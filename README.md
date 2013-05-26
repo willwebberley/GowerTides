@@ -7,7 +7,8 @@ Source for Gower Tides app on Google Play.
 
 **Notes:**
 * External Credits
-    * Credit to [Adam Whitcroft](http://adamwhitcroft.com/climacons) for weather icons 
+    * Credit to [Adam Whitcroft](http://adamwhitcroft.com/climacons) for weather information icons (temperature, wind, precipitation)
+    * Credit to [digitalchet](http://digitalchet.deviantart.com/art/Novacons-Weather-Icons-13133337) for weather icons 
     * Graph generation utilises the [AndroidPlot](http://androidplot.com) Java package
     * Weather data is from the [World Weather Online](http://www.worldweatheronline.com) API.
     * This SQLite [helper class](https://github.com/jgilfelt/android-sqlite-asset-helper) was used to handle the local SQLite database.
