@@ -1,0 +1,103 @@
+<ScrollView  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/aboutText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="20dp"
+        tools:context=".About" />
+
+
+    <Button
+        android:id="@+id/helpButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/aboutText"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="30dp"
+        android:onClick="goToHelp"
+        android:text="Contact" />
+    
+     <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/helpButton"
+        android:layout_below="@+id/aboutText"
+        android:layout_marginTop="35dp"
+        android:layout_marginLeft="30dp"
+        android:text="willwebberley.net"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="fitXY"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/helpButton"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:src="@drawable/twitter"
+        android:onClick="openTwitter" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/imageView1"
+        android:layout_below="@+id/textView2"
+        android:layout_alignLeft="@+id/textView2"
+        android:layout_marginTop="70dp"
+        android:text="\@flyingSparx"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+   <View 
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#ccc"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        />
+   
+   <TextView
+        android:id="@+id/weatherCredit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:layout_alignParentRight="true"
+        android:layout_below="@+id/divider2"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:text="Weather data is provided by World Weather Online. Please click the button below to visit their website."
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+   
+	 <Button
+        android:id="@+id/weatherButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/weatherCredit"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+     
+        android:onClick="goToWeather"
+        android:text="World Weather Online" />
+    
+</RelativeLayout>
+</ScrollView>

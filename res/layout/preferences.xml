@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent">
+    <PreferenceCategory 
+        android:title="Tide graph">
+        <CheckBoxPreference
+            android:key="show_graph"
+            android:summary="Display the tide graph."
+            android:title="Show tide graph"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="show_graph_time"
+            android:summary="Show the current time on the graph."
+            android:title="Show current time"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="show_graph_sunrise_sunset"
+            android:summary="Show the sunrise and sunset times on the graph."
+            android:title="Show sunrise/sunset"
+            android:defaultValue="true" />
+    </PreferenceCategory>
+     <PreferenceCategory 
+        android:title="Tide table">
+        <CheckBoxPreference
+            android:key="show_table"
+            android:summary="Display the tide table."
+            android:title="Show tide table"
+            android:defaultValue="true" />
+        </PreferenceCategory>
+        
+        <PreferenceCategory 
+        android:title="Weather forecast" >
+        <CheckBoxPreference
+            android:key="show_weather"
+            android:summary="Lookup and show the weather forecast. Weather available for next 5 days from today."
+            android:title="Display weather forecast"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="weather_sync"
+            android:summary="Automatically try to sync weather when the app is opened."
+            android:title="Weather auto-sync"
+            android:defaultValue="true" />
+        <ListPreference
+		  android:title="Unit formats"
+		  android:summary="Display weather units in metric or imperial formats."
+		  android:key="unitFormat"
+		  android:entries="@array/unitDisplay"
+  		  android:entryValues="@array/unitValue" />
+		
+    </PreferenceCategory>
+    
+    <PreferenceCategory 
+        android:title="Sunrise and sunset times"
+        android:key="pref_key_storage_settings">
+        <CheckBoxPreference
+            android:key="show_sunrise_sunset"
+            android:summary="Show times of sunrise and sunset."
+            android:title="Show times"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="show_sunset_timer"
+            android:summary="Show time left until sunset."
+            android:title="Show sunset timer"
+            android:defaultValue="true" />
+		
+    </PreferenceCategory>
+</PreferenceScreen>

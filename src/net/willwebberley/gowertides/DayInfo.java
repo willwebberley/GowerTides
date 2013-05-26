@@ -1,0 +1,387 @@
+package net.willwebberley.gowertides;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import com.androidplot.xy.XYPlot;
+
+import net.willwebberley.gowertides.classes.Day;
+import net.willwebberley.gowertides.classes.TideGraph;
+import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.text.Html;
+import android.text.Spanned;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
+@SuppressLint("ValidFragment")
+public class DayInfo extends Fragment {
+	
+	private Dayview dayView;
+	
+	private SharedPreferences prefs;
+	private Handler updaterHandler;
+	
+	public Day today;
+	private Calendar rightNow;
+	private TideGraph tideGraph;
+	
+	private TextView dateText;
+	private TextView tideTypeField;
+	private TextView tideTimeField;
+	private TextView tideTimeLeftField;
+	private TextView sunriseText;
+	private TextView sunsetText;
+	private TextView sunsetCountField;
+	private TextView weatherDescriptionView;
+	private ImageView revertButton;
+	private ProgressBar weatherProgress;
+	private ImageButton weatherSync;
+	
+	private View layoutView;
+	
+	@Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
+        layoutView =  inflater.inflate(R.layout.fragment_day_info, container, false);
+        
+        updaterHandler = new Handler();
+        initComponents();
+        showPreferredComponents();
+    	updateUI();
+    	updater();
+
+        if(dayView.weatherSycing){
+            startWeatherSync();
+        }
+        else{
+            finishWeatherSync();
+        }
+
+        return layoutView;
+    }
+	
+	public DayInfo(Day day, SharedPreferences p, Dayview d){
+		today = day;
+		prefs = p;
+		dayView = d;    	
+	}
+	
+	public DayInfo(){
+		
+	}
+	
+	/******
+     * 
+     * UI METHODS
+     */
+
+    public void startWeatherSync(){
+        System.out.println("starting sync");
+        try{
+            weatherSync.setVisibility(View.INVISIBLE);
+            weatherProgress.setVisibility(View.VISIBLE);
+        }
+        catch(Exception e){
+            System.err.println("error starting sync on fragment: "+e);
+        }
+    }
+
+    public void finishWeatherSync(){
+        try{
+            weatherSync.setVisibility(View.VISIBLE);
+            weatherProgress.setVisibility(View.INVISIBLE);
+            updateUI();
+            showPreferredComponents();
+            System.out.println("finished sync");
+        }
+        catch(Exception e){
+            System.err.println("error finishing sync on fragment: "+e);
+        }
+    }
+
+    public void refreshUI(){
+        showPreferredComponents();
+        updateUI();
+    }
+    
+    /*
+     * Loaded from onResume() - checks preferences and hides or shows components based on what the
+     * user wants.
+     */
+    private void showPreferredComponents(){
+    	if(prefs.getBoolean("show_graph", true)){layoutView.findViewById(R.id.tideGraphComponent).setVisibility(View.VISIBLE);}
+    	else{layoutView.findViewById(R.id.tideGraphComponent).setVisibility(View.GONE);}
+    	
+    	if(prefs.getBoolean("show_table", true)){layoutView.findViewById(R.id.tideTable).setVisibility(View.VISIBLE);}
+    	else{layoutView.findViewById(R.id.tideTable).setVisibility(View.GONE);}
+    	
+    	if(prefs.getBoolean("show_sunrise_sunset", true)){layoutView.findViewById(R.id.sunrise_sunset).setVisibility(View.VISIBLE);}
+    	else{layoutView.findViewById(R.id.sunrise_sunset).setVisibility(View.GONE);}
+    	
+    	if(prefs.getBoolean("show_sunset_timer", true)){layoutView.findViewById(R.id.sunsetCountField).setVisibility(View.VISIBLE);}
+    	else{layoutView.findViewById(R.id.sunsetCountField).setVisibility(View.GONE);}
+    	   	
+    	if(prefs.getBoolean("show_weather", true)){layoutView.findViewById(R.id.weatherHolder).setVisibility(View.VISIBLE);}
+    	else{layoutView.findViewById(R.id.weatherHolder).setVisibility(View.GONE);}
+    }
+   
+    /*
+     * Main UI updater. Sets the textfields, tide graph, etc to the selected day.
+     */
+    public void updateUI(){
+        today.getDayInfo();
+    	rightNow = Calendar.getInstance();
+    	Boolean errors = today.getErrors();
+    	if(errors){
+    		//Toast.makeText(getApplicationContext(), "There has been an unknown issue retrieving some of the info for today.", Toast.LENGTH_LONG).show();
+    	}
+    	
+    	// Set all the text fields to the new values:
+    	//dateText.setText(today.toString());
+    	
+    	// Put in try-catch as getting the strings returned null pointers on some devices
+    	try{
+    		sunriseText.setText(today.getSunriseString());
+    		sunsetText.setText(today.getSunsetString());
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	
+    	try{
+    		tideGraph.setDay(today);
+        	
+        	// Draw the tide table with correct values
+        	setTideTableInfo();
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	
+    	try{
+	    	// Check if selected day is today. If so, show further information and set revert day button
+	    	// to invisible, else, set to visible:
+	    	if(today.isToday()){
+	    		setSunsetTime();
+	    		setTimeToTide();
+	    		//revertButton.setVisibility(View.INVISIBLE);
+	    	}
+	    	else{
+	    		sunsetCountField.setText("");
+	    		//revertButton.setVisibility(View.VISIBLE);
+	    	}
+    	}
+    	catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	
+    	// Check if there is weather data for selected day. If yes, set the weather info view to visible
+    	// and remove error message and fill text fields with correct data. Else hide weather info
+    	// and show error message.
+    	if(today.isWeatherAvailable()){
+    		layoutView.findViewById(R.id.weather).setVisibility(View.VISIBLE);
+    		((TextView)layoutView.findViewById(R.id.weather_error)).setVisibility(View.GONE);
+    		setWeatherInfo();
+    	}
+    	else{
+    		layoutView.findViewById(R.id.weather).setVisibility(View.GONE);
+    		((TextView)layoutView.findViewById(R.id.weather_description)).setText("Weather unavailable");
+    		((TextView)layoutView.findViewById(R.id.weather_error)).setVisibility(View.VISIBLE);
+    		//today = new Day(Calendar.getInstance(), dayView.getApplicationContext());
+    	}
+    	
+    	//((TextView)layoutView.findViewById(R.id.dayNotFound)).setVisibility(View.GONE);
+    }
+    
+    /*
+     * Set the weather fields and images for the current day.
+     */
+    private void setWeatherInfo(){
+    	String weather_description = today.getWeatherDescription();
+    	String unitType = prefs.getString("unitFormat", "true");
+    	Boolean metric = false;
+    	if(unitType.equals("true")){
+    		metric = true;
+    	}
+    	
+    	int max_temp = today.getMaxTemp(metric);
+    	int min_temp = today.getMinTemp(metric);
+    	int wind_speed = today.getWindSpeed(metric);
+    	Double prep = today.getPrecipitation();
+    	String direction = today.getWindDirection();
+    	Spanned temp=null,wind=null;
+    	if(metric){
+    		temp = Html.fromHtml("<b>"+min_temp+"&deg;C - "+max_temp+"&deg;C</b>");
+        	wind = Html.fromHtml("<b>"+wind_speed+"km/h</b> from <b>"+direction+"</b>");
+        	
+    	}
+    	else{
+    		temp = Html.fromHtml("<b>"+min_temp+"&deg;F - "+max_temp+"&deg;F</b>");
+        	wind = Html.fromHtml("<b>"+wind_speed+"mph</b> from <b>"+direction+"</b>");
+    	}
+    	Spanned precipitation = Html.fromHtml("<b>"+prep+"mm</b>");
+    	
+		((TextView)layoutView.findViewById(R.id.weather_description)).setText(weather_description);
+		((TextView)layoutView.findViewById(R.id.weatherTemp)).setText(temp);
+        ((TextView)layoutView.findViewById(R.id.weatherTemp)).setTextColor(Color.rgb(100, 100, 100));
+		((TextView)layoutView.findViewById(R.id.weatherWind)).setText(wind);
+        ((TextView)layoutView.findViewById(R.id.weatherWind)).setTextColor(Color.rgb(100, 100, 100));
+		((TextView)layoutView.findViewById(R.id.weatherPrecipitation)).setText(precipitation);
+        ((TextView)layoutView.findViewById(R.id.weatherPrecipitation)).setTextColor(Color.rgb(100, 100, 100));
+		String icon = today.getWeatherIcon();
+		try {
+			 InputStream ims = getActivity().getAssets().open("icons/"+icon);
+			 Drawable d = Drawable.createFromStream(ims, null);
+			 ((ImageView)layoutView.findViewById(R.id.weatherIcon)).setImageDrawable(d);
+			 InputStream ims2 = getActivity().getAssets().open("icons/arrow.png");
+			 Drawable d2 = Drawable.createFromStream(ims2, null);
+			 ((ImageView)layoutView.findViewById(R.id.weatherWindIcon)).setImageDrawable(d2);
+			 
+			 RotateAnimation rAnim = new RotateAnimation(0, today.getWindDegree(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+			 rAnim.setDuration(500);
+			 rAnim.setFillEnabled(true);
+			 rAnim.setFillAfter(true);
+			 ((ImageView)layoutView.findViewById(R.id.weatherWindIcon)).startAnimation(rAnim);
+		}
+			catch(IOException e) {System.out.println(e);}
+    }
+    
+    /*
+     * Draws the tide table (3 columwindns: type(high/low),time,timeToGo)
+     * This method responsible for first two columns (since final one depends on current time.
+     */
+    private void setTideTableInfo(){
+    	tideTypeField.setText("");
+    	tideTimeField.setText("");
+    	tideTimeLeftField.setText("");
+    	tideTypeField.append((Html.fromHtml("<b>TIDE</b><br />")));
+    	tideTimeField.append((Html.fromHtml("<b>TIME</b><br />")));
+    	
+    	String[] types = today.getTideTypes();
+    	Calendar[] times = today.getTideTimes();
+    	
+    	for(int i = 0; i < types.length; i++){
+    		tideTypeField.append(types[i]);
+    		tideTimeField.append((new SimpleDateFormat("HH:mm")).format(times[i].getTime()));
+    		if(i < types.length-1){
+    			tideTypeField.append("\n");
+    			tideTimeField.append("\n");
+    		}
+      	}
+    }
+    
+    /*
+     * Updates tide table's final column with the time left until the next high/low tide.
+     */
+    private void setTimeToTide(){
+    	tideTimeLeftField.setText("");
+    	tideTimeLeftField.append((Html.fromHtml("<b>TO GO</b><br />")));
+    	
+    	Calendar[] times = today.getTideTimes();
+    	for(int i = 0; i < times.length; i++){
+	    	int hoursDiff = times[i].get(Calendar.HOUR_OF_DAY) - rightNow.get(Calendar.HOUR_OF_DAY);
+		    int minsDiff = times[i].get(Calendar.MINUTE) - rightNow.get(Calendar.MINUTE);
+		    if(minsDiff < 0){
+		    	hoursDiff--;
+		    	minsDiff = 60+minsDiff;
+		    }
+		    if(hoursDiff < 0){
+		    	tideTimeLeftField.append("--:--");
+		    }
+		    if(hoursDiff >= 0){
+		    	if(minsDiff < 10){tideTimeLeftField.append((Html.fromHtml("<b>"+hoursDiff+":0"+minsDiff+"</b>")));}
+	    	    if(minsDiff >=10){tideTimeLeftField.append((Html.fromHtml("<b>"+hoursDiff+":"+minsDiff+"</b>")));}
+		    }
+		    if(i < times.length-1){
+		    	tideTimeLeftField.append((Html.fromHtml("<br />")));
+    		}
+    	}
+    }
+    
+    /*
+     * Set data for the sunset timer (again, depends on current time)
+     */
+    private void setSunsetTime(){
+    	Calendar sunsetTime = today.getSunset();
+	    int hoursDiff = sunsetTime.get(Calendar.HOUR_OF_DAY) - rightNow.get(Calendar.HOUR_OF_DAY);
+	    int minsDiff = sunsetTime.get(Calendar.MINUTE) - rightNow.get(Calendar.MINUTE);
+	    if(minsDiff < 0){
+	    	hoursDiff--;
+	    	minsDiff = 60+minsDiff;
+	    }
+	    if(hoursDiff < 0){
+	    	sunsetCountField.setText("sun has set");
+	    }
+	    if(hoursDiff >= 0){
+	    	if(minsDiff < 10){sunsetCountField.setText(hoursDiff+":0"+minsDiff+" 'til sunset");}
+    	    if(minsDiff >=10){sunsetCountField.setText(hoursDiff+":"+minsDiff+" 'til sunset");}
+	    }
+    }
+    
+    /******
+     * 
+     * INITIALIZATION METHODS
+     */
+    
+    /*
+     * Get the layout components initialized and make their variable names global.
+     */
+    private void initComponents(){
+    	
+    	tideGraph = new TideGraph((XYPlot)layoutView.findViewById(R.id.tideGraphComponent), dayView.getApplicationContext());
+
+    	tideTypeField = (TextView)layoutView.findViewById(R.id.tideTypes);
+    	tideTimeField = (TextView)layoutView.findViewById(R.id.tideTimes);
+    	tideTimeLeftField = (TextView)layoutView.findViewById(R.id.tideTimesLeft);
+    	tideTimeLeftField.setTextColor(Color.rgb(0, 100, 0));
+    	
+    	sunriseText = (TextView)layoutView.findViewById(R.id.sunriseText);
+    	sunriseText.setTextColor(Color.rgb(0, 100, 0));
+    	sunsetText = (TextView)layoutView.findViewById(R.id.sunsetText);
+    	sunsetText.setTextColor(Color.rgb(100, 0, 0));
+    	sunsetCountField = (TextView)layoutView.findViewById(R.id.sunsetCountField);
+    	sunsetCountField.setTextColor(Color.rgb(100, 25, 25));
+    
+    	weatherProgress = (ProgressBar)layoutView.findViewById(R.id.weatherProgress);
+    	weatherSync = (ImageButton)layoutView.findViewById(R.id.weatherSync);
+    	weatherDescriptionView = (TextView)layoutView.findViewById(R.id.weather_description);
+    	weatherDescriptionView.setTextColor(Color.rgb(0, 150, 220));
+    }
+    
+ // Method to update the interface automatically every 60 seconds:
+    public void updater() {
+        Runnable runnable = new Runnable() {
+          public void run() {
+            for (;;) {
+              try {
+                Thread.sleep(60000);
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+              updaterHandler.post(new Runnable() {
+                public void run() {
+                  updateUI();
+                }
+              });
+            }
+          }
+        };
+        new Thread(runnable).start();
+      }
+}

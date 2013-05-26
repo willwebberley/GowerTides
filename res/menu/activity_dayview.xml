@@ -1,0 +1,27 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!--
+    <item android:id="@+id/menu_prev"
+        android:title="Previous day"
+        android:icon="@drawable/arrow_left"
+        android:showAsAction="ifRoom" 
+    />
+    <item android:id="@+id/menu_next"
+        android:title="Next day"
+        android:icon="@drawable/arrow_right"
+        android:showAsAction="ifRoom"
+    />
+    -->
+    <item android:id="@+id/menu_revert"
+        android:title="Today"
+        android:showAsAction="never"
+    />
+    <item android:id="@+id/menu_about"
+        android:title="@string/menu_about"
+        android:showAsAction="never"
+         />
+    <item android:id="@+id/menu_settings"
+        android:title="Settings"
+        android:showAsAction="never"
+         />
+</menu>
