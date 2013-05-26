@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="tides">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/assets/databases/tides.zip!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

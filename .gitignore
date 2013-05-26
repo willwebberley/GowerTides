@@ -3,4 +3,6 @@
 *.png
 *.zip
 out/
+.idea/
+.settings/
 *.jar
