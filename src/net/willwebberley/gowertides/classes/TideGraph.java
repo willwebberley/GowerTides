@@ -16,19 +16,36 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYStepMode;
 
+/*
+* Class to represent the tide graph shown on each day fragment.
+*
+* Contains method to modify parts of the graph where necessary, and also the support required to construct
+* the graph.
+*
+* Each instance of TideGraph represents the tidal graph and tidal data for a certain Day object.
+ */
 public class TideGraph {
 	
 	private XYPlot plot;
 	private XYSeries series, timeSeries, sunriseSeries, sunsetSeries;
 	private Day day;
 	private SharedPreferences prefs;
-	
+
+    /*
+    * Initialize TideGraph instance with the UI View representing the graph and the application context.
+     */
 	public TideGraph(XYPlot plotComponent, Context context){
 		plot = plotComponent;	
 		prefs = PreferenceManager.getDefaultSharedPreferences(context); 
 		initGraph();
 	}
-	
+
+    /*
+    * Set the Day to be represented by the graph.
+    *
+    * Method then goes on to format the rest of the graph, including colours etc., and also to draw on support
+    * information, such as sunrise/sunset times and the current time.
+     */
 	public void setDay(Day d){
 		// Get the current day and reset graph
 		day = d;
@@ -121,7 +138,10 @@ public class TideGraph {
         plot.redraw();
 	}
 	
-	
+	/*
+	* Initialize the graph by handling its static UI properties (axes, etc.), colours, axes formats, axes titles,
+	* axes ranges, etc.
+	 */
 	private void initGraph(){
         
 		// reduce the number of range labels

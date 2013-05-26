@@ -27,9 +27,14 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
+/*
+* class (Fragment) to represent a day.
+*
+* Each day holds various tidal, weather, sunset/sunrise data and this fragment is responsible for displaying this
+* data and updating it where necessary.
+ */
 @SuppressLint("ValidFragment")
 public class DayInfo extends Fragment {
 	
@@ -42,7 +47,6 @@ public class DayInfo extends Fragment {
 	private Calendar rightNow;
 	private TideGraph tideGraph;
 	
-	private TextView dateText;
 	private TextView tideTypeField;
 	private TextView tideTimeField;
 	private TextView tideTimeLeftField;
@@ -50,12 +54,19 @@ public class DayInfo extends Fragment {
 	private TextView sunsetText;
 	private TextView sunsetCountField;
 	private TextView weatherDescriptionView;
-	private ImageView revertButton;
 	private ProgressBar weatherProgress;
 	private ImageButton weatherSync;
 	
 	private View layoutView;
-	
+
+    /*
+    * Called when the fragment is loaded into the viewpager's memory.
+    *
+    * Method responsible for loading the fragment's UI from layout XML and updating the UI components.
+    *
+    * If weather sync is currently ongoing, then show progressbar and hide sync button.
+    * Else, hide progressbar and show sync button.
+     */
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
         layoutView =  inflater.inflate(R.layout.fragment_day_info, container, false);
@@ -75,13 +86,19 @@ public class DayInfo extends Fragment {
 
         return layoutView;
     }
-	
+
+    /*
+    * Initialize the fragment with the Day it is to represent, the application preferences and the parent activity.
+     */
 	public DayInfo(Day day, SharedPreferences p, Dayview d){
 		today = day;
 		prefs = p;
 		dayView = d;    	
 	}
-	
+
+    /*
+    * Empty constructor also required for a valid fragment.
+     */
 	public DayInfo(){
 		
 	}
@@ -91,8 +108,11 @@ public class DayInfo extends Fragment {
      * UI METHODS
      */
 
+    /*
+    * Called from parent activity when weather is to start syncing.
+    * Responsible for hiding the sync button and showing the progress bar.
+     */
     public void startWeatherSync(){
-        System.out.println("starting sync");
         try{
             weatherSync.setVisibility(View.INVISIBLE);
             weatherProgress.setVisibility(View.VISIBLE);
@@ -102,26 +122,34 @@ public class DayInfo extends Fragment {
         }
     }
 
+    /*
+    * Called from parent activity when weather sync is completed.
+    * Hides progressbar and shows sync button.
+    * Updates the UI.
+     */
     public void finishWeatherSync(){
         try{
             weatherSync.setVisibility(View.VISIBLE);
             weatherProgress.setVisibility(View.INVISIBLE);
             updateUI();
             showPreferredComponents();
-            System.out.println("finished sync");
         }
         catch(Exception e){
             System.err.println("error finishing sync on fragment: "+e);
         }
     }
 
+    /*
+    * Called from parent activity when it requires the fragment to refresh its UI.
+    * (Typically onResume() calls it to make it reload the components which are set to show in preferences.)
+     */
     public void refreshUI(){
         showPreferredComponents();
         updateUI();
     }
     
     /*
-     * Loaded from onResume() - checks preferences and hides or shows components based on what the
+     * Internal method that checks preferences and hides or shows components based on what the
      * user wants.
      */
     private void showPreferredComponents(){
@@ -147,15 +175,8 @@ public class DayInfo extends Fragment {
     public void updateUI(){
         today.getDayInfo();
     	rightNow = Calendar.getInstance();
-    	Boolean errors = today.getErrors();
-    	if(errors){
-    		//Toast.makeText(getApplicationContext(), "There has been an unknown issue retrieving some of the info for today.", Toast.LENGTH_LONG).show();
-    	}
-    	
-    	// Set all the text fields to the new values:
-    	//dateText.setText(today.toString());
-    	
-    	// Put in try-catch as getting the strings returned null pointers on some devices
+
+       	// Put in try-catch as getting the strings returned null pointers on some devices
     	try{
     		sunriseText.setText(today.getSunriseString());
     		sunsetText.setText(today.getSunsetString());
@@ -175,16 +196,13 @@ public class DayInfo extends Fragment {
     	}
     	
     	try{
-	    	// Check if selected day is today. If so, show further information and set revert day button
-	    	// to invisible, else, set to visible:
+	    	// Check if selected day is today. If so, show further information
 	    	if(today.isToday()){
 	    		setSunsetTime();
 	    		setTimeToTide();
-	    		//revertButton.setVisibility(View.INVISIBLE);
 	    	}
 	    	else{
 	    		sunsetCountField.setText("");
-	    		//revertButton.setVisibility(View.VISIBLE);
 	    	}
     	}
     	catch(Exception e){
@@ -203,10 +221,7 @@ public class DayInfo extends Fragment {
     		layoutView.findViewById(R.id.weather).setVisibility(View.GONE);
     		((TextView)layoutView.findViewById(R.id.weather_description)).setText("Weather unavailable");
     		((TextView)layoutView.findViewById(R.id.weather_error)).setVisibility(View.VISIBLE);
-    		//today = new Day(Calendar.getInstance(), dayView.getApplicationContext());
     	}
-    	
-    	//((TextView)layoutView.findViewById(R.id.dayNotFound)).setVisibility(View.GONE);
     }
     
     /*
@@ -263,8 +278,8 @@ public class DayInfo extends Fragment {
     }
     
     /*
-     * Draws the tide table (3 columwindns: type(high/low),time,timeToGo)
-     * This method responsible for first two columns (since final one depends on current time.
+     * Draws the tide table (3 columns: type(high/low),time,timeToGo)
+     * This method responsible for first two columns (since final one depends on current time).
      */
     private void setTideTableInfo(){
     	tideTypeField.setText("");
@@ -315,7 +330,7 @@ public class DayInfo extends Fragment {
     }
     
     /*
-     * Set data for the sunset timer (again, depends on current time)
+     * Set data for the sunset timer (again, depends on whether selected day is 'today')
      */
     private void setSunsetTime(){
     	Calendar sunsetTime = today.getSunset();
@@ -364,7 +379,8 @@ public class DayInfo extends Fragment {
     	weatherDescriptionView.setTextColor(Color.rgb(0, 150, 220));
     }
     
- // Method to update the interface automatically every 60 seconds:
+    // Method to update the interface automatically every 60 seconds,
+    // so that timers, etc., are up-to-date.
     public void updater() {
         Runnable runnable = new Runnable() {
           public void run() {

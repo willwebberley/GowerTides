@@ -8,6 +8,12 @@ import android.database.Cursor;
 import net.willwebberley.gowertides.Dayview;
 import net.willwebberley.gowertides.utils.*;
 
+/*
+* Class to represent a Day. Holds various fields of information regarding the day, including tidal, weather,
+* and sunrise-sunset information.
+*
+* This is not a UI class, but contains the data represented in a DayInfo fragment.
+ */
 public class Day {
 
 	private Calendar day;
@@ -39,25 +45,32 @@ public class Day {
 	private WeatherDatabase weather_db;
 	
 	private int dayErrors;
-	
+
+    /*
+    * Instantiate object with a Calendar day to represent, the application context and the main Dayview activity.
+    * Activity is needed to access the databases.
+     */
 	public Day(Calendar date, Context con, Dayview dv){
 		day = date;
 		context = con;
-		//db = new DayDatabase(con);
-		//weather_db = new WeatherDatabase(con);
 		db = dv.db;
 		weather_db = dv.weather_db;
 		
-		
 		getDayInfo();
 	}
-	
+
+    /*
+    * Set a new Calendar day of the Day object, if needed
+     */
 	public Day setDay(Calendar date){
 		day = date;
 		getDayInfo();
 		return this;
 	}
-	
+
+    /*
+    * Load information regarding this day from the databases and put into the fields held by this object.
+     */
 	public void getDayInfo(){
 		dayErrors = 0;
 		// TIDE INFO:
@@ -85,8 +98,10 @@ public class Day {
 			precipitation = weatherInfo.getDouble(14);
 			weatherAvailable = true;
 		}
+        /*
+        * Exception will be thrown if there s no stored weather data for this Day.
+         */
 		catch(Exception e){
-			//System.out.print("no weather for today");
 			weatherAvailable = false;
 			dayErrors++;
 		}
@@ -126,25 +141,36 @@ public class Day {
 
 		lowTideHeights[0] = info.getString(10);
 		lowTideHeights[1] = info.getString(14);
+
+        /*
+        * Close the two cursors needed to get this data.
+         */
         info.close();
         weatherInfo.close();
 	}
-	
+
+    /*
+    * Check to see if there were any errors in retrieving data.
+    *
+    * Note that if weather is unavailable for this Day, then this will return true.
+     */
 	public Boolean getErrors(){
 		if (dayErrors > 0){
 			return true;
 		}
 		return false;
 	}
-	
-	public Boolean setWeatherData(String data){
-		Boolean success =  weather_db.insertWeatherData(data);
-		return success;
-	}
-	
+
+    /*
+    * Check if there is weather data for this day.
+     */
 	public Boolean isWeatherAvailable(){
 		return weatherAvailable;
 	}
+
+    /*
+    * Publicly-available standard getter and mutator methods for this class.
+     */
 	public String getWeatherDescription(){
 		return description;
 	}
@@ -204,6 +230,10 @@ public class Day {
 		day.add(Calendar.DATE, -1);
 		return day;
 	}
+
+    /*
+    * Check if this Day represents real-life 'today'
+     */
 	public Boolean isToday(){
 		Calendar now = Calendar.getInstance();
 		Calendar dayToCheck = getDay();
@@ -214,6 +244,10 @@ public class Day {
 			return false;
 		}
 	}
+
+    /*
+    * Get the current time of day for plotting on the graph.
+     */
 	public Double getCurrentTimePlot(){
 		Calendar now = Calendar.getInstance();
 		Double hour = now.get(Calendar.HOUR_OF_DAY)+0.0;
@@ -221,19 +255,27 @@ public class Day {
 		Double minuteOfHour = minute/60;
 		return (hour+minuteOfHour);
 	}
+    /*
+    * Get the sunrise time of today for plotting on the graph.
+     */
 	public Double getSunrisePlot(){
 		Double hour = sunrise.get(Calendar.HOUR_OF_DAY)+0.0;
 		Double minute = sunrise.get(Calendar.MINUTE)+0.0;
 		Double minuteOfHour = minute/60;
 		return (hour+minuteOfHour);
 	}
+    /*
+    * Get the sunset time of today for plotting on the graph.
+     */
 	public Double getSunsetPlot(){
 		Double hour = sunset.get(Calendar.HOUR_OF_DAY)+0.0;
 		Double minute = sunset.get(Calendar.MINUTE)+0.0;
 		Double minuteOfHour = minute/60;
 		return (hour+minuteOfHour);
 	}
-	
+    /*
+    * Get an array of tide heights to plot on graph, stripping out the numeric values.
+     */
 	public Double[] getTideHeights(){
 		ArrayList heights = new ArrayList();
 		for(int i = 0; i < highTideHeights.length; i++){
@@ -269,8 +311,9 @@ public class Day {
 		}
 		return (Double[]) heights.toArray(new Double[heights.size()]);
 	}
-	
-		
+	/*
+	* Get the time of tide events for plotting on the graph.
+    */
 	public Double[] getTideTimesPlot(){
 		ArrayList times = new ArrayList();
 		for(int i = 0; i < highTideTimes.length; i++){
@@ -332,7 +375,10 @@ public class Day {
 		}
 		return (Double[]) times.toArray(new Double[times.size()]);
 	}
-	
+
+    /*
+    * Get String[] representing order of tide events for the day. (e.g. high, low, high, low)
+     */
 	public String[] getTideTypes(){
 		ArrayList types = new ArrayList();
 		for(int i = 0; i < highTideTimes.length; i++){
@@ -349,7 +395,10 @@ public class Day {
 		}
 		return (String[]) types.toArray(new String[types.size()]);
 	}
-	
+
+    /*
+    * Get Calendar[] representing the time of the tide events for the day (in same order as above method).
+     */
 	public Calendar[] getTideTimes(){
 		ArrayList times = new ArrayList();
 		for(int i = 0; i < highTideTimes.length; i++){
@@ -388,8 +437,4 @@ public class Day {
 		}
 		return (Calendar[]) times.toArray(new Calendar[times.size()]);
 	}
-	
-	
-	
-	
 }

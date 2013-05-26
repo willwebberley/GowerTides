@@ -35,6 +35,17 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 
+/*
+ * Main Activity of application
+ *
+ * This class maintains the pageviewer of days as well as indicating the currently selected day and handles some button
+  * press events.
+  *
+  * Pageviewer contains a list of fragments, each representing a day.
+  *
+  * This class ia also responsible for network tasks (getting weather), and communicating this to the day fragments.
+  *
+ */
 public class Dayview extends FragmentActivity {
 
 	private SharedPreferences prefs;
@@ -57,6 +68,14 @@ public class Dayview extends FragmentActivity {
     private ProgressBar buildProgress;
 
 
+    /*
+    * onCreate() called upon activity start.
+    *
+    * Responsible for initializing major components, loading app preferences and initializing some global variables.
+    * Creates the viewpager object and assigns an adapter.
+    *
+    * Starts the StartupTasks thread to handle long-running startup tasks (while progress bar shows on UI).
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +91,12 @@ public class Dayview extends FragmentActivity {
         new StartupTasks().execute("");
     }
 
+    /*
+    * Called from StartupTasks thread and is used to populate the viewpager with the day fragments.
+    *
+    * Creates DAYS_TO_STORE number of day fragments equally distributed around the current day and calculates and stores
+    * the index of the current day of the list.
+     */
     private void populatePager(Calendar newToday){
         fragments.clear();
         Calendar startDay = (Calendar)newToday.clone();
@@ -83,7 +108,6 @@ public class Dayview extends FragmentActivity {
             DayInfo dayToAdd = new DayInfo(new Day(newDay, getApplicationContext(), this), prefs, this);
             if (currentDay.getTimeInMillis() == newDay.getTimeInMillis()){
                 todayFragmentIndex = i;
-                System.out.println(i);
             }
             fragments.add(dayToAdd);
             if (newDay.getTimeInMillis() == lastDay.getTimeInMillis()){
@@ -92,28 +116,25 @@ public class Dayview extends FragmentActivity {
         }
     }
 
+    /*
+    * Inner class to act as the PagerAdapter for the viewpager.
+    *
+    * Implements various methods to assist with handling the pager.
+     */
     class PagerAdapter extends FragmentPagerAdapter {
-
         private List<DayInfo> fragments;
-
-
         public PagerAdapter(android.support.v4.app.FragmentManager fm, List<DayInfo> fragments) {
             super(fm);
             this.fragments = fragments;
         }
-
-
         @Override
         public DayInfo getItem(int position) {
             return this.fragments.get(position);
         }
-
-
         @Override
         public int getCount() {
             return this.fragments.size();
         }
-
         @Override
         public int getItemPosition(Object object) {
             return POSITION_NONE;
@@ -153,7 +174,7 @@ public class Dayview extends FragmentActivity {
      */
 
     /*
-     * When application resumes, refresh the UI.
+     * When application resumes, refresh the UI of each day fragment..
      */
     public void onResume(){
     	super.onResume();
@@ -203,7 +224,7 @@ public class Dayview extends FragmentActivity {
     }
 
     /*
-     * Set the current day to the current//updateUI();nt day and update GUI. If error, assume no data for day.
+     * Set the current day to the current day. If error, assume no data for day.
      * (Hopefully this will never result in a error if app is updated!)
      */
     public void toDay(View view){
@@ -218,6 +239,8 @@ public class Dayview extends FragmentActivity {
 
     /*
      * If a network connection is available, sync the weather. Else show an error.
+     *
+     * Weather is synced using a threaded AsyncTask. If net unavailable, toast an error.
      */
     public void syncWeather(View view){
         weatherSycing = true;
@@ -251,6 +274,8 @@ public class Dayview extends FragmentActivity {
 
     /*
     * Update Fragments in ViewPager. Will only update the three Fragments currently in memory.
+    *
+    * These three methods execute different methods within the loaded pages.
      */
     private void fragmentsFinishWeatherSync(){
         ((DayInfo)fragments.get(currentFragmentIndex-1)).finishWeatherSync();
@@ -290,6 +315,12 @@ public class Dayview extends FragmentActivity {
      * THREADED CODE
      */
 
+    /*
+    * Threaded task to run startup routine (while progressbar shows on UI).
+    *
+    * Responsible for initialising view pager and other general tasks.
+    * On finish, onPostExecute() is called.
+     */
     private class StartupTasks extends AsyncTask<String, Integer, Boolean>{
         @Override
         protected Boolean doInBackground(String... arg0) {
@@ -303,8 +334,6 @@ public class Dayview extends FragmentActivity {
             //currentDay = setDayForTesting("31/12/2016");
 
             populatePager(currentDay);
-
-
 
             infoPager.setOnPageChangeListener(new OnPageChangeListener() {
                 public void onPageScrollStateChanged(int state) {}
@@ -326,6 +355,10 @@ public class Dayview extends FragmentActivity {
         }
         protected void onPostExecute(Boolean result) {
             infoPager.setCurrentItem(todayFragmentIndex); // set initial pager position to current day
+            /*
+            * If preference is to sync weather on startup, then sync weather task now.
+            * (this is done after initialising day fragments due to UI updates on the fragments during this task.)
+             */
             if(prefs.getBoolean("weather_sync", true)){
                 syncWeather(null);
             }
@@ -335,6 +368,7 @@ public class Dayview extends FragmentActivity {
             infoPager.setVisibility(View.VISIBLE);
         }
     }
+
     /*
      * AsyncTask to fetch weather data for current day.
      */
@@ -378,15 +412,17 @@ public class Dayview extends FragmentActivity {
 			return true;
 		}
 
+        /*
+        * On finish, update day fragments to show weather and flag the process as complete.
+        *
+        * If unsuccessful, for any reason, show an error.
+         */
 		protected void onPostExecute(Boolean result) {
+            weatherSycing = false;
+            fragmentsFinishWeatherSync();
 	         if(!result){
 	        	 Toast.makeText(getApplicationContext(), "Error syncing weather. Please try again later.", Toast.LENGTH_LONG).show();
-                 weatherSycing = false;
-                 fragmentsFinishWeatherSync();
-	         }
-	         else{
-	        	 weatherSycing = false;
-                 fragmentsFinishWeatherSync();
+
 	         }
 	     }
     }
