@@ -14,9 +14,6 @@ public class About extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        TextView aboutText = (TextView)findViewById(R.id.aboutText);
-        aboutText.setText("Gower Tides \n\n");
-        aboutText.append("Author: Will Webberley (@flyingSparx)\n");
     }
 
     @Override
@@ -26,7 +23,7 @@ public class About extends Activity {
     }
     
     public void goToHelp(View view){
-    	String url = "http://www.willwebberley.net/contact";
+    	String url = "http://www.flyingsparx.net/contact";
     	Intent i = new Intent(Intent.ACTION_VIEW);
     	i.setData(Uri.parse(url));
     	startActivity(i);
@@ -44,5 +41,19 @@ public class About extends Activity {
     	Intent i = new Intent(Intent.ACTION_VIEW);
     	i.setData(Uri.parse(url));
     	startActivity(i);
+    }
+
+    public void goToWeatherIcon(View view){
+        String url = "http://digitalchet.deviantart.com/art/Novacons-Weather-Icons-13133337";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+
+    public void goToIcon(View view){
+        String url = "http://adamwhitcroft.com/climacons";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 }

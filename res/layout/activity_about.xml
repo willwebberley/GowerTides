@@ -4,8 +4,9 @@
     android:layout_height="match_parent">
     
 <RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="20dp">
 
     <TextView
         android:id="@+id/aboutText"
@@ -13,9 +14,23 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="20dp"
-        tools:context=".About" />
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:text="Developer"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_weight="1.0"/>
+
+    <TextView
+            android:id="@+id/authorText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/aboutText"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            android:text="Will Webberley (\@flyingSparx)"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_weight="1.0"/>
 
 
     <Button
@@ -23,69 +38,60 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/aboutText"
+        android:layout_below="@+id/authorText"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:onClick="goToHelp"
-        android:text="Contact" />
+        android:text="Contact"
+        android:layout_weight=".50"/>
     
-     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/helpButton"
-        android:layout_below="@+id/aboutText"
-        android:layout_marginTop="35dp"
-        android:layout_marginLeft="30dp"
-        android:text="willwebberley.net"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:scaleType="fitXY"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/helpButton"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
+        android:layout_below="@+id/authorText"
+        android:layout_toRightOf="@+id/helpButton"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="30dp"
         android:src="@drawable/twitter"
-        android:onClick="openTwitter" />
+        android:onClick="openTwitter"/>
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-        android:layout_toRightOf="@+id/imageView1"
-        android:layout_below="@+id/textView2"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_marginTop="70dp"
-        android:text="\@flyingSparx"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-   <View 
+
+   <View
         android:id="@+id/divider2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#ccc"
+        android:background="#bbb"
         android:layout_below="@+id/imageView1"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp"
         />
+
+    <TextView
+            android:id="@+id/creditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/divider2"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:text="Credits"
+            android:textAppearance="?android:attr/textAppearanceLarge"/>
    
    <TextView
         android:id="@+id/weatherCredit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-        android:layout_below="@+id/divider2"
+        android:layout_below="@+id/creditText"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="20dp"
-        android:text="Weather data is provided by World Weather Online. Please click the button below to visit their website."
+        android:text="Weather data is provided by World Weather Online's public API."
         android:textAppearance="?android:attr/textAppearanceSmall" />
    
 	 <Button
@@ -95,9 +101,80 @@
         android:layout_below="@+id/weatherCredit"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
-     
+        style="?android:attr/buttonStyleSmall"
         android:onClick="goToWeather"
         android:text="World Weather Online" />
-    
+
+    <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ddd"
+            android:layout_below="@+id/weatherButton"
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            />
+
+    <TextView
+            android:id="@+id/weatherIconCredit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/divider3"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:text="Weather icons designed by user digitalchet on DeviantART."
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <Button
+            android:id="@+id/weatherIconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/weatherIconCredit"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:onClick="goToWeatherIcon"
+            style="?android:attr/buttonStyleSmall"
+            android:text="Novacon Icons on DeviantART" />
+
+    <View
+            android:id="@+id/divider4"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ddd"
+            android:layout_below="@+id/weatherIconButton"
+            android:layout_marginRight="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            />
+
+    <TextView
+            android:id="@+id/iconCredit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/divider4"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:text="Weather information icons part of Climacons icon set by Adam Whitcroft."
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <Button
+            android:id="@+id/iconCreditButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/iconCredit"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp"
+            android:onClick="goToIcon"
+            style="?android:attr/buttonStyleSmall"
+            android:text="Climacons web page" />
+
 </RelativeLayout>
 </ScrollView>
