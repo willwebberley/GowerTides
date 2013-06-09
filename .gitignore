@@ -1,3 +1,4 @@
+proguard_logs/
 *.class
 .DS_Store
 *.png
