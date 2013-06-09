@@ -28,6 +28,7 @@ public class DayDatabase extends SQLiteAssetHelper {
         Cursor c = db.rawQuery("SELECT * FROM data ORDER BY year ASC, month ASC, day ASC", null);
         c.moveToFirst();
         Calendar cal = parseString(c.getInt(2)+"/"+c.getInt(1)+"/"+c.getInt(0));
+        c.close();
         return cal;
     }
     public Calendar getLastDay(){
@@ -36,6 +37,7 @@ public class DayDatabase extends SQLiteAssetHelper {
         Cursor c = db.rawQuery("SELECT * FROM data ORDER BY year ASC, month ASC, day ASC", null);
         c.moveToLast();
         Calendar cal = parseString(c.getInt(2)+"/"+c.getInt(1)+"/"+c.getInt(0));
+        c.close();
         return cal;
     }
 

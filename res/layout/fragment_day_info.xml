@@ -96,6 +96,7 @@
                     android:layout_toLeftOf="@+id/weatherSync"
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="7dp"
+                    android:layout_marginBottom="15dp"
                     android:visibility="gone"
                     android:text="Either weather service is unavailable or day is too far in the past or future."
                     android:textAppearance="?android:attr/textAppearanceSmall" />

@@ -58,9 +58,10 @@ public class Dayview extends FragmentActivity {
 	private PagerAdapter mPagerAdapter;
 	public DayDatabase db;
 	public WeatherDatabase weather_db;
-    public Boolean weatherSycing;
+    public Boolean weatherSycing, isPaused;
+    public SimpleDateFormat dayDateFormatter;
 
-    private final int DAYS_TO_StORE = 80;
+    private final int DAYS_TO_StORE = 100;
 
 	private TextView dateText;
 	private ImageView revertButton;
@@ -80,7 +81,16 @@ public class Dayview extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dayview);
+        /*
+        * Following two variables used by day fragments to check the status of parent activity
+         */
         weatherSycing = false;
+        isPaused = false;
+        /*
+        * Following one variable stored by Parent activity to speed up startup on Android v2.2.
+        * (Previously each Day class responsibe for maintaining, which caused slowdowns)
+         */
+        dayDateFormatter = new SimpleDateFormat("h:m a z");
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         initComponents();
@@ -89,6 +99,7 @@ public class Dayview extends FragmentActivity {
         infoPager.setAdapter(mPagerAdapter);
 
         new StartupTasks().execute("");
+
     }
 
     /*
@@ -97,10 +108,12 @@ public class Dayview extends FragmentActivity {
     * Creates DAYS_TO_STORE number of day fragments equally distributed around the current day and calculates and stores
     * the index of the current day of the list.
      */
-    private void populatePager(Calendar newToday){
+    private void populatePager(Calendar newToday, int daysToLoad){
         fragments.clear();
         Calendar startDay = (Calendar)newToday.clone();
-        startDay.add(Calendar.DATE,-(DAYS_TO_StORE/2));
+        // Change the day to start the pager at (e.g., if 4, will start at today - DAYS_TO_STORE/4 and end at
+        // 3*DAYS_TO_STORE/4.
+        startDay.add(Calendar.DATE,-(daysToLoad/4));
         for(int i =0; i < DAYS_TO_StORE; i++){
             Calendar newDay = (Calendar)startDay.clone();
             newDay.add(Calendar.DATE,i);
@@ -178,13 +191,25 @@ public class Dayview extends FragmentActivity {
      */
     public void onResume(){
     	super.onResume();
-    	fragmentsRefreshUI();
+        isPaused = false;
+        try{
+    	    fragmentsRefreshUI();
+        }
+        catch(Exception e){
+            System.err.println(e);
+        }
     }
 
-    /******
-     *
-     * MENU METHODS
-     */
+    @Override
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+        isPaused = true;
+    }
+
+        /******
+         *
+         * MENU METHODS
+         */
 
     /*
      * Listen for click events on the options menu.
@@ -324,16 +349,20 @@ public class Dayview extends FragmentActivity {
     private class StartupTasks extends AsyncTask<String, Integer, Boolean>{
         @Override
         protected Boolean doInBackground(String... arg0) {
-            db = new DayDatabase(getApplicationContext());
-            weather_db = new WeatherDatabase(getApplicationContext());
-            firstDay = db.getFirstDay();
-            lastDay = db.getLastDay();
-
+            try{
+                db = new DayDatabase(getApplicationContext());
+                weather_db = new WeatherDatabase(getApplicationContext());
+                firstDay = db.getFirstDay();
+                lastDay = db.getLastDay();
+            }
+            catch(Exception e){
+                System.err.println(e);
+            }
             infoArray = new Calendar[DAYS_TO_StORE];
             currentDay = Calendar.getInstance();
             //currentDay = setDayForTesting("31/12/2016");
 
-            populatePager(currentDay);
+            populatePager(currentDay, DAYS_TO_StORE);
 
             infoPager.setOnPageChangeListener(new OnPageChangeListener() {
                 public void onPageScrollStateChanged(int state) {}
@@ -366,6 +395,7 @@ public class Dayview extends FragmentActivity {
             buildProgressHolder.setVisibility(View.GONE);
             buildProgress.setVisibility(View.GONE);
             infoPager.setVisibility(View.VISIBLE);
+            //new PagerFillerTask().execute(null);
         }
     }
 
@@ -425,6 +455,27 @@ public class Dayview extends FragmentActivity {
 
 	         }
 	     }
+    }
+
+    /*
+    * AsyncTask to fetch weather data for current day.
+    */
+    private class PagerFillerTask extends AsyncTask<Dayview, Integer, Boolean>{
+        @Override
+        protected Boolean doInBackground(Dayview... arg0) {
+            populatePager(currentDay, 400);
+            return true;
+        }
+
+        /*
+        * On finish, update day fragments to show weather and flag the process as complete.
+        *
+        * If unsuccessful, for any reason, show an error.
+         */
+        protected void onPostExecute(Boolean result) {
+            System.out.println("loaded further days");
+            mPagerAdapter.notifyDataSetChanged();
+        }
     }
 
 }

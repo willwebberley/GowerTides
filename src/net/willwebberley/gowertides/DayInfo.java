@@ -274,7 +274,7 @@ public class DayInfo extends Fragment {
 			 rAnim.setFillAfter(true);
 			 ((ImageView)layoutView.findViewById(R.id.weatherWindIcon)).startAnimation(rAnim);
 		}
-			catch(IOException e) {System.out.println(e);}
+		catch(Exception e) {System.err.println(e);}
     }
     
     /*
@@ -392,7 +392,9 @@ public class DayInfo extends Fragment {
               }
               updaterHandler.post(new Runnable() {
                 public void run() {
-                  updateUI();
+                    if(!dayView.isPaused){
+                        updateUI();
+                    }
                 }
               });
             }

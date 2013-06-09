@@ -43,7 +43,8 @@ public class Day {
 	
 	private DayDatabase db;
 	private WeatherDatabase weather_db;
-	
+	private Dayview dayView;
+
 	private int dayErrors;
 
     /*
@@ -55,7 +56,7 @@ public class Day {
 		context = con;
 		db = dv.db;
 		weather_db = dv.weather_db;
-		
+		dayView = dv;
 		getDayInfo();
 	}
 
@@ -108,9 +109,12 @@ public class Day {
 		
 		try{
 			sunrise = Calendar.getInstance();
-			sunrise.setTime(new SimpleDateFormat("h:m a z").parse(info.getString(4).replace("BST", "GMT")));
+			//sunrise.setTime(new SimpleDateFormat("h:m a z").parse(info.getString(4).replace("BST", "GMT")));
+            sunrise.setTime(dayView.dayDateFormatter.parse(info.getString(4).replace("BST", "GMT")));
+            //sunrise.setTime(new SimpleDateFormat("h:m a").parse(info.getString(4).replace("BST", "GMT").replace("GMT", "")));
 			sunset = Calendar.getInstance();
-			sunset.setTime(new SimpleDateFormat("h:m a z").parse(info.getString(5).replace("BST", "GMT")));
+			sunset.setTime(dayView.dayDateFormatter.parse(info.getString(5).replace("BST", "GMT")));
+            //sunset.setTime(new SimpleDateFormat("h:m a").parse(info.getString(5).replace("BST", "GMT").replace("GMT", "")));
 			//if(info.getString(4).contains("BST")){
 				sunset.add(Calendar.HOUR, -1);
 				sunrise.add(Calendar.HOUR, -1);
@@ -320,7 +324,7 @@ public class Day {
 			String highTimeStripped = highTideTimes[i].trim();
 			if(!highTimeStripped.equals("")){
 		        try {
-		        	Date date = new SimpleDateFormat("h:m a z").parse(highTideTimes[i].replace("BST", "GMT"));
+                    Date date = dayView.dayDateFormatter.parse(highTideTimes[i].replace("BST", "GMT"));
 		        	Calendar cal = Calendar.getInstance();
 		        	cal.setTime(date);
 		        	//if(highTideTimes[i].contains("BST")){
@@ -349,7 +353,7 @@ public class Day {
 				String lowTimeStripped = lowTideTimes[i].trim();
 				if(!lowTimeStripped.equals("")){
 			        try {
-			        	Date date = new SimpleDateFormat("h:m a z").parse(lowTideTimes[i].replace("BST", "GMT"));
+                        Date date = dayView.dayDateFormatter.parse(lowTideTimes[i].replace("BST", "GMT"));
 			        	Calendar cal = Calendar.getInstance();
 			        	cal.setTime(date);
 			        	//if(lowTideTimes[i].contains("BST")){
@@ -405,7 +409,7 @@ public class Day {
 			String highTimeStripped = highTideTimes[i].trim();
 			if(!highTimeStripped.equals("")){
 		        try {
-		        	Date date = new SimpleDateFormat("h:m a z").parse(highTideTimes[i].replace("BST", "GMT"));
+                    Date date = dayView.dayDateFormatter.parse(highTideTimes[i].replace("BST", "GMT"));
 		        	Calendar cal = Calendar.getInstance();
 		        	cal.setTime(date);
 		        	//if(highTideTimes[i].contains("BST")){
@@ -421,7 +425,7 @@ public class Day {
 				String lowTimeStripped = lowTideTimes[i].trim();
 				if(!lowTimeStripped.equals("")){
 			        try {
-			        	Date date = new SimpleDateFormat("h:m a z").parse(lowTideTimes[i].replace("BST", "GMT"));
+                        Date date = dayView.dayDateFormatter.parse(lowTideTimes[i].replace("BST", "GMT"));
 			        	Calendar cal = Calendar.getInstance();
 			        	cal.setTime(date);
 			        	//if(lowTideTimes[i].contains("BST")){
