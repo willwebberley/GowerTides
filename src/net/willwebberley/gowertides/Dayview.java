@@ -280,6 +280,24 @@ public class Dayview extends FragmentActivity {
     	}
     }
 
+    /*
+     * If a network connection is available, sync the weather. Else show an error.
+     *
+     * Weather is synced using a threaded AsyncTask. If net unavailable, toast an error.
+     */
+    public void syncSurf(View view){
+        weatherSycing = true;
+        //fragmentsStartWeatherSync();
+        if(this.isOnline()){
+            new SyncSurfTask().execute("http://tides.flyingsparx.net/fetch/surf");
+        }
+        else{
+            Toast.makeText(getApplicationContext(), "Unable to sync surf: network unavailable.", Toast.LENGTH_LONG).show();
+            //weatherSycing = false;
+            //fragmentsFinishWeatherSync();
+        }
+    }
+
     /******
      *
      * UTILITY METHODS
@@ -391,6 +409,7 @@ public class Dayview extends FragmentActivity {
             if(prefs.getBoolean("weather_sync", true)){
                 syncWeather(null);
             }
+            syncSurf(null);
             ((RelativeLayout)findViewById(R.id.controls)).setVisibility(View.VISIBLE);
             buildProgressHolder.setVisibility(View.GONE);
             buildProgress.setVisibility(View.GONE);
@@ -400,7 +419,7 @@ public class Dayview extends FragmentActivity {
     }
 
     /*
-     * AsyncTask to fetch weather data for current day.
+     * AsyncTask to fetch new weather data.
      */
     private class SyncWeatherTask extends AsyncTask<String, Integer, Boolean>{
 		@Override
@@ -441,7 +460,6 @@ public class Dayview extends FragmentActivity {
 			}
 			return true;
 		}
-
         /*
         * On finish, update day fragments to show weather and flag the process as complete.
         *
@@ -458,24 +476,59 @@ public class Dayview extends FragmentActivity {
     }
 
     /*
-    * AsyncTask to fetch weather data for current day.
-    */
-    private class PagerFillerTask extends AsyncTask<Dayview, Integer, Boolean>{
+     * AsyncTask to fetch new weather data.
+     */
+    private class SyncSurfTask extends AsyncTask<String, Integer, Boolean>{
         @Override
-        protected Boolean doInBackground(Dayview... arg0) {
-            populatePager(currentDay, 400);
+        protected Boolean doInBackground(String... arg0) {
+            BufferedReader reader = null;
+            StringBuffer completeData = new StringBuffer();
+            String androidVersion = android.os.Build.VERSION.RELEASE;
+            String model = android.os.Build.MANUFACTURER+"-"+android.os.Build.MODEL.replace(" ", "-");
+
+            arg0[0] = arg0[0]+"?dev="+model+"&ver="+androidVersion;
+            try {
+                URL url = new URL(arg0[0]);
+                HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                InputStream in = con.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(in));
+                String line = "";
+                while ((line = reader.readLine()) != null) {
+                    completeData.append(line);
+                }
+                Boolean success = weather_db.insertSurfData(completeData.toString());
+                if(!success){
+                    return false;
+                }
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return false;
+                    }
+                }
+            }
             return true;
         }
-
         /*
-        * On finish, update day fragments to show weather and flag the process as complete.
+        * On finish, update day fragments to show surf and flag the process as complete.
         *
         * If unsuccessful, for any reason, show an error.
          */
         protected void onPostExecute(Boolean result) {
-            System.out.println("loaded further days");
-            mPagerAdapter.notifyDataSetChanged();
+            //weatherSycing = false;
+            //fragmentsFinishWeatherSync();
+            if(!result){
+                Toast.makeText(getApplicationContext(), "Error syncing surf. Please try again later.", Toast.LENGTH_LONG).show();
+
+            }
         }
     }
-
 }

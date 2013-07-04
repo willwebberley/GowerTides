@@ -84,6 +84,7 @@ public class Day {
 		
 		Cursor info = db.getDayInfo(day);
 		Cursor weatherInfo = weather_db.getWeatherInfo(day);
+        Cursor surfInfo = weather_db.getSurfInfo(day);
 		
 		try{
 			max_temp_c = weatherInfo.getInt(4);
