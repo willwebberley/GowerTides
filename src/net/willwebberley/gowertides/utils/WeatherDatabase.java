@@ -111,7 +111,6 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 
     public Boolean insertSurfData(String data){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM surf");
         try{
             JSONArray jsonArray = new JSONArray(data);
             for (int i = 0; i < jsonArray.length(); i++){

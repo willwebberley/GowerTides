@@ -149,6 +149,7 @@ public class Day {
             int ind = 7;
 
             while (! surfInfo.isFirst()){
+                if(ind == -1){break;}
                 hour[ind] = surfInfo.getInt(5);
 
                 local_time[ind] = surfInfo.getLong(1);
@@ -170,10 +171,10 @@ public class Day {
                 surfInfo.moveToPrevious();
                 ind--;
             }
-            //System.out.println(surfInfo.getCount());
             surfAvailable = true;
         }
         catch(Exception e){
+            System.err.println(e);
             surfAvailable = false;
             dayErrors ++;
         }

@@ -35,7 +35,8 @@ public class TideGraph {
     * Initialize TideGraph instance with the UI View representing the graph and the application context.
      */
 	public TideGraph(XYPlot plotComponent, Context context){
-		plot = plotComponent;	
+		plot = plotComponent;
+
 		prefs = PreferenceManager.getDefaultSharedPreferences(context); 
 		initGraph();
 	}

@@ -58,7 +58,7 @@ public class Dayview extends FragmentActivity {
 	private PagerAdapter mPagerAdapter;
 	public DayDatabase db;
 	public WeatherDatabase weather_db;
-    public Boolean weatherSycing, isPaused;
+    public Boolean weatherSycing, surfSyncing, isPaused;
     public SimpleDateFormat dayDateFormatter;
 
     private final int DAYS_TO_StORE = 100;
@@ -85,6 +85,7 @@ public class Dayview extends FragmentActivity {
         * Following two variables used by day fragments to check the status of parent activity
          */
         weatherSycing = false;
+        surfSyncing = false;
         isPaused = false;
         /*
         * Following one variable stored by Parent activity to speed up startup on Android v2.2.
@@ -286,15 +287,15 @@ public class Dayview extends FragmentActivity {
      * Weather is synced using a threaded AsyncTask. If net unavailable, toast an error.
      */
     public void syncSurf(View view){
-        weatherSycing = true;
-        //fragmentsStartWeatherSync();
+        surfSyncing = true;
+        fragmentsStartSurfSync();
         if(this.isOnline()){
             new SyncSurfTask().execute("http://tides.flyingsparx.net/fetch/surf");
         }
         else{
             Toast.makeText(getApplicationContext(), "Unable to sync surf: network unavailable.", Toast.LENGTH_LONG).show();
-            //weatherSycing = false;
-            //fragmentsFinishWeatherSync();
+            surfSyncing = false;
+            fragmentsFinishSurfSync();
         }
     }
 
@@ -329,6 +330,16 @@ public class Dayview extends FragmentActivity {
         ((DayInfo)fragments.get(currentFragmentIndex-1)).startWeatherSync();
         ((DayInfo)fragments.get(currentFragmentIndex)).startWeatherSync();
         ((DayInfo)fragments.get(currentFragmentIndex+1)).startWeatherSync();
+    }
+    private void fragmentsFinishSurfSync(){
+        ((DayInfo)fragments.get(currentFragmentIndex-1)).finishSurfSync();
+        ((DayInfo)fragments.get(currentFragmentIndex)).finishSurfSync();
+        ((DayInfo)fragments.get(currentFragmentIndex+1)).finishSurfSync();
+    }
+    private void fragmentsStartSurfSync(){
+        ((DayInfo)fragments.get(currentFragmentIndex-1)).startSurfSync();
+        ((DayInfo)fragments.get(currentFragmentIndex)).startSurfSync();
+        ((DayInfo)fragments.get(currentFragmentIndex+1)).startSurfSync();
     }
     private void fragmentsRefreshUI(){
         ((DayInfo)fragments.get(currentFragmentIndex-1)).refreshUI();
@@ -523,8 +534,8 @@ public class Dayview extends FragmentActivity {
         * If unsuccessful, for any reason, show an error.
          */
         protected void onPostExecute(Boolean result) {
-            //weatherSycing = false;
-            //fragmentsFinishWeatherSync();
+            surfSyncing = false;
+            fragmentsFinishSurfSync();
             if(!result){
                 Toast.makeText(getApplicationContext(), "Error syncing surf. Please try again later.", Toast.LENGTH_LONG).show();
 

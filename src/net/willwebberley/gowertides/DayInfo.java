@@ -56,6 +56,8 @@ public class DayInfo extends Fragment {
 	private TextView weatherDescriptionView;
 	private ProgressBar weatherProgress;
 	private ImageButton weatherSync;
+    private ProgressBar surfProgress;
+    private ImageButton surfSync;
 	
 	private View layoutView;
 
@@ -82,6 +84,13 @@ public class DayInfo extends Fragment {
         }
         else{
             finishWeatherSync();
+        }
+
+        if(dayView.surfSyncing){
+            startSurfSync();
+        }
+        else{
+            finishSurfSync();
         }
 
         return layoutView;
@@ -131,6 +140,37 @@ public class DayInfo extends Fragment {
         try{
             weatherSync.setVisibility(View.VISIBLE);
             weatherProgress.setVisibility(View.INVISIBLE);
+            updateUI();
+            showPreferredComponents();
+        }
+        catch(Exception e){
+            System.err.println("error finishing sync on fragment: "+e);
+        }
+    }
+
+    /*
+   * Called from parent activity when weather is to start syncing.
+   * Responsible for hiding the sync button and showing the progress bar.
+    */
+    public void startSurfSync(){
+        try{
+            surfSync.setVisibility(View.INVISIBLE);
+            surfProgress.setVisibility(View.VISIBLE);
+        }
+        catch(Exception e){
+            System.err.println("error starting sync on fragment: "+e);
+        }
+    }
+
+    /*
+    * Called from parent activity when weather sync is completed.
+    * Hides progressbar and shows sync button.
+    * Updates the UI.
+     */
+    public void finishSurfSync(){
+        try{
+            surfSync.setVisibility(View.VISIBLE);
+            surfProgress.setVisibility(View.INVISIBLE);
             updateUI();
             showPreferredComponents();
         }
@@ -223,7 +263,13 @@ public class DayInfo extends Fragment {
     		((TextView)layoutView.findViewById(R.id.weather_error)).setVisibility(View.VISIBLE);
     	}
         if(today.isSurfAvailable()){
+            layoutView.findViewById(R.id.surf).setVisibility(View.VISIBLE);
+            ((TextView)layoutView.findViewById(R.id.surf_error)).setVisibility(View.GONE);
             setSurfInfo();
+        }
+        else{
+            layoutView.findViewById(R.id.surf).setVisibility(View.GONE);
+            ((TextView)layoutView.findViewById(R.id.surf_error)).setVisibility(View.VISIBLE);
         }
     }
     
@@ -284,8 +330,18 @@ public class DayInfo extends Fragment {
      * Set the surf fields and images for the current day.
      */
     private void setSurfInfo(){
-        double min_surf = today.getMinSurfForTime(3);
-        System.out.println(min_surf);
+        int min_surf_9 = (int)today.getMinSurfForTime(9);
+        int min_surf_12 = (int)today.getMinSurfForTime(12);
+        int min_surf_15 = (int)today.getMinSurfForTime(15);
+        int max_surf_9 = (int)today.getMaxSurfForTime(9);
+        int max_surf_12 = (int)today.getMaxSurfForTime(12);
+        int max_surf_15 = (int)today.getMaxSurfForTime(15);
+        if(max_surf_9-min_surf_9 == 0){((TextView)layoutView.findViewById(R.id.surfinfo9size)).setText(Html.fromHtml("<b>"+max_surf_9+"</b> <i>ft</i>"));}
+        else{((TextView)layoutView.findViewById(R.id.surfinfo9size)).setText(Html.fromHtml("<b>"+min_surf_9+"-"+max_surf_9+"</b> <i>ft</i>"));}
+        if(max_surf_12-min_surf_12 == 0){((TextView)layoutView.findViewById(R.id.surfinfo12size)).setText(Html.fromHtml("<b>"+max_surf_12+"</b> <i>ft</i>"));}
+        else{((TextView)layoutView.findViewById(R.id.surfinfo12size)).setText(Html.fromHtml("<b>"+min_surf_12+"-"+max_surf_12+"</b> <i>ft</i>"));}
+        if(max_surf_15-min_surf_15 == 0){((TextView)layoutView.findViewById(R.id.surfinfo15size)).setText(Html.fromHtml("<b>"+max_surf_15+"</b> <i>ft</i>"));}
+        else{((TextView)layoutView.findViewById(R.id.surfinfo15size)).setText(Html.fromHtml("<b>"+min_surf_15+"-"+max_surf_15+"</b> <i>ft</i>"));}
     }
 
 
@@ -384,11 +440,18 @@ public class DayInfo extends Fragment {
     	sunsetText.setTextColor(Color.rgb(100, 0, 0));
     	sunsetCountField = (TextView)layoutView.findViewById(R.id.sunsetCountField);
     	sunsetCountField.setTextColor(Color.rgb(100, 25, 25));
-    
+
+        surfProgress = (ProgressBar)layoutView.findViewById(R.id.surfProgress);
+        surfSync = (ImageButton)layoutView.findViewById(R.id.surfSync);
     	weatherProgress = (ProgressBar)layoutView.findViewById(R.id.weatherProgress);
     	weatherSync = (ImageButton)layoutView.findViewById(R.id.weatherSync);
     	weatherDescriptionView = (TextView)layoutView.findViewById(R.id.weather_description);
     	weatherDescriptionView.setTextColor(Color.rgb(0, 150, 220));
+
+        ((TextView)layoutView.findViewById(R.id.surf_title)).setTextColor(Color.rgb(0, 150, 220));
+        ((TextView)layoutView.findViewById(R.id.surfinfo9title)).setTextColor(Color.rgb(0, 150, 220));
+        ((TextView)layoutView.findViewById(R.id.surfinfo12title)).setTextColor(Color.rgb(0, 150, 220));
+        ((TextView)layoutView.findViewById(R.id.surfinfo15title)).setTextColor(Color.rgb(0, 150, 220));
     }
     
     // Method to update the interface automatically every 60 seconds,
