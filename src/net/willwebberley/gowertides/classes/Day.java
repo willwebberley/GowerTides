@@ -16,8 +16,14 @@ import net.willwebberley.gowertides.utils.*;
  */
 public class Day {
 
+    /*
+    * Calendar representation of Day
+     */
 	private Calendar day;
-	
+
+    /*
+    * Fields to hold tidal data
+     */
 	private String[] highTideTimes;
 	private String[] highTideHeights;
 	private String[] lowTideTimes;
@@ -25,7 +31,10 @@ public class Day {
 	private Calendar sunrise;
 	private Calendar sunset;
 	private String moon;
-	
+
+    /*
+    * Fields to hold weather data
+     */
 	private int max_temp_c;
 	private int max_temp_f;
 	private int min_temp_c;
@@ -37,15 +46,38 @@ public class Day {
 	private String icon_url;
 	private String description;
 	private Double precipitation;
-	
-	private Context context;
-	private Boolean weatherAvailable;
-	
-	private DayDatabase db;
-	private WeatherDatabase weather_db;
-	private Dayview dayView;
 
-	private int dayErrors;
+    /*
+    * Fields to hold surf data
+     */
+    private int[] hour = new int[8];
+    private long[] local_time = new long[8];
+    private int[] faded_rating = new int[8];
+    private int[] solid_rating = new int[8];
+    private double[] min_surf = new double[8];
+    private double[] abs_min_surf = new double[8];
+    private double[] max_surf = new double[8];
+    private double[] abs_max_surf = new double[8];
+    private double[] swell_height = new double[8];
+    private double[] swell_period = new double[8];
+    private double[] swell_angle = new double[8];
+    private String[] swell_direction = new String[8];
+    private String[] swell_chart_url = new String[8];
+    private String[] period_chart_url = new String[8];
+    private String[] Wind_chart_url = new String[8];
+    private String[] pressure_chart_url = new String[8];
+    private String[] sst_chart_url = new String[8];
+
+    /*
+    * Helper fields
+     */
+	private Context context; // application context
+	private Boolean weatherAvailable; // true if weather data is available for today
+    private Boolean surfAvailable; // true if surf data is available for today
+	private DayDatabase db; // intance of the database holding tidal data
+	private WeatherDatabase weather_db; // instance of the database holding weather and surf data
+	private Dayview dayView; // Top level activity for application (to access context, databases, etc.)
+	private int dayErrors; // enumerate the number of errors occurred in retrieving data from databases
 
     /*
     * Instantiate object with a Calendar day to represent, the application context and the main Dayview activity.
@@ -81,11 +113,17 @@ public class Day {
 		// WEATHER INFO:
 		// 0timestamp 1year 2month 3day 4max_temp_c 5max_temp_f 6min_temp_c 7min_temp_f 8wind_speed_miles
 		// 9wind_speed_km 10wind_direction 11wind_degree 12icon_url 13description 14precipitation
+        //
+        // SURF INFO:
+        // 0timestamp 1local_time 2year 3month 4day 5hour 6minute 7faded_rating 8solid_rating 9min_surf 10abs_min_surf 11max_surf
+        // 12abs_max_surf 13swell_height 14swell_period 15swell_angle 16swell_direction 17swell_chart 18period_chart
+        // 19wind_chart 20pressure_chart 21sst_chart
+
 		
 		Cursor info = db.getDayInfo(day);
 		Cursor weatherInfo = weather_db.getWeatherInfo(day);
         Cursor surfInfo = weather_db.getSurfInfo(day);
-		
+
 		try{
 			max_temp_c = weatherInfo.getInt(4);
 			max_temp_f = weatherInfo.getInt(5);
@@ -107,7 +145,39 @@ public class Day {
 			weatherAvailable = false;
 			dayErrors++;
 		}
-		
+        try{
+            int ind = 7;
+
+            while (! surfInfo.isFirst()){
+                hour[ind] = surfInfo.getInt(5);
+
+                local_time[ind] = surfInfo.getLong(1);
+                faded_rating[ind] = surfInfo.getInt(7);
+                solid_rating[ind] = surfInfo.getInt(8);
+                min_surf[ind] = surfInfo.getDouble(9);
+                abs_min_surf[ind] = surfInfo.getDouble(10);
+                max_surf[ind] = surfInfo.getDouble(11);
+                abs_max_surf[ind] = surfInfo.getDouble(12);
+                swell_height[ind] = surfInfo.getDouble(13);
+                swell_period[ind] = surfInfo.getDouble(14);
+                swell_angle[ind] = surfInfo.getDouble(15);
+                swell_direction[ind] = surfInfo.getString(16);
+                swell_chart_url[ind] = surfInfo.getString(17);
+                period_chart_url[ind] = surfInfo.getString(18);
+                Wind_chart_url[ind] = surfInfo.getString(19);
+                pressure_chart_url[ind] = surfInfo.getString(20);
+                sst_chart_url[ind] = surfInfo.getString(21);
+                surfInfo.moveToPrevious();
+                ind--;
+            }
+            //System.out.println(surfInfo.getCount());
+            surfAvailable = true;
+        }
+        catch(Exception e){
+            surfAvailable = false;
+            dayErrors ++;
+        }
+
 		try{
 			sunrise = Calendar.getInstance();
 			//sunrise.setTime(new SimpleDateFormat("h:m a z").parse(info.getString(4).replace("BST", "GMT")));
@@ -152,6 +222,7 @@ public class Day {
          */
         info.close();
         weatherInfo.close();
+//        surfInfo.close();
 	}
 
     /*
@@ -172,10 +243,32 @@ public class Day {
 	public Boolean isWeatherAvailable(){
 		return weatherAvailable;
 	}
+    /*
+    * Check if there is surf data for this day.
+     */
+    public Boolean isSurfAvailable(){
+        return surfAvailable;
+    }
 
     /*
     * Publicly-available standard getter and mutator methods for this class.
      */
+    private int getIndexForSurfHour(int hourReq){
+        for (int i = 0; i < hour.length; i++){
+            if (hour[i] == hourReq){
+                return i;
+            }
+        }
+        return -1;
+    }
+    public double getMinSurfForTime(int hourReq){
+        int ind = getIndexForSurfHour(hourReq);
+        return min_surf[ind];
+    }
+    public double getMaxSurfForTime(int hourReq){
+        int ind = getIndexForSurfHour(hourReq);
+        return max_surf[ind];
+    }
 	public String getWeatherDescription(){
 		return description;
 	}

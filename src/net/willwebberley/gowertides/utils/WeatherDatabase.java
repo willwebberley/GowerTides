@@ -64,6 +64,7 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        System.out.println("upgrading db");
 		db.execSQL("DROP TABLE IF EXISTS weather");
         db.execSQL("DROP TABLE IF EXISTS surf");
         onCreate(db);
@@ -110,6 +111,7 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 
     public Boolean insertSurfData(String data){
         SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM surf");
         try{
             JSONArray jsonArray = new JSONArray(data);
             for (int i = 0; i < jsonArray.length(); i++){
@@ -171,13 +173,13 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 
     public Cursor getSurfInfo(Calendar dayToGet){
         SQLiteDatabase db = this.getReadableDatabase();
-        long startOfDay = dayToGet.getTimeInMillis();
-        System.out.println(startOfDay);
+        int year = dayToGet.get(Calendar.YEAR);
+        int month = dayToGet.get(Calendar.MONTH)+1;
+        int day = dayToGet.get(Calendar.DAY_OF_MONTH);
         try{
-            
-            Cursor result = db.rawQuery("SELECT * FROM surf WHERE timestamp = "+ startOfDay,null);
-            result.moveToFirst();
-            System.out.println(result.toString());
+            Cursor result = db.rawQuery("SELECT * FROM surf WHERE year = "+year+" AND month = "+month+" AND day = "+day+" ORDER BY timestamp",null);
+
+            result.moveToLast();
             return result;
         }
         catch(Exception e){

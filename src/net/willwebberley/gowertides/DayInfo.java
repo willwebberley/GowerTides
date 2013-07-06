@@ -222,6 +222,9 @@ public class DayInfo extends Fragment {
     		((TextView)layoutView.findViewById(R.id.weather_description)).setText("Weather unavailable");
     		((TextView)layoutView.findViewById(R.id.weather_error)).setVisibility(View.VISIBLE);
     	}
+        if(today.isSurfAvailable()){
+            setSurfInfo();
+        }
     }
     
     /*
@@ -276,7 +279,16 @@ public class DayInfo extends Fragment {
 		}
 		catch(Exception e) {System.err.println(e);}
     }
-    
+
+    /*
+     * Set the surf fields and images for the current day.
+     */
+    private void setSurfInfo(){
+        double min_surf = today.getMinSurfForTime(3);
+        System.out.println(min_surf);
+    }
+
+
     /*
      * Draws the tide table (3 columns: type(high/low),time,timeToGo)
      * This method responsible for first two columns (since final one depends on current time).
