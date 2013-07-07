@@ -152,6 +152,28 @@ public class WeatherDatabase extends SQLiteOpenHelper{
         }
         return true;
     }
+
+    public Boolean insertAllData(String data){
+        try{
+            JSONObject jsonArray = new JSONObject(data);
+            Boolean weatherSuccess = insertWeatherData(jsonArray.getJSONArray("weather").toString());
+            Boolean surfSuccess = insertSurfData(jsonArray.getJSONArray("surf").toString());
+            if(!weatherSuccess){
+                System.out.println("error storing weather");
+                return false;
+            }
+            if(!surfSuccess){
+                System.out.println("error storing surf");
+                return false;
+            }
+        }
+        catch(Exception e){
+            System.err.println(e);
+            return false;
+        }
+        System.out.println("storage success");
+        return true;
+    }
 	
 	public Cursor getWeatherInfo(Calendar dayToGet){	
 		SQLiteDatabase db = this.getReadableDatabase();

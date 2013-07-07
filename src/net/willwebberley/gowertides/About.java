@@ -43,6 +43,13 @@ public class About extends Activity {
     	startActivity(i);
     }
 
+    public void goToMSW(View view){
+        String url = "http://www.magicseaweed.com";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+
     public void goToWeatherIcon(View view){
         String url = "http://digitalchet.deviantart.com/art/Novacons-Weather-Icons-13133337";
         Intent i = new Intent(Intent.ACTION_VIEW);
@@ -52,6 +59,13 @@ public class About extends Activity {
 
     public void goToIcon(View view){
         String url = "http://adamwhitcroft.com/climacons";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+
+    public void goToBatch(View view){
+        String url = "http://adamwhitcroft.com/batch";
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setData(Uri.parse(url));
         startActivity(i);

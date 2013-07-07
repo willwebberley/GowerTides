@@ -11,6 +11,32 @@
          >
 
         <ImageView
+                android:id="@+id/refreshButton"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="fitXY"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="7dp"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:onClick="refresh"
+                android:alpha="0.5"
+                android:src="@drawable/refresh" />
+
+        <ProgressBar
+                android:id="@+id/refreshProgress"
+                android:visibility="gone"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:scaleType="fitXY"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="7dp"
+                android:layout_marginRight="10dp"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"/>
+
+        <ImageView
             android:id="@+id/revertButton"
             android:layout_width="30dp"
             android:layout_height="30dp"
@@ -18,7 +44,8 @@
             android:layout_centerVertical="true"
             android:layout_marginTop="7dp"
             android:layout_marginRight="10dp"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/refreshButton"
             android:onClick="toDay"
             android:alpha="0.5"
             android:src="@drawable/myreturn" />

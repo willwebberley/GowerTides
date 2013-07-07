@@ -77,7 +77,7 @@ public class DayInfo extends Fragment {
     	updateUI();
     	updater();
 
-        if(dayView.weatherSycing){
+        /*if(dayView.weatherSycing){
             startWeatherSync();
         }
         else{
@@ -89,7 +89,7 @@ public class DayInfo extends Fragment {
         }
         else{
             finishSurfSync();
-        }
+        }*/
 
         return layoutView;
     }
@@ -119,7 +119,7 @@ public class DayInfo extends Fragment {
     * Called from parent activity when weather is to start syncing.
     * Responsible for hiding the sync button and showing the progress bar.
      */
-    public void startWeatherSync(){
+    /*public void startWeatherSync(){
         try{
             weatherSync.setVisibility(View.INVISIBLE);
             weatherProgress.setVisibility(View.VISIBLE);
@@ -127,14 +127,14 @@ public class DayInfo extends Fragment {
         catch(Exception e){
             System.err.println("error starting sync on fragment: "+e);
         }
-    }
+    }*/
 
     /*
     * Called from parent activity when weather sync is completed.
     * Hides progressbar and shows sync button.
     * Updates the UI.
      */
-    public void finishWeatherSync(){
+    /*public void finishWeatherSync(){
         try{
             weatherSync.setVisibility(View.VISIBLE);
             weatherProgress.setVisibility(View.INVISIBLE);
@@ -144,13 +144,13 @@ public class DayInfo extends Fragment {
         catch(Exception e){
             System.err.println("error finishing sync on fragment: "+e);
         }
-    }
+    }*/
 
     /*
    * Called from parent activity when weather is to start syncing.
    * Responsible for hiding the sync button and showing the progress bar.
     */
-    public void startSurfSync(){
+    /*public void startSurfSync(){
         try{
             surfSync.setVisibility(View.INVISIBLE);
             surfProgress.setVisibility(View.VISIBLE);
@@ -158,14 +158,14 @@ public class DayInfo extends Fragment {
         catch(Exception e){
             System.err.println("error starting sync on fragment: "+e);
         }
-    }
+    }*/
 
     /*
     * Called from parent activity when weather sync is completed.
     * Hides progressbar and shows sync button.
     * Updates the UI.
      */
-    public void finishSurfSync(){
+    /*public void finishSurfSync(){
         try{
             surfSync.setVisibility(View.VISIBLE);
             surfProgress.setVisibility(View.INVISIBLE);
@@ -175,7 +175,7 @@ public class DayInfo extends Fragment {
         catch(Exception e){
             System.err.println("error finishing sync on fragment: "+e);
         }
-    }
+    }*/
 
     /*
     * Called from parent activity when it requires the fragment to refresh its UI.
@@ -191,20 +191,28 @@ public class DayInfo extends Fragment {
      * user wants.
      */
     private void showPreferredComponents(){
-    	if(prefs.getBoolean("show_graph", true)){layoutView.findViewById(R.id.tideGraphComponent).setVisibility(View.VISIBLE);}
-    	else{layoutView.findViewById(R.id.tideGraphComponent).setVisibility(View.GONE);}
-    	
-    	if(prefs.getBoolean("show_table", true)){layoutView.findViewById(R.id.tideTable).setVisibility(View.VISIBLE);}
-    	else{layoutView.findViewById(R.id.tideTable).setVisibility(View.GONE);}
-    	
-    	if(prefs.getBoolean("show_sunrise_sunset", true)){layoutView.findViewById(R.id.sunrise_sunset).setVisibility(View.VISIBLE);}
-    	else{layoutView.findViewById(R.id.sunrise_sunset).setVisibility(View.GONE);}
-    	
-    	if(prefs.getBoolean("show_sunset_timer", true)){layoutView.findViewById(R.id.sunsetCountField).setVisibility(View.VISIBLE);}
-    	else{layoutView.findViewById(R.id.sunsetCountField).setVisibility(View.GONE);}
-    	   	
-    	if(prefs.getBoolean("show_weather", true)){layoutView.findViewById(R.id.weatherHolder).setVisibility(View.VISIBLE);}
-    	else{layoutView.findViewById(R.id.weatherHolder).setVisibility(View.GONE);}
+        try{
+            if(prefs.getBoolean("show_graph", true)){layoutView.findViewById(R.id.tideGraphComponent).setVisibility(View.VISIBLE);}
+            else{layoutView.findViewById(R.id.tideGraphComponent).setVisibility(View.GONE);}
+
+            if(prefs.getBoolean("show_table", true)){layoutView.findViewById(R.id.tideTable).setVisibility(View.VISIBLE);}
+            else{layoutView.findViewById(R.id.tideTable).setVisibility(View.GONE);}
+
+            if(prefs.getBoolean("show_sunrise_sunset", true)){layoutView.findViewById(R.id.sunrise_sunset).setVisibility(View.VISIBLE);}
+            else{layoutView.findViewById(R.id.sunrise_sunset).setVisibility(View.GONE);}
+
+            if(prefs.getBoolean("show_sunset_timer", true)){layoutView.findViewById(R.id.sunsetCountField).setVisibility(View.VISIBLE);}
+            else{layoutView.findViewById(R.id.sunsetCountField).setVisibility(View.GONE);}
+
+            if(prefs.getBoolean("show_weather", true)){layoutView.findViewById(R.id.weatherHolder).setVisibility(View.VISIBLE);}
+            else{layoutView.findViewById(R.id.weatherHolder).setVisibility(View.GONE);}
+
+            if(prefs.getBoolean("show_surf", true)){layoutView.findViewById(R.id.surfHolder).setVisibility(View.VISIBLE);}
+            else{layoutView.findViewById(R.id.surfHolder).setVisibility(View.GONE);}
+        }
+        catch(Exception e){
+            System.err.println(e);
+        }
     }
    
     /*
@@ -429,7 +437,7 @@ public class DayInfo extends Fragment {
      * Get the layout components initialized and make their variable names global.
      */
     private void initComponents(){
-    	
+    	try{
     	tideGraph = new TideGraph((XYPlot)layoutView.findViewById(R.id.tideGraphComponent), dayView.getApplicationContext());
 
     	tideTypeField = (TextView)layoutView.findViewById(R.id.tideTypes);
@@ -444,15 +452,18 @@ public class DayInfo extends Fragment {
     	sunsetCountField = (TextView)layoutView.findViewById(R.id.sunsetCountField);
     	sunsetCountField.setTextColor(Color.rgb(100, 25, 25));
 
-        surfProgress = (ProgressBar)layoutView.findViewById(R.id.surfProgress);
+        /*surfProgress = (ProgressBar)layoutView.findViewById(R.id.surfProgress);
         surfSync = (ImageButton)layoutView.findViewById(R.id.surfSync);
     	weatherProgress = (ProgressBar)layoutView.findViewById(R.id.weatherProgress);
-    	weatherSync = (ImageButton)layoutView.findViewById(R.id.weatherSync);
+    	weatherSync = (ImageButton)layoutView.findViewById(R.id.weatherSync);*/
     	weatherDescriptionView = (TextView)layoutView.findViewById(R.id.weather_description);
     	weatherDescriptionView.setTextColor(Color.rgb(0, 150, 220));
 
         ((TextView)layoutView.findViewById(R.id.surf_title)).setTextColor(Color.rgb(0, 150, 220));
-
+        }
+        catch(Exception e){
+            System.err.println(e);
+        }
     }
     
     // Method to update the interface automatically every 60 seconds,

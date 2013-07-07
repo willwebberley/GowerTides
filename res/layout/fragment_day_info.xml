@@ -1,42 +1,42 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/scrollView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:background="#dddddd" >
-      	
-        <LinearLayout
+            android:id="@+id/scrollView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="#dddddd" >
+
+    <LinearLayout
             android:id="@+id/mainView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
             android:background="#dddddd" >
 
-            <com.androidplot.xy.XYPlot
+        <com.androidplot.xy.XYPlot
                 android:id="@+id/tideGraphComponent"
                 android:layout_width="fill_parent"
-                android:layout_height="200dp"  
+                android:layout_height="200dp"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"   
-                android:layout_marginTop="10dp"          
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
                 title="" />
-                        
-            
-            <RelativeLayout
-                 android:id="@+id/tideTable"
+
+
+        <RelativeLayout
+                android:id="@+id/tideTable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight=	"10dp"   
-                android:layout_marginTop="10dp" 
+                android:layout_marginRight=	"10dp"
+                android:layout_marginTop="10dp"
                 android:padding="10dp"
                 android:background="@drawable/drop_shadow"
-                 >
-                 
-                 <TextView
+                >
+
+            <TextView
                     android:id="@+id/tideTypes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                     android:layout_marginRight="15px"
                     android:text="TIDE"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
-                 <TextView
+            <TextView
                     android:id="@+id/tideTimes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
                     android:layout_centerInParent="true"
                     android:text="TIME"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
-                 <TextView
+            <TextView
                     android:id="@+id/tideTimesLeft"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -61,40 +61,41 @@
                     android:layout_alignParentRight="true"
                     android:text="TO GO"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
-             
-             </RelativeLayout>
+
+        </RelativeLayout>
 
 
-            <RelativeLayout
-                    android:id="@+id/surfHolder"
-                    android:layout_width="match_parent"
+        <RelativeLayout
+                android:id="@+id/surfHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:padding="3dp"
+                android:background="@drawable/drop_shadow">
+            <TextView
+                    android:id="@+id/surf_title"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="10dp"
-                    android:padding="3dp"
-                    android:background="@drawable/drop_shadow">
-                <TextView
-                        android:id="@+id/surf_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginTop="7dp"
-                        android:layout_marginLeft="7dp"
-                        android:text="Llangennith"
-                        android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginLeft="7dp"
+                    android:text="Llangennith"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <ImageView
-                        android:id="@+id/msw_icon"
-                        android:layout_width="120dp"
-                        android:layout_height="30dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginRight="40dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true"
-                        android:scaleType="fitXY"
-                        android:src="@drawable/msw" />
+            <ImageView
+                    android:id="@+id/msw_icon"
+                    android:layout_width="120dp"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:scaleType="fitXY"
+                    android:onClick="openMSW"
+                    android:src="@drawable/msw" />
 
             <TextView
                     android:id="@+id/surf_error"
@@ -102,32 +103,12 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@+id/msw_icon"
-                    android:layout_toLeftOf="@+id/surfSync"
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="7dp"
                     android:layout_marginBottom="15dp"
                     android:visibility="gone"
                     android:text="Either surf service is unavailable or day is too far in the past or future."
                     android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <ImageButton
-                    android:id="@+id/surfSync"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@android:drawable/stat_notify_sync"
-                    android:onClick="syncSurf" />
-
-            <ProgressBar
-                    android:id="@+id/surfProgress"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:visibility="gone" />
-
-
 
             <LinearLayout
                     android:id="@+id/surf"
@@ -140,9 +121,9 @@
 
             </LinearLayout>
         </RelativeLayout>
-             
-             
-              <RelativeLayout
+
+
+        <RelativeLayout
                 android:id="@+id/weatherHolder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -151,8 +132,8 @@
                 android:layout_marginTop="10dp"
                 android:padding="3dp"
                 android:background="@drawable/drop_shadow">
-            
-                  <TextView
+
+            <TextView
                     android:id="@+id/weather_description"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -162,148 +143,131 @@
                     android:layout_marginLeft="7dp"
                     android:text="weather"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
-                  
-                  <TextView
+
+            <TextView
                     android:id="@+id/weather_error"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@+id/weather_description"
-                    android:layout_toLeftOf="@+id/weatherSync"
                     android:layout_marginTop="10dp"
                     android:layout_marginLeft="7dp"
                     android:layout_marginBottom="15dp"
                     android:visibility="gone"
                     android:text="Either weather service is unavailable or day is too far in the past or future."
                     android:textAppearance="?android:attr/textAppearanceSmall" />
-                  
-                  <ImageButton
-			        android:id="@+id/weatherSync"
-			        android:layout_alignParentRight="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-			        android:src="@android:drawable/stat_notify_sync"
-			        android:onClick="syncWeather" />
 
-                  <ProgressBar
-                      android:id="@+id/weatherProgress"
-                      android:layout_width="40dp"
-                      android:layout_height="40dp"
-                      android:layout_alignParentRight="true"
-                      android:layout_alignParentTop="true"
-                      android:visibility="gone" />
-                  
-                   <RelativeLayout
-	                android:id="@+id/weather"
-	                android:layout_width="match_parent"
-	                android:layout_height="wrap_content"
-	                android:layout_below="@+id/weather_description"
-	                android:paddingBottom="10dp" >
-	                
-                   <ImageView
-                       android:id="@+id/weatherIcon"
-                       android:layout_width="60dp"
-                       android:layout_height="60dp"
-                       android:layout_alignParentLeft="true"
-                       android:layout_alignParentTop="true"
-                       android:layout_marginTop="15dp"
-                       android:layout_marginRight="10dp"
-                       android:layout_marginBottom="10dp"
-                       android:layout_marginLeft="7dp"
-                       android:scaleType="fitXY"
-                       android:src="@android:drawable/ic_notification_clear_all" />
-
-                       <ImageView
-                               android:id="@+id/tempLogo"
-                               android:layout_width="20dp"
-                               android:layout_height="20dp"
-                               android:layout_marginRight="5dp"
-                               android:layout_marginTop="5dp"
-                               android:layout_alignParentTop="true"
-                               android:layout_toRightOf="@+id/weatherIcon"
-                               android:scaleType="fitXY"
-                               android:src="@drawable/temperature"
-                               />
-                       <TextView
-	                    android:id="@+id/weatherTemp"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-                        android:layout_toRightOf="@+id/tempLogo"
-	                    android:layout_alignParentTop="true"
-	                    android:layout_marginTop="5dp"
-	                    android:text="temp"
-	                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                       <ImageView
-                               android:id="@+id/windLogo"
-                               android:layout_width="20dp"
-                               android:layout_height="20dp"
-                               android:layout_marginRight="5dp"
-                               android:layout_marginTop="10dp"
-                               android:layout_below="@+id/weatherTemp"
-                               android:layout_toRightOf="@+id/weatherIcon"
-                               android:scaleType="fitXY"
-                               android:src="@drawable/wind"
-                               />
-
-                   <TextView
-	                    android:id="@+id/weatherWind"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_toRightOf="@+id/windLogo"
-	                    android:layout_below="@+id/weatherTemp"
-	                    android:layout_marginTop="10dp"
-	                    android:text="wind"
-	                    android:textAppearance="?android:attr/textAppearanceSmall" />
-                   <ImageView
-                       android:id="@+id/weatherWindIcon"
-                       android:layout_width="30dp"
-                       android:layout_height="30dp"
-                       android:layout_marginTop="5dp"
-                       android:layout_below="@+id/weatherTemp"
-                       android:layout_toRightOf="@+id/weatherWind"
-                       android:layout_marginLeft="7dp"
-                       android:scaleType="fitXY"
-                       android:src="@android:drawable/ic_notification_clear_all" />
-
-                       <ImageView
-                               android:id="@+id/precipitationLogo"
-                               android:layout_width="20dp"
-                               android:layout_height="20dp"
-                               android:layout_marginRight="5dp"
-                               android:layout_marginTop="10dp"
-                               android:layout_below="@+id/weatherWind"
-                               android:layout_toRightOf="@+id/weatherIcon"
-                               android:scaleType="fitXY"
-                               android:src="@drawable/precipitation"
-                               />
-	                 <TextView
-	                    android:id="@+id/weatherPrecipitation"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_below="@+id/weatherWind"
-	                    android:layout_toRightOf="@+id/precipitationLogo"
-	                    android:layout_marginTop="10dp"
-	                    android:text="precipitation"
-	                    android:textAppearance="?android:attr/textAppearanceSmall" />
-                  
-              </RelativeLayout>
-          </RelativeLayout>
-              
 
             <RelativeLayout
+                    android:id="@+id/weather"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/weather_description"
+                    android:paddingBottom="10dp" >
+
+                <ImageView
+                        android:id="@+id/weatherIcon"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginLeft="7dp"
+                        android:scaleType="fitXY"
+                        android:src="@android:drawable/ic_notification_clear_all" />
+
+                <ImageView
+                        android:id="@+id/tempLogo"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_toRightOf="@+id/weatherIcon"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/temperature"
+                        />
+                <TextView
+                        android:id="@+id/weatherTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/tempLogo"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="5dp"
+                        android:text="temp"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <ImageView
+                        android:id="@+id/windLogo"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/weatherTemp"
+                        android:layout_toRightOf="@+id/weatherIcon"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/wind"
+                        />
+
+                <TextView
+                        android:id="@+id/weatherWind"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/windLogo"
+                        android:layout_below="@+id/weatherTemp"
+                        android:layout_marginTop="10dp"
+                        android:text="wind"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+                <ImageView
+                        android:id="@+id/weatherWindIcon"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_below="@+id/weatherTemp"
+                        android:layout_toRightOf="@+id/weatherWind"
+                        android:layout_marginLeft="7dp"
+                        android:scaleType="fitXY"
+                        android:src="@android:drawable/ic_notification_clear_all" />
+
+                <ImageView
+                        android:id="@+id/precipitationLogo"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_below="@+id/weatherWind"
+                        android:layout_toRightOf="@+id/weatherIcon"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/precipitation"
+                        />
+                <TextView
+                        android:id="@+id/weatherPrecipitation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/weatherWind"
+                        android:layout_toRightOf="@+id/precipitationLogo"
+                        android:layout_marginTop="10dp"
+                        android:text="precipitation"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            </RelativeLayout>
+        </RelativeLayout>
+
+
+        <RelativeLayout
                 android:id="@+id/sunrise_sunset"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"   
-                android:layout_marginTop="10dp" 
-                android:layout_marginBottom="10dp" 
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/drop_shadow"
                 android:padding="10dp" >
 
-                <ImageView
+            <ImageView
                     android:id="@+id/sunriseImage"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -313,8 +277,8 @@
                     android:scaleType="fitXY"
                     android:src="@drawable/sunrise"
                     />
-                
-                <TextView
+
+            <TextView
                     android:id="@+id/sunriseText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -323,16 +287,16 @@
                     android:text="--:--"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <TextView
+            <TextView
                     android:id="@+id/sunsetText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-					android:layout_toLeftOf="@+id/sunsetImage"
-					android:layout_alignParentTop="true"
+                    android:layout_toLeftOf="@+id/sunsetImage"
+                    android:layout_alignParentTop="true"
                     android:text="--:--"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
-				
-                <ImageView
+
+            <ImageView
                     android:id="@+id/sunsetImage"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -341,19 +305,19 @@
                     android:layout_alignParentTop="true"
                     android:scaleType="fitXY"
                     android:src="@drawable/sunset" />
-                
-                <TextView
+
+            <TextView
                     android:id="@+id/sunsetCountField"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-					android:layout_below="@+id/sunsetText"
-					android:layout_toLeftOf="@+id/sunsetImage"
-					android:layout_marginTop="0dp"
+                    android:layout_below="@+id/sunsetText"
+                    android:layout_toLeftOf="@+id/sunsetImage"
+                    android:layout_marginTop="0dp"
                     android:text="--:-- 'til sunset"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
-			
-            </RelativeLayout>
 
-        </LinearLayout>
+        </RelativeLayout>
 
-    </ScrollView>
+    </LinearLayout>
+
+</ScrollView>

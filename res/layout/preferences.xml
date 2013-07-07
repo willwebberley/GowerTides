@@ -2,6 +2,16 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                   android:layout_width="match_parent"
                   android:layout_height="match_parent">
+
+    <PreferenceCategory
+            android:title="Surf and weather sync">
+        <CheckBoxPreference
+                android:key="sync_enabled"
+                android:summary="Automatically try to sync surf and weather when the app is opened."
+                android:title="Surf/weather auto-sync"
+                android:defaultValue="true" />
+    </PreferenceCategory>
+
     <PreferenceCategory 
         android:title="Tide graph">
         <CheckBoxPreference
@@ -20,6 +30,7 @@
             android:title="Show sunrise/sunset"
             android:defaultValue="true" />
     </PreferenceCategory>
+
      <PreferenceCategory 
         android:title="Tide table">
         <CheckBoxPreference
@@ -28,6 +39,24 @@
             android:title="Show tide table"
             android:defaultValue="true" />
         </PreferenceCategory>
+
+        <PreferenceCategory
+            android:title="Surf forecast" >
+        <CheckBoxPreference
+                android:key="show_surf"
+                android:summary="Lookup and show the surf forecast. Forecast generally available for next 5 days from today."
+                android:title="Display surf forecast"
+                android:defaultValue="true" />
+<!--
+        <ListPreference
+                android:title="Location"
+                android:summary="Select Gower location for surf reports.."
+                android:key="location"
+                android:entries="@array/locationDisplay"
+                android:entryValues="@array/locationValue"
+                android:defaultValue="Llangennith"/>-->
+
+    </PreferenceCategory>
         
         <PreferenceCategory 
         android:title="Weather forecast" >
@@ -35,11 +64,6 @@
             android:key="show_weather"
             android:summary="Lookup and show the weather forecast. Weather available for next 5 days from today."
             android:title="Display weather forecast"
-            android:defaultValue="true" />
-        <CheckBoxPreference
-            android:key="weather_sync"
-            android:summary="Automatically try to sync weather when the app is opened."
-            android:title="Weather auto-sync"
             android:defaultValue="true" />
         <ListPreference
 		  android:title="Unit formats"

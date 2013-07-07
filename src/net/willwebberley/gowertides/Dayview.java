@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import android.net.Uri;
 import net.willwebberley.gowertides.classes.*;
 import net.willwebberley.gowertides.utils.DayDatabase;
 import net.willwebberley.gowertides.utils.WeatherDatabase;
@@ -58,7 +59,7 @@ public class Dayview extends FragmentActivity {
 	private PagerAdapter mPagerAdapter;
 	public DayDatabase db;
 	public WeatherDatabase weather_db;
-    public Boolean weatherSycing, surfSyncing, isPaused;
+    public Boolean isPaused;
     public SimpleDateFormat dayDateFormatter;
 
     private final int DAYS_TO_StORE = 100;
@@ -67,6 +68,8 @@ public class Dayview extends FragmentActivity {
 	private ImageView revertButton;
     private RelativeLayout buildProgressHolder;
     private ProgressBar buildProgress;
+    private ImageView refreshButton;
+    private ProgressBar refreshProgress;
 
 
     /*
@@ -84,8 +87,6 @@ public class Dayview extends FragmentActivity {
         /*
         * Following two variables used by day fragments to check the status of parent activity
          */
-        weatherSycing = false;
-        surfSyncing = false;
         isPaused = false;
         /*
         * Following one variable stored by Parent activity to speed up startup on Android v2.2.
@@ -264,38 +265,28 @@ public class Dayview extends FragmentActivity {
     }
 
     /*
-     * If a network connection is available, sync the weather. Else show an error.
-     *
-     * Weather is synced using a threaded AsyncTask. If net unavailable, toast an error.
+    * Listen for clicks on MSW logo, and open up their site if clicked.
      */
-    public void syncWeather(View view){
-        weatherSycing = true;
-        fragmentsStartWeatherSync();
-    	if(this.isOnline()){
-    		new SyncWeatherTask().execute("http://tides.flyingsparx.net/fetch");
-    	}
-    	else{
-    		Toast.makeText(getApplicationContext(), "Unable to sync weather: network unavailable.", Toast.LENGTH_LONG).show();
-            weatherSycing = false;
-            fragmentsFinishWeatherSync();
-    	}
+    public void openMSW(View view){
+        String url = "http://www.magicseaweed.com";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 
+
     /*
-     * If a network connection is available, sync the weather. Else show an error.
-     *
-     * Weather is synced using a threaded AsyncTask. If net unavailable, toast an error.
+    * If network available, sync surf and weather data
      */
-    public void syncSurf(View view){
-        surfSyncing = true;
-        fragmentsStartSurfSync();
+    public void refresh(View view){
+        refreshButton.setVisibility(View.INVISIBLE);
+        refreshProgress.setVisibility(View.VISIBLE);
         if(this.isOnline()){
-            new SyncSurfTask().execute("http://tides.flyingsparx.net/fetch/surf");
+            new RefreshTask().execute("http://tides.flyingsparx.net/fetch/both/");
         }
         else{
-            Toast.makeText(getApplicationContext(), "Unable to sync surf: network unavailable.", Toast.LENGTH_LONG).show();
-            surfSyncing = false;
-            fragmentsFinishSurfSync();
+            Toast.makeText(getApplicationContext(), "Unable to sync: network unavailable.", Toast.LENGTH_LONG).show();
+            finishRefresh();
         }
     }
 
@@ -321,7 +312,7 @@ public class Dayview extends FragmentActivity {
     *
     * These three methods execute different methods within the loaded pages.
      */
-    private void fragmentsFinishWeatherSync(){
+    /*private void fragmentsFinishWeatherSync(){
         ((DayInfo)fragments.get(currentFragmentIndex-1)).finishWeatherSync();
         ((DayInfo)fragments.get(currentFragmentIndex)).finishWeatherSync();
         ((DayInfo)fragments.get(currentFragmentIndex+1)).finishWeatherSync();
@@ -340,11 +331,16 @@ public class Dayview extends FragmentActivity {
         ((DayInfo)fragments.get(currentFragmentIndex-1)).startSurfSync();
         ((DayInfo)fragments.get(currentFragmentIndex)).startSurfSync();
         ((DayInfo)fragments.get(currentFragmentIndex+1)).startSurfSync();
-    }
+    }*/
     private void fragmentsRefreshUI(){
         ((DayInfo)fragments.get(currentFragmentIndex-1)).refreshUI();
         ((DayInfo)fragments.get(currentFragmentIndex)).refreshUI();
         ((DayInfo)fragments.get(currentFragmentIndex+1)).refreshUI();
+    }
+    private void finishRefresh(){
+        refreshProgress.setVisibility(View.INVISIBLE);
+        refreshButton.setVisibility(View.VISIBLE);
+        fragmentsRefreshUI();
     }
 
     /******
@@ -362,7 +358,10 @@ public class Dayview extends FragmentActivity {
         buildProgressHolder = (RelativeLayout)findViewById(R.id.buildProgressHolder);
     	dateText.setTextColor(Color.rgb(0, 150, 220));
     	revertButton = (ImageView)findViewById(R.id.revertButton);
+        refreshButton = (ImageView)findViewById(R.id.refreshButton);
+        refreshProgress = (ProgressBar)findViewById(R.id.refreshProgress);
     }
+
 
     /******
      *
@@ -417,79 +416,21 @@ public class Dayview extends FragmentActivity {
             * If preference is to sync weather on startup, then sync weather task now.
             * (this is done after initialising day fragments due to UI updates on the fragments during this task.)
              */
-            if(prefs.getBoolean("weather_sync", true)){
-                syncWeather(null);
+            if(prefs.getBoolean("sync_enabled", true)){
+                refresh(null);
             }
-            syncSurf(null);
+
             ((RelativeLayout)findViewById(R.id.controls)).setVisibility(View.VISIBLE);
             buildProgressHolder.setVisibility(View.GONE);
             buildProgress.setVisibility(View.GONE);
             infoPager.setVisibility(View.VISIBLE);
-            //new PagerFillerTask().execute(null);
         }
     }
 
     /*
-     * AsyncTask to fetch new weather data.
+     * AsyncTask to fetch new surf and weather data.
      */
-    private class SyncWeatherTask extends AsyncTask<String, Integer, Boolean>{
-		@Override
-		protected Boolean doInBackground(String... arg0) {
-			BufferedReader reader = null;
-			StringBuffer completeData = new StringBuffer();
-			String androidVersion = android.os.Build.VERSION.RELEASE;
-			String model = android.os.Build.MANUFACTURER+"-"+android.os.Build.MODEL.replace(" ", "-");
-
-			arg0[0] = arg0[0]+"?dev="+model+"&ver="+androidVersion;
-			try {
-				URL url = new URL(arg0[0]);
-				HttpURLConnection con = (HttpURLConnection) url.openConnection();
-				InputStream in = con.getInputStream();
-			    reader = new BufferedReader(new InputStreamReader(in));
-			    String line = "";
-			    while ((line = reader.readLine()) != null) {
-			    	completeData.append(line);
-			    }
-			    Boolean success = weather_db.insertWeatherData(completeData.toString());
-			    if(!success){
-			    	return false;
-			    }
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}
-			finally {
-				if (reader != null) {
-					try {
-						reader.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-        /*
-        * On finish, update day fragments to show weather and flag the process as complete.
-        *
-        * If unsuccessful, for any reason, show an error.
-         */
-		protected void onPostExecute(Boolean result) {
-            weatherSycing = false;
-            fragmentsFinishWeatherSync();
-	         if(!result){
-	        	 Toast.makeText(getApplicationContext(), "Error syncing weather. Please try again later.", Toast.LENGTH_LONG).show();
-
-	         }
-	     }
-    }
-
-    /*
-     * AsyncTask to fetch new weather data.
-     */
-    private class SyncSurfTask extends AsyncTask<String, Integer, Boolean>{
+    private class RefreshTask extends AsyncTask<String, Integer, Boolean>{
         @Override
         protected Boolean doInBackground(String... arg0) {
             BufferedReader reader = null;
@@ -507,7 +448,7 @@ public class Dayview extends FragmentActivity {
                 while ((line = reader.readLine()) != null) {
                     completeData.append(line);
                 }
-                Boolean success = weather_db.insertSurfData(completeData.toString());
+                Boolean success = weather_db.insertAllData(completeData.toString());
                 if(!success){
                     return false;
                 }
@@ -534,11 +475,9 @@ public class Dayview extends FragmentActivity {
         * If unsuccessful, for any reason, show an error.
          */
         protected void onPostExecute(Boolean result) {
-            surfSyncing = false;
-            fragmentsFinishSurfSync();
+            finishRefresh();
             if(!result){
-                Toast.makeText(getApplicationContext(), "Error syncing surf. Please try again later.", Toast.LENGTH_LONG).show();
-
+                Toast.makeText(getApplicationContext(), "Sync error: Please try again later.", Toast.LENGTH_LONG).show();
             }
         }
     }

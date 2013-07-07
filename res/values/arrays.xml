@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string-array name="unitDisplay">
- <item>Metric</item>
- <item>Imperial</item>
-</string-array>
-<string-array name="unitValue">
- <item>true</item>
- <item>false</item>
-</string-array>
+    <string-array name="unitDisplay">
+     <item>Metric</item>
+     <item>Imperial</item>
+    </string-array>
+    <string-array name="unitValue">
+     <item>true</item>
+     <item>false</item>
+    </string-array>
+
+    <string-array name="locationDisplay">
+        <item>Llangennith</item>
+        <item>Broughton</item>
+    </string-array>
+    <string-array name="locationValue">
+        <item>Llangennith</item>
+        <item>Broughton</item>
+    </string-array>
 </resources>

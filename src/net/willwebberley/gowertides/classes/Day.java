@@ -223,7 +223,7 @@ public class Day {
          */
         info.close();
         weatherInfo.close();
-        surfInfo.close();
+       // surfInfo.close();
 	}
 
     /*
@@ -270,6 +270,23 @@ public class Day {
         int ind = getIndexForSurfHour(hourReq);
         return max_surf[ind];
     }
+    public String getSwellDirection(int hourReq){
+        int ind = getIndexForSurfHour(hourReq);
+        return swell_direction[ind];
+    }
+    public double getSwellAngle(int hourReq){
+        int ind = getIndexForSurfHour(hourReq);
+        return swell_angle[ind];
+    }
+    public double getSwellHeight(int hourReq){
+        int ind = getIndexForSurfHour(hourReq);
+        return swell_height[ind];
+    }
+    public double getSwellPeriod(int hourReq){
+        int ind = getIndexForSurfHour(hourReq);
+        return swell_period[ind];
+    }
+
 	public String getWeatherDescription(){
 		return description;
 	}
