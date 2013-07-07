@@ -145,13 +145,11 @@ public class Day {
 			weatherAvailable = false;
 			dayErrors++;
 		}
+
         try{
             int ind = 7;
-
-            while (! surfInfo.isFirst()){
-                if(ind == -1){break;}
+            while (! surfInfo.isFirst() && ind >= 0){
                 hour[ind] = surfInfo.getInt(5);
-
                 local_time[ind] = surfInfo.getLong(1);
                 faded_rating[ind] = surfInfo.getInt(7);
                 solid_rating[ind] = surfInfo.getInt(8);
@@ -173,8 +171,10 @@ public class Day {
             }
             surfAvailable = true;
         }
+        /*
+        * Exception will be thrown if there is no stored surf data for this Day.
+         */
         catch(Exception e){
-            System.err.println(e);
             surfAvailable = false;
             dayErrors ++;
         }
@@ -219,11 +219,11 @@ public class Day {
 		lowTideHeights[1] = info.getString(14);
 
         /*
-        * Close the two cursors needed to get this data.
+        * Close the three cursors needed to get this data.
          */
         info.close();
         weatherInfo.close();
-//        surfInfo.close();
+        surfInfo.close();
 	}
 
     /*

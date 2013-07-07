@@ -131,105 +131,12 @@
 
             <LinearLayout
                     android:id="@+id/surf"
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/msw_icon"
                     android:layout_marginTop="10dp"
+                    android:orientation="horizontal"
                     android:paddingBottom="10dp" >
-
-                <RelativeLayout
-                    android:id="@+id/surfInfo9"
-                    android:layout_width="0dp"
-                    android:layout_weight=".20"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_height="wrap_content"
-                    >
-                    <TextView
-                            android:id="@+id/surfinfo9title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:layout_marginBottom="5dp"
-                            android:text="09:00"/>
-                    <View
-                            android:id="@+id/hr1"
-                        android:layout_width="fill_parent"
-                        android:layout_height="2dp"
-                        android:layout_below="@+id/surfinfo9title"
-                        android:background="#cccccc"
-                        android:layout_marginBottom="5dp"
-                        />
-                    <TextView
-                            android:id="@+id/surfinfo9size"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/hr1"
-                            android:text="3-4ft"/>
-                </RelativeLayout>
-                <RelativeLayout
-                        android:id="@+id/surfInfo12"
-                        android:layout_width="0dp"
-                        android:layout_weight=".20"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_height="wrap_content"
-
-                        android:layout_toRightOf="@+id/surfInfo9"
-                        >
-                    <TextView
-                            android:id="@+id/surfinfo12title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:layout_marginBottom="5dp"
-                            android:text="12:00"/>
-                    <View
-                            android:id="@+id/hr2"
-                            android:layout_width="fill_parent"
-                            android:layout_height="2dp"
-                            android:layout_below="@+id/surfinfo12title"
-                            android:background="#cccccc"
-                            android:layout_marginBottom="5dp"
-                            />
-                    <TextView
-                            android:id="@+id/surfinfo12size"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/hr2"
-
-                            android:text="5-6ft"/>
-                </RelativeLayout>
-                <RelativeLayout
-                        android:id="@+id/surfInfo15"
-                        android:layout_width="0dp"
-                        android:layout_weight=".20"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="5dp"
-                        android:layout_marginRight="5dp"
-                        android:layout_toRightOf="@+id/surfInfo12"
-                        >
-                    <TextView
-                            android:id="@+id/surfinfo15title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceMedium"
-                            android:layout_marginBottom="5dp"
-                            android:text="15:00"/>
-                    <View
-                            android:id="@+id/hr3"
-                            android:layout_width="fill_parent"
-                            android:layout_height="2dp"
-                            android:layout_marginBottom="5dp"
-                            android:layout_below="@+id/surfinfo15title"
-                            android:background="#cccccc" />
-                    <TextView
-                            android:id="@+id/surfinfo15size"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/hr3"
-                            android:text="6-7ft"/>
-                </RelativeLayout>
 
             </LinearLayout>
         </RelativeLayout>

@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import android.widget.*;
 import com.androidplot.xy.XYPlot;
 
 import net.willwebberley.gowertides.classes.Day;
@@ -23,10 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 
 /*
@@ -60,6 +57,7 @@ public class DayInfo extends Fragment {
     private ImageButton surfSync;
 	
 	private View layoutView;
+    private ViewGroup c;
 
     /*
     * Called when the fragment is loaded into the viewpager's memory.
@@ -72,7 +70,7 @@ public class DayInfo extends Fragment {
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
         layoutView =  inflater.inflate(R.layout.fragment_day_info, container, false);
-        
+        c = container;
         updaterHandler = new Handler();
         initComponents();
         showPreferredComponents();
@@ -330,18 +328,23 @@ public class DayInfo extends Fragment {
      * Set the surf fields and images for the current day.
      */
     private void setSurfInfo(){
-        int min_surf_9 = (int)today.getMinSurfForTime(9);
-        int min_surf_12 = (int)today.getMinSurfForTime(12);
-        int min_surf_15 = (int)today.getMinSurfForTime(15);
-        int max_surf_9 = (int)today.getMaxSurfForTime(9);
-        int max_surf_12 = (int)today.getMaxSurfForTime(12);
-        int max_surf_15 = (int)today.getMaxSurfForTime(15);
-        if(max_surf_9-min_surf_9 == 0){((TextView)layoutView.findViewById(R.id.surfinfo9size)).setText(Html.fromHtml("<b>"+max_surf_9+"</b> <i>ft</i>"));}
-        else{((TextView)layoutView.findViewById(R.id.surfinfo9size)).setText(Html.fromHtml("<b>"+min_surf_9+"-"+max_surf_9+"</b> <i>ft</i>"));}
-        if(max_surf_12-min_surf_12 == 0){((TextView)layoutView.findViewById(R.id.surfinfo12size)).setText(Html.fromHtml("<b>"+max_surf_12+"</b> <i>ft</i>"));}
-        else{((TextView)layoutView.findViewById(R.id.surfinfo12size)).setText(Html.fromHtml("<b>"+min_surf_12+"-"+max_surf_12+"</b> <i>ft</i>"));}
-        if(max_surf_15-min_surf_15 == 0){((TextView)layoutView.findViewById(R.id.surfinfo15size)).setText(Html.fromHtml("<b>"+max_surf_15+"</b> <i>ft</i>"));}
-        else{((TextView)layoutView.findViewById(R.id.surfinfo15size)).setText(Html.fromHtml("<b>"+min_surf_15+"-"+max_surf_15+"</b> <i>ft</i>"));}
+        LinearLayout surf = (LinearLayout)layoutView.findViewById(R.id.surf); // Get the linear layout to add the surf details to
+        // Set some basic layout params (last arg is weight - set to 0.2)
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT, 0.2f);
+        // Calculate the pixel density (in dpi)...
+        double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
+        // ... and use this to set the horizontal margins of the views to be added to the LinearLayout
+        param.setMargins((int)(5*x), 0, (int)(5*x), 0);
+
+        // Finally remove all views in there already, before repopulating with the layoutparams specified above.
+        surf.removeAllViews();
+        SurfInfo surfTime1 = new SurfInfo(dayView.getApplicationContext(), today, 9);
+        SurfInfo surfTime2 = new SurfInfo(dayView.getApplicationContext(),today, 12);
+        SurfInfo surfTime3 = new SurfInfo(dayView.getApplicationContext(),today, 15);
+        surf.addView(surfTime1.getView(), param);
+        surf.addView(surfTime2.getView(), param);
+        surf.addView(surfTime3.getView(), param);
+
     }
 
 
@@ -449,9 +452,7 @@ public class DayInfo extends Fragment {
     	weatherDescriptionView.setTextColor(Color.rgb(0, 150, 220));
 
         ((TextView)layoutView.findViewById(R.id.surf_title)).setTextColor(Color.rgb(0, 150, 220));
-        ((TextView)layoutView.findViewById(R.id.surfinfo9title)).setTextColor(Color.rgb(0, 150, 220));
-        ((TextView)layoutView.findViewById(R.id.surfinfo12title)).setTextColor(Color.rgb(0, 150, 220));
-        ((TextView)layoutView.findViewById(R.id.surfinfo15title)).setTextColor(Color.rgb(0, 150, 220));
+
     }
     
     // Method to update the interface automatically every 60 seconds,
