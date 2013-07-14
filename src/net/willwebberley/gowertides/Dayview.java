@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import android.app.AlertDialog;
 import android.net.Uri;
 import net.willwebberley.gowertides.classes.*;
 import net.willwebberley.gowertides.utils.DayDatabase;
@@ -59,10 +60,10 @@ public class Dayview extends FragmentActivity {
 	private PagerAdapter mPagerAdapter;
 	public DayDatabase db;
 	public WeatherDatabase weather_db;
-    public Boolean isPaused;
+    public Boolean isPaused, isSyncing;
     public SimpleDateFormat dayDateFormatter;
 
-    private final int DAYS_TO_StORE = 100;
+    private final int DAYS_TO_STORE = 40;
 
 	private TextView dateText;
 	private ImageView revertButton;
@@ -71,6 +72,11 @@ public class Dayview extends FragmentActivity {
     private ImageView refreshButton;
     private ProgressBar refreshProgress;
 
+    public String [] locationNames;
+    public int[] locationKeys;
+    public int locationIndex;
+
+    private int pauseCounter = 0;
 
     /*
     * onCreate() called upon activity start.
@@ -88,6 +94,7 @@ public class Dayview extends FragmentActivity {
         * Following two variables used by day fragments to check the status of parent activity
          */
         isPaused = false;
+        isSyncing = false;
         /*
         * Following one variable stored by Parent activity to speed up startup on Android v2.2.
         * (Previously each Day class responsibe for maintaining, which caused slowdowns)
@@ -116,7 +123,7 @@ public class Dayview extends FragmentActivity {
         // Change the day to start the pager at (e.g., if 4, will start at today - DAYS_TO_STORE/4 and end at
         // 3*DAYS_TO_STORE/4.
         startDay.add(Calendar.DATE,-(daysToLoad/4));
-        for(int i =0; i < DAYS_TO_StORE; i++){
+        for(int i =0; i < DAYS_TO_STORE; i++){
             Calendar newDay = (Calendar)startDay.clone();
             newDay.add(Calendar.DATE,i);
             infoArray[i] = newDay;
@@ -194,12 +201,15 @@ public class Dayview extends FragmentActivity {
     public void onResume(){
     	super.onResume();
         isPaused = false;
-        try{
-    	    fragmentsRefreshUI();
+        if(pauseCounter > 0){
+            try{
+                fragmentsRefreshUI();
+            }
+            catch(Exception e){
+                System.err.println(e);
+            }
         }
-        catch(Exception e){
-            System.err.println(e);
-        }
+        pauseCounter ++;
     }
 
     @Override
@@ -274,13 +284,23 @@ public class Dayview extends FragmentActivity {
         startActivity(i);
     }
 
+    public void editLocation(View view){
+        LocationDialog ld = new LocationDialog(locationNames, locationKeys);
+        ld.show(getSupportFragmentManager(), "");
+
+    }
+
 
     /*
     * If network available, sync surf and weather data
      */
     public void refresh(View view){
+        if(isSyncing){
+            return;
+        }
         refreshButton.setVisibility(View.INVISIBLE);
         refreshProgress.setVisibility(View.VISIBLE);
+        isSyncing = true;
         if(this.isOnline()){
             new RefreshTask().execute("http://tides.flyingsparx.net/fetch/both/");
         }
@@ -305,6 +325,15 @@ public class Dayview extends FragmentActivity {
             return true;
         }
         return false;
+    }
+
+    public void updateLocation(int index){
+        locationIndex = index;
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt("location_index",index);
+        editor.commit();
+        fragmentsRefreshUI();
+        refresh(null);
     }
 
     /*
@@ -377,6 +406,10 @@ public class Dayview extends FragmentActivity {
     private class StartupTasks extends AsyncTask<String, Integer, Boolean>{
         @Override
         protected Boolean doInBackground(String... arg0) {
+            locationNames = getResources().getStringArray(R.array.locationDisplay);
+            locationKeys = getResources().getIntArray(R.array.locationKey);
+            //locationIndex = prefs.getInt("location_index",0);
+            locationIndex = 0;
             try{
                 db = new DayDatabase(getApplicationContext());
                 weather_db = new WeatherDatabase(getApplicationContext());
@@ -386,11 +419,11 @@ public class Dayview extends FragmentActivity {
             catch(Exception e){
                 System.err.println(e);
             }
-            infoArray = new Calendar[DAYS_TO_StORE];
+            infoArray = new Calendar[DAYS_TO_STORE];
             currentDay = Calendar.getInstance();
             //currentDay = setDayForTesting("31/12/2016");
 
-            populatePager(currentDay, DAYS_TO_StORE);
+            populatePager(currentDay, DAYS_TO_STORE);
 
             infoPager.setOnPageChangeListener(new OnPageChangeListener() {
                 public void onPageScrollStateChanged(int state) {}
@@ -398,6 +431,7 @@ public class Dayview extends FragmentActivity {
                 public void onPageSelected(int position) {
                     currentFragmentIndex = position;
                     DayInfo myNow = mPagerAdapter.getItem(position);
+                    myNow.slideSurf();
                     dateText.setText(myNow.today.toString());
                     if(position == todayFragmentIndex){
                         revertButton.setVisibility(View.INVISIBLE);
@@ -407,6 +441,8 @@ public class Dayview extends FragmentActivity {
                     }
                 }
             });
+
+
 
             return true;
         }
@@ -424,6 +460,8 @@ public class Dayview extends FragmentActivity {
             buildProgressHolder.setVisibility(View.GONE);
             buildProgress.setVisibility(View.GONE);
             infoPager.setVisibility(View.VISIBLE);
+
+
         }
     }
 
@@ -437,8 +475,8 @@ public class Dayview extends FragmentActivity {
             StringBuffer completeData = new StringBuffer();
             String androidVersion = android.os.Build.VERSION.RELEASE;
             String model = android.os.Build.MANUFACTURER+"-"+android.os.Build.MODEL.replace(" ", "-");
-
-            arg0[0] = arg0[0]+"?dev="+model+"&ver="+androidVersion;
+            int location = locationKeys[locationIndex];
+            arg0[0] = arg0[0]+"?dev="+model+"&ver="+androidVersion+"&loc="+location;
             try {
                 URL url = new URL(arg0[0]);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -479,6 +517,22 @@ public class Dayview extends FragmentActivity {
             if(!result){
                 Toast.makeText(getApplicationContext(), "Sync error: Please try again later.", Toast.LENGTH_LONG).show();
             }
+            isSyncing = false;
+        }
+    }
+
+    /*
+     * AsyncTask to fetch new surf and weather data.
+     */
+    private class UpdateFragmentTask extends AsyncTask<String, Integer, Boolean>{
+        @Override
+        protected Boolean doInBackground(String... arg0) {
+
+            return true;
+        }
+
+        protected void onPostExecute(Boolean result) {
+
         }
     }
 }

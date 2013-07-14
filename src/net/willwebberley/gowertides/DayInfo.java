@@ -59,6 +59,10 @@ public class DayInfo extends Fragment {
 	private View layoutView;
     private ViewGroup c;
 
+    private String[] locationNames;
+    private int[] locationKeys;
+    private int locationIndex;
+
     /*
     * Called when the fragment is loaded into the viewpager's memory.
     *
@@ -100,7 +104,9 @@ public class DayInfo extends Fragment {
 	public DayInfo(Day day, SharedPreferences p, Dayview d){
 		today = day;
 		prefs = p;
-		dayView = d;    	
+		dayView = d;
+        locationNames = dayView.locationNames;
+        locationKeys = dayView.locationKeys;
 	}
 
     /*
@@ -185,6 +191,12 @@ public class DayInfo extends Fragment {
         showPreferredComponents();
         updateUI();
     }
+
+    public void slideSurf(){
+        double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
+        int scrollTo = (int)(250*x);
+        ((HorizontalScrollView)layoutView.findViewById(R.id.surfScroller)).scrollTo(scrollTo,0);
+    }
     
     /*
      * Internal method that checks preferences and hides or shows components based on what the
@@ -221,6 +233,7 @@ public class DayInfo extends Fragment {
     public void updateUI(){
         today.getDayInfo();
     	rightNow = Calendar.getInstance();
+        locationIndex = dayView.locationIndex;
 
        	// Put in try-catch as getting the strings returned null pointers on some devices
     	try{
@@ -336,23 +349,35 @@ public class DayInfo extends Fragment {
      * Set the surf fields and images for the current day.
      */
     private void setSurfInfo(){
+        ((TextView)layoutView.findViewById(R.id.surf_title)).setText(locationNames[locationIndex]);
+
         LinearLayout surf = (LinearLayout)layoutView.findViewById(R.id.surf); // Get the linear layout to add the surf details to
         // Set some basic layout params (last arg is weight - set to 0.2)
         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT, 0.2f);
         // Calculate the pixel density (in dpi)...
         double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
-        // ... and use this to set the horizontal margins of the views to be added to the LinearLayout
+        // ... and use this to set the horizontal margins of the views to be added to the LinearLayout (i.e. 5dpi left and right)
         param.setMargins((int)(5*x), 0, (int)(5*x), 0);
 
         // Finally remove all views in there already, before repopulating with the layoutparams specified above.
         surf.removeAllViews();
-        SurfInfo surfTime1 = new SurfInfo(dayView.getApplicationContext(), today, 9);
-        SurfInfo surfTime2 = new SurfInfo(dayView.getApplicationContext(),today, 12);
-        SurfInfo surfTime3 = new SurfInfo(dayView.getApplicationContext(),today, 15);
+        SurfInfo surfTime1 = new SurfInfo(dayView.getApplicationContext(), today, 0);
+        SurfInfo surfTime2 = new SurfInfo(dayView.getApplicationContext(), today, 3);
+        SurfInfo surfTime3 = new SurfInfo(dayView.getApplicationContext(), today, 6);
+        SurfInfo surfTime4 = new SurfInfo(dayView.getApplicationContext(), today, 9);
+        SurfInfo surfTime5 = new SurfInfo(dayView.getApplicationContext(),today, 12);
+        SurfInfo surfTime6 = new SurfInfo(dayView.getApplicationContext(),today, 15);
+        SurfInfo surfTime7 = new SurfInfo(dayView.getApplicationContext(), today, 18);
+        SurfInfo surfTime8 = new SurfInfo(dayView.getApplicationContext(), today, 21);
+
         surf.addView(surfTime1.getView(), param);
         surf.addView(surfTime2.getView(), param);
         surf.addView(surfTime3.getView(), param);
-
+        surf.addView(surfTime4.getView(), param);
+        surf.addView(surfTime5.getView(), param);
+        surf.addView(surfTime6.getView(), param);
+        surf.addView(surfTime7.getView(), param);
+        surf.addView(surfTime8.getView(), param);
     }
 
 

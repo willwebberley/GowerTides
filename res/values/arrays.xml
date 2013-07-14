@@ -11,10 +11,20 @@
 
     <string-array name="locationDisplay">
         <item>Llangennith</item>
-        <item>Broughton</item>
+        <item>Hunts Bay</item>
+        <item>Caswell Bay</item>
+        <item>Langland</item>
     </string-array>
     <string-array name="locationValue">
         <item>Llangennith</item>
-        <item>Broughton</item>
+        <item>Hunts Bay</item>
+        <item>Caswell Bay</item>
+        <item>Langland</item>
     </string-array>
+    <integer-array name="locationKey">
+        <item>32</item>
+        <item>1456</item>
+        <item>3942</item>
+        <item>31</item>
+    </integer-array>
 </resources>

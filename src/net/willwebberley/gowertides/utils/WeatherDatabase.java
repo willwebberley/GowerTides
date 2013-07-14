@@ -11,7 +11,9 @@ import org.json.JSONObject;
 
 public class WeatherDatabase extends SQLiteOpenHelper{
 
-	private static final int DATABASE_VERSION = 1;
+    // Version 2: added 'surf' table
+    // Version 3: added 'location' column to 'surf' table
+	private static final int DATABASE_VERSION = 3;
 	private static final String DATABASE_NAME = "weather";
 	
 	public WeatherDatabase(Context context) {
@@ -37,6 +39,7 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 				"precipitation FLOAT)";
 		db.execSQL(create);
         String create2 = "CREATE TABLE IF NOT EXISTS surf (" +
+                "location INTEGER," +
                 "timestamp INTEGER," +
                 "local_time INTEGER," +
                 "year INTEGER," +
@@ -115,6 +118,7 @@ public class WeatherDatabase extends SQLiteOpenHelper{
             JSONArray jsonArray = new JSONArray(data);
             for (int i = 0; i < jsonArray.length(); i++){
                 JSONObject surf = jsonArray.getJSONObject(i);
+                int location = surf.getInt("location");
                 long timestamp = surf.getLong("timestamp");
                 long localtime = surf.getLong("local_time");
                 int year = surf.getInt("year");
@@ -139,7 +143,7 @@ public class WeatherDatabase extends SQLiteOpenHelper{
                 String sst_chart_url = surf.getString("sst_chart");
 
                 String inS = "INSERT INTO surf VALUES(" +
-                        timestamp+","+localtime+","+year+","+month+","+day+","+hour+","+minute+","+faded_rating+","+
+                        location+","+timestamp+","+localtime+","+year+","+month+","+day+","+hour+","+minute+","+faded_rating+","+
                         solid_rating+","+min_surf+","+abs_min_surf+","+max_surf+","+
                         abs_max_surf+","+swell_height+","+swell_period+","+swell_angle+",'"+swell_direction+"','"+
                         swell_chart_url+"','"+period_chart_url+"','"+wind_chart_url+"','"+pressure_chart_url+"','"+sst_chart_url+"')";
@@ -154,24 +158,32 @@ public class WeatherDatabase extends SQLiteOpenHelper{
     }
 
     public Boolean insertAllData(String data){
+        JSONObject jsonArray = null;
         try{
-            JSONObject jsonArray = new JSONObject(data);
-            Boolean weatherSuccess = insertWeatherData(jsonArray.getJSONArray("weather").toString());
-            Boolean surfSuccess = insertSurfData(jsonArray.getJSONArray("surf").toString());
-            if(!weatherSuccess){
-                System.out.println("error storing weather");
-                return false;
-            }
-            if(!surfSuccess){
-                System.out.println("error storing surf");
-                return false;
-            }
+            jsonArray = new JSONObject(data);
         }
         catch(Exception e){
-            System.err.println(e);
+            System.err.println("couldn't parse JSON");
             return false;
         }
-        System.out.println("storage success");
+        int err_count = 0;
+        try{
+            Boolean weatherSuccess = insertWeatherData(jsonArray.getJSONArray("weather").toString());
+        }
+        catch(Exception e){
+            err_count ++;
+            System.err.println("Error storing weather");
+        }
+        try{
+            Boolean surfSuccess = insertSurfData(jsonArray.getJSONArray("surf").toString());
+        }
+        catch(Exception e){
+            err_count ++;
+            System.err.println("Error storing surf");
+        }
+        if(err_count > 0){
+            return false;
+        }
         return true;
     }
 	
@@ -192,15 +204,15 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 		}
 	}
 
-    public Cursor getSurfInfo(Calendar dayToGet){
+    public Cursor getSurfInfo(Calendar dayToGet, int location){
         SQLiteDatabase db = this.getReadableDatabase();
         int year = dayToGet.get(Calendar.YEAR);
         int month = dayToGet.get(Calendar.MONTH)+1;
         int day = dayToGet.get(Calendar.DAY_OF_MONTH);
         try{
-            Cursor result = db.rawQuery("SELECT * FROM surf WHERE year = "+year+" AND month = "+month+" AND day = "+day+" ORDER BY timestamp",null);
+            Cursor result = db.rawQuery("SELECT * FROM surf WHERE year = "+year+" AND month = "+month+" AND day = "+day+" AND location = "+location+" ORDER BY timestamp DESC",null);
 
-            result.moveToLast();
+            result.moveToFirst();
             return result;
         }
         catch(Exception e){

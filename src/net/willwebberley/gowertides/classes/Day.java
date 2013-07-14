@@ -115,14 +115,14 @@ public class Day {
 		// 9wind_speed_km 10wind_direction 11wind_degree 12icon_url 13description 14precipitation
         //
         // SURF INFO:
-        // 0timestamp 1local_time 2year 3month 4day 5hour 6minute 7faded_rating 8solid_rating 9min_surf 10abs_min_surf 11max_surf
-        // 12abs_max_surf 13swell_height 14swell_period 15swell_angle 16swell_direction 17swell_chart 18period_chart
-        // 19wind_chart 20pressure_chart 21sst_chart
+        // 0location 1timestamp 2local_time 3year 4month 5day 6hour 7minute 8faded_rating 9solid_rating 10min_surf 11abs_min_surf 12max_surf
+        // 13abs_max_surf 14swell_height 15swell_period 16swell_angle 17swell_direction 18swell_chart 19period_chart
+        // 20wind_chart 21pressure_chart 22sst_chart
 
-		
+		int location = dayView.locationKeys[dayView.locationIndex];
 		Cursor info = db.getDayInfo(day);
 		Cursor weatherInfo = weather_db.getWeatherInfo(day);
-        Cursor surfInfo = weather_db.getSurfInfo(day);
+        Cursor surfInfo = weather_db.getSurfInfo(day, location);
 
 		try{
 			max_temp_c = weatherInfo.getInt(4);
@@ -147,27 +147,27 @@ public class Day {
 		}
 
         try{
-            int ind = 7;
-            while (! surfInfo.isFirst() && ind >= 0){
-                hour[ind] = surfInfo.getInt(5);
-                local_time[ind] = surfInfo.getLong(1);
-                faded_rating[ind] = surfInfo.getInt(7);
-                solid_rating[ind] = surfInfo.getInt(8);
-                min_surf[ind] = surfInfo.getDouble(9);
-                abs_min_surf[ind] = surfInfo.getDouble(10);
-                max_surf[ind] = surfInfo.getDouble(11);
-                abs_max_surf[ind] = surfInfo.getDouble(12);
-                swell_height[ind] = surfInfo.getDouble(13);
-                swell_period[ind] = surfInfo.getDouble(14);
-                swell_angle[ind] = surfInfo.getDouble(15);
-                swell_direction[ind] = surfInfo.getString(16);
-                swell_chart_url[ind] = surfInfo.getString(17);
-                period_chart_url[ind] = surfInfo.getString(18);
-                Wind_chart_url[ind] = surfInfo.getString(19);
-                pressure_chart_url[ind] = surfInfo.getString(20);
-                sst_chart_url[ind] = surfInfo.getString(21);
+            int ind = 0;
+            while (! surfInfo.isLast() && ind <8){
+                hour[ind] = surfInfo.getInt(6);
+                local_time[ind] = surfInfo.getLong(2);
+                faded_rating[ind] = surfInfo.getInt(8);
+                solid_rating[ind] = surfInfo.getInt(9);
+                min_surf[ind] = surfInfo.getDouble(10);
+                abs_min_surf[ind] = surfInfo.getDouble(11);
+                max_surf[ind] = surfInfo.getDouble(12);
+                abs_max_surf[ind] = surfInfo.getDouble(13);
+                swell_height[ind] = surfInfo.getDouble(14);
+                swell_period[ind] = surfInfo.getDouble(15);
+                swell_angle[ind] = surfInfo.getDouble(16);
+                swell_direction[ind] = surfInfo.getString(17);
+                swell_chart_url[ind] = surfInfo.getString(18);
+                period_chart_url[ind] = surfInfo.getString(19);
+                Wind_chart_url[ind] = surfInfo.getString(20);
+                pressure_chart_url[ind] = surfInfo.getString(21);
+                sst_chart_url[ind] = surfInfo.getString(22);
                 surfInfo.moveToPrevious();
-                ind--;
+                ind++;
             }
             surfAvailable = true;
         }
@@ -221,9 +221,14 @@ public class Day {
         /*
         * Close the three cursors needed to get this data.
          */
+       try{
         info.close();
         weatherInfo.close();
-       // surfInfo.close();
+        surfInfo.close();
+       }
+       catch(Exception e){
+           System.err.println("Could not close DBs: "+e);
+       }
 	}
 
     /*
@@ -263,6 +268,7 @@ public class Day {
         return -1;
     }
     public double getMinSurfForTime(int hourReq){
+        System.out.println(hourReq);
         int ind = getIndexForSurfHour(hourReq);
         return min_surf[ind];
     }

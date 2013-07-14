@@ -44,17 +44,17 @@
             android:title="Surf forecast" >
         <CheckBoxPreference
                 android:key="show_surf"
-                android:summary="Lookup and show the surf forecast. Forecast generally available for next 5 days from today."
+                android:summary="Show the surf forecast. Forecast generally available for next 5 days from today."
                 android:title="Display surf forecast"
                 android:defaultValue="true" />
 <!--
         <ListPreference
                 android:title="Location"
-                android:summary="Select Gower location for surf reports.."
+                android:summary="Select a Gower location for surf reports."
                 android:key="location"
                 android:entries="@array/locationDisplay"
-                android:entryValues="@array/locationValue"
-                android:defaultValue="Llangennith"/>-->
+                android:entryValues="@array/locationKey"
+                android:defaultValue="32"/>-->
 
     </PreferenceCategory>
         
@@ -62,7 +62,7 @@
         android:title="Weather forecast" >
         <CheckBoxPreference
             android:key="show_weather"
-            android:summary="Lookup and show the weather forecast. Weather available for next 5 days from today."
+            android:summary="Show the weather forecast. Weather available for next 5 days from today."
             android:title="Display weather forecast"
             android:defaultValue="true" />
         <ListPreference

@@ -80,10 +80,23 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginTop="7dp"
+                    android:layout_marginTop="4dp"
                     android:layout_marginLeft="7dp"
-                    android:text="Llangennith"
+                    android:text="Langland Bay"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <ImageView
+                    android:id="@+id/edit_location"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_toRightOf="@+id/surf_title"
+                    android:scaleType="fitXY"
+                    android:onClick="editLocation"
+                    android:src="@drawable/edit"
+                    android:alpha="0.5"/>
 
             <ImageView
                     android:id="@+id/msw_icon"
@@ -110,16 +123,24 @@
                     android:text="Either surf service is unavailable or day is too far in the past or future."
                     android:textAppearance="?android:attr/textAppearanceSmall" />
 
-            <LinearLayout
-                    android:id="@+id/surf"
+            <HorizontalScrollView
+                    android:id="@+id/surfScroller"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/msw_icon"
                     android:layout_marginTop="10dp"
+                >
+
+            <LinearLayout
+                    android:id="@+id/surf"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:paddingBottom="10dp" >
 
             </LinearLayout>
+            </HorizontalScrollView>
+
         </RelativeLayout>
 
 

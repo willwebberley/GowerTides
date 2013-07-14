@@ -27,9 +27,7 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		CheckBoxPreference sunriseSunsetBox = (CheckBoxPreference)getPreferenceScreen().findPreference("show_graph_sunrise_sunset");
 		ListPreference metric = (ListPreference)getPreferenceScreen().findPreference("unitFormat");
 		CheckBoxPreference timerBox = (CheckBoxPreference)getPreferenceScreen().findPreference("show_sunset_timer");
-        //ListPreference surfBox = (ListPreference)getPreferenceScreen().findPreference("location");
-        //surfBox.setSummary("Select a location for surf reports ("+arg0.getString("location", "Llangennith")+").");
-		
+
 		if(!arg0.getBoolean("show_graph", true)){
 			timeBox.setEnabled(false);
 			sunriseSunsetBox.setEnabled(false);
@@ -40,13 +38,11 @@ public class Settings extends PreferenceActivity implements OnSharedPreferenceCh
 		}
 		
 		if(arg0.getString("unitFormat", "true").equals("true")){
-			metric.setSummary("Display units in metric (km/h, Celcius).");
+			metric.setSummary("Display weather units in metric (km/h, Celcius).");
 		}
 		else{
-			metric.setSummary("Display units in imperial (mph, Faranheit).");
+			metric.setSummary("Display weather units in imperial (mph, Faranheit).");
 		}
-
-
 		
 		if(!arg0.getBoolean("show_sunrise_sunset", true)){
 			timerBox.setEnabled(false);
