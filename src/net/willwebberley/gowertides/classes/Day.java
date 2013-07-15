@@ -50,23 +50,7 @@ public class Day {
     /*
     * Fields to hold surf data
      */
-    private int[] hour = new int[8];
-    private long[] local_time = new long[8];
-    private int[] faded_rating = new int[8];
-    private int[] solid_rating = new int[8];
-    private double[] min_surf = new double[8];
-    private double[] abs_min_surf = new double[8];
-    private double[] max_surf = new double[8];
-    private double[] abs_max_surf = new double[8];
-    private double[] swell_height = new double[8];
-    private double[] swell_period = new double[8];
-    private double[] swell_angle = new double[8];
-    private String[] swell_direction = new String[8];
-    private String[] swell_chart_url = new String[8];
-    private String[] period_chart_url = new String[8];
-    private String[] Wind_chart_url = new String[8];
-    private String[] pressure_chart_url = new String[8];
-    private String[] sst_chart_url = new String[8];
+    private ArrayList surf_reports = new ArrayList<Surf>();
 
     /*
     * Helper fields
@@ -147,27 +131,31 @@ public class Day {
 		}
 
         try{
-            int ind = 0;
-            while (! surfInfo.isLast() && ind <8){
-                hour[ind] = surfInfo.getInt(6);
-                local_time[ind] = surfInfo.getLong(2);
-                faded_rating[ind] = surfInfo.getInt(8);
-                solid_rating[ind] = surfInfo.getInt(9);
-                min_surf[ind] = surfInfo.getDouble(10);
-                abs_min_surf[ind] = surfInfo.getDouble(11);
-                max_surf[ind] = surfInfo.getDouble(12);
-                abs_max_surf[ind] = surfInfo.getDouble(13);
-                swell_height[ind] = surfInfo.getDouble(14);
-                swell_period[ind] = surfInfo.getDouble(15);
-                swell_angle[ind] = surfInfo.getDouble(16);
-                swell_direction[ind] = surfInfo.getString(17);
-                swell_chart_url[ind] = surfInfo.getString(18);
-                period_chart_url[ind] = surfInfo.getString(19);
-                Wind_chart_url[ind] = surfInfo.getString(20);
-                pressure_chart_url[ind] = surfInfo.getString(21);
-                sst_chart_url[ind] = surfInfo.getString(22);
-                surfInfo.moveToPrevious();
-                ind++;
+            long recent_request_timestamp = surfInfo.getLong(1);
+            surf_reports.clear();
+            while (! surfInfo.isLast() && surfInfo.getLong(1) == recent_request_timestamp){
+                Surf surf = new Surf();
+                surf.hour = surfInfo.getInt(6);
+                surf.location = surfInfo.getInt(0);
+                surf.local_time = surfInfo.getLong(2);
+                surf.faded_rating = surfInfo.getInt(8);
+                surf.solid_rating= surfInfo.getInt(9);
+                surf.min_surf = surfInfo.getDouble(10);
+                surf.abs_min_surf= surfInfo.getDouble(11);
+                surf.max_surf = surfInfo.getDouble(12);
+                surf.abs_max_surf= surfInfo.getDouble(13);
+                surf.swell_height= surfInfo.getDouble(14);
+                surf.swell_period= surfInfo.getDouble(15);
+                surf.swell_angle = surfInfo.getDouble(16);
+                surf.swell_direction= surfInfo.getString(17);
+                surf.swell_chart_url= surfInfo.getString(18);
+                surf.period_chart_url= surfInfo.getString(19);
+                surf.Wind_chart_url= surfInfo.getString(20);
+                surf.pressure_chart_url= surfInfo.getString(21);
+                surf.sst_chart_url= surfInfo.getString(22);
+                surf_reports.add(surf);
+
+                surfInfo.moveToNext();
             }
             surfAvailable = true;
         }
@@ -259,40 +247,9 @@ public class Day {
     /*
     * Publicly-available standard getter and mutator methods for this class.
      */
-    private int getIndexForSurfHour(int hourReq){
-        for (int i = 0; i < hour.length; i++){
-            if (hour[i] == hourReq){
-                return i;
-            }
-        }
-        return -1;
+    public ArrayList<Surf> getSurfReports(){
+        return surf_reports;
     }
-    public double getMinSurfForTime(int hourReq){
-        System.out.println(hourReq);
-        int ind = getIndexForSurfHour(hourReq);
-        return min_surf[ind];
-    }
-    public double getMaxSurfForTime(int hourReq){
-        int ind = getIndexForSurfHour(hourReq);
-        return max_surf[ind];
-    }
-    public String getSwellDirection(int hourReq){
-        int ind = getIndexForSurfHour(hourReq);
-        return swell_direction[ind];
-    }
-    public double getSwellAngle(int hourReq){
-        int ind = getIndexForSurfHour(hourReq);
-        return swell_angle[ind];
-    }
-    public double getSwellHeight(int hourReq){
-        int ind = getIndexForSurfHour(hourReq);
-        return swell_height[ind];
-    }
-    public double getSwellPeriod(int hourReq){
-        int ind = getIndexForSurfHour(hourReq);
-        return swell_period[ind];
-    }
-
 	public String getWeatherDescription(){
 		return description;
 	}

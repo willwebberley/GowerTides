@@ -82,7 +82,7 @@
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="4dp"
                     android:layout_marginLeft="7dp"
-                    android:text="Langland Bay"
+                    android:text=""
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ImageView

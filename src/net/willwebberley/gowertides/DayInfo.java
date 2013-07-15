@@ -3,12 +3,14 @@ package net.willwebberley.gowertides;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.widget.*;
 import com.androidplot.xy.XYPlot;
 
 import net.willwebberley.gowertides.classes.Day;
+import net.willwebberley.gowertides.classes.Surf;
 import net.willwebberley.gowertides.classes.TideGraph;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
@@ -80,21 +82,6 @@ public class DayInfo extends Fragment {
         showPreferredComponents();
     	updateUI();
     	updater();
-
-        /*if(dayView.weatherSycing){
-            startWeatherSync();
-        }
-        else{
-            finishWeatherSync();
-        }
-
-        if(dayView.surfSyncing){
-            startSurfSync();
-        }
-        else{
-            finishSurfSync();
-        }*/
-
         return layoutView;
     }
 
@@ -122,68 +109,6 @@ public class DayInfo extends Fragment {
      */
 
     /*
-    * Called from parent activity when weather is to start syncing.
-    * Responsible for hiding the sync button and showing the progress bar.
-     */
-    /*public void startWeatherSync(){
-        try{
-            weatherSync.setVisibility(View.INVISIBLE);
-            weatherProgress.setVisibility(View.VISIBLE);
-        }
-        catch(Exception e){
-            System.err.println("error starting sync on fragment: "+e);
-        }
-    }*/
-
-    /*
-    * Called from parent activity when weather sync is completed.
-    * Hides progressbar and shows sync button.
-    * Updates the UI.
-     */
-    /*public void finishWeatherSync(){
-        try{
-            weatherSync.setVisibility(View.VISIBLE);
-            weatherProgress.setVisibility(View.INVISIBLE);
-            updateUI();
-            showPreferredComponents();
-        }
-        catch(Exception e){
-            System.err.println("error finishing sync on fragment: "+e);
-        }
-    }*/
-
-    /*
-   * Called from parent activity when weather is to start syncing.
-   * Responsible for hiding the sync button and showing the progress bar.
-    */
-    /*public void startSurfSync(){
-        try{
-            surfSync.setVisibility(View.INVISIBLE);
-            surfProgress.setVisibility(View.VISIBLE);
-        }
-        catch(Exception e){
-            System.err.println("error starting sync on fragment: "+e);
-        }
-    }*/
-
-    /*
-    * Called from parent activity when weather sync is completed.
-    * Hides progressbar and shows sync button.
-    * Updates the UI.
-     */
-    /*public void finishSurfSync(){
-        try{
-            surfSync.setVisibility(View.VISIBLE);
-            surfProgress.setVisibility(View.INVISIBLE);
-            updateUI();
-            showPreferredComponents();
-        }
-        catch(Exception e){
-            System.err.println("error finishing sync on fragment: "+e);
-        }
-    }*/
-
-    /*
     * Called from parent activity when it requires the fragment to refresh its UI.
     * (Typically onResume() calls it to make it reload the components which are set to show in preferences.)
      */
@@ -195,7 +120,7 @@ public class DayInfo extends Fragment {
     public void slideSurf(){
         double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
         int scrollTo = (int)(250*x);
-        ((HorizontalScrollView)layoutView.findViewById(R.id.surfScroller)).scrollTo(scrollTo,0);
+        ((HorizontalScrollView)layoutView.findViewById(R.id.surfScroller)).smoothScrollTo(scrollTo,0);
     }
     
     /*
@@ -288,6 +213,7 @@ public class DayInfo extends Fragment {
         }
         else{
             layoutView.findViewById(R.id.surf).setVisibility(View.GONE);
+            ((TextView)layoutView.findViewById(R.id.surf_title)).setText("Surf unavailable");
             ((TextView)layoutView.findViewById(R.id.surf_error)).setVisibility(View.VISIBLE);
         }
     }
@@ -350,34 +276,23 @@ public class DayInfo extends Fragment {
      */
     private void setSurfInfo(){
         ((TextView)layoutView.findViewById(R.id.surf_title)).setText(locationNames[locationIndex]);
+        double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
 
         LinearLayout surf = (LinearLayout)layoutView.findViewById(R.id.surf); // Get the linear layout to add the surf details to
         // Set some basic layout params (last arg is weight - set to 0.2)
-        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT, 0.2f);
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((int)(x*100),LinearLayout.LayoutParams.MATCH_PARENT);
         // Calculate the pixel density (in dpi)...
-        double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
+
         // ... and use this to set the horizontal margins of the views to be added to the LinearLayout (i.e. 5dpi left and right)
         param.setMargins((int)(5*x), 0, (int)(5*x), 0);
 
         // Finally remove all views in there already, before repopulating with the layoutparams specified above.
         surf.removeAllViews();
-        SurfInfo surfTime1 = new SurfInfo(dayView.getApplicationContext(), today, 0);
-        SurfInfo surfTime2 = new SurfInfo(dayView.getApplicationContext(), today, 3);
-        SurfInfo surfTime3 = new SurfInfo(dayView.getApplicationContext(), today, 6);
-        SurfInfo surfTime4 = new SurfInfo(dayView.getApplicationContext(), today, 9);
-        SurfInfo surfTime5 = new SurfInfo(dayView.getApplicationContext(),today, 12);
-        SurfInfo surfTime6 = new SurfInfo(dayView.getApplicationContext(),today, 15);
-        SurfInfo surfTime7 = new SurfInfo(dayView.getApplicationContext(), today, 18);
-        SurfInfo surfTime8 = new SurfInfo(dayView.getApplicationContext(), today, 21);
-
-        surf.addView(surfTime1.getView(), param);
-        surf.addView(surfTime2.getView(), param);
-        surf.addView(surfTime3.getView(), param);
-        surf.addView(surfTime4.getView(), param);
-        surf.addView(surfTime5.getView(), param);
-        surf.addView(surfTime6.getView(), param);
-        surf.addView(surfTime7.getView(), param);
-        surf.addView(surfTime8.getView(), param);
+        ArrayList<Surf> reports = today.getSurfReports();
+        for(int i = 0; i < reports.size(); i++){
+            SurfInfo si = new SurfInfo(dayView.getApplicationContext(), reports.get(i));
+            surf.addView(si.getView(), param);
+        }
     }
 
 
@@ -477,10 +392,6 @@ public class DayInfo extends Fragment {
     	sunsetCountField = (TextView)layoutView.findViewById(R.id.sunsetCountField);
     	sunsetCountField.setTextColor(Color.rgb(100, 25, 25));
 
-        /*surfProgress = (ProgressBar)layoutView.findViewById(R.id.surfProgress);
-        surfSync = (ImageButton)layoutView.findViewById(R.id.surfSync);
-    	weatherProgress = (ProgressBar)layoutView.findViewById(R.id.weatherProgress);
-    	weatherSync = (ImageButton)layoutView.findViewById(R.id.weatherSync);*/
     	weatherDescriptionView = (TextView)layoutView.findViewById(R.id.weather_description);
     	weatherDescriptionView.setTextColor(Color.rgb(0, 150, 220));
 

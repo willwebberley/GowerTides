@@ -73,9 +73,7 @@ public class WeatherDatabase extends SQLiteOpenHelper{
         onCreate(db);
 	}
 	
-	public Boolean insertWeatherData(String data){
-		SQLiteDatabase db = this.getWritableDatabase();
-		//db.execSQL("DELETE FROM weather");
+	public Boolean insertWeatherData(String data, SQLiteDatabase db){
 		try{
 			JSONArray jsonArray = new JSONArray(data);
 			for (int i = 0; i < jsonArray.length(); i++){
@@ -112,8 +110,7 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 		return true;
 	}
 
-    public Boolean insertSurfData(String data){
-        SQLiteDatabase db = this.getWritableDatabase();
+    public Boolean insertSurfData(String data, SQLiteDatabase db){
         try{
             JSONArray jsonArray = new JSONArray(data);
             for (int i = 0; i < jsonArray.length(); i++){
@@ -142,6 +139,8 @@ public class WeatherDatabase extends SQLiteOpenHelper{
                 String pressure_chart_url = surf.getString("pressure_chart");
                 String sst_chart_url = surf.getString("sst_chart");
 
+                
+
                 String inS = "INSERT INTO surf VALUES(" +
                         location+","+timestamp+","+localtime+","+year+","+month+","+day+","+hour+","+minute+","+faded_rating+","+
                         solid_rating+","+min_surf+","+abs_min_surf+","+max_surf+","+
@@ -159,31 +158,54 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 
     public Boolean insertAllData(String data){
         JSONObject jsonArray = null;
+        JSONArray weatherArray = null;
+        JSONArray surfArray = null;
+
         try{
             jsonArray = new JSONObject(data);
+            weatherArray = jsonArray.getJSONArray("weather");
+            surfArray = jsonArray.getJSONArray("surf");
         }
         catch(Exception e){
             System.err.println("couldn't parse JSON");
             return false;
         }
+
+        SQLiteDatabase db = this.getWritableDatabase();
         int err_count = 0;
-        try{
-            Boolean weatherSuccess = insertWeatherData(jsonArray.getJSONArray("weather").toString());
-        }
-        catch(Exception e){
+
+        /* Insert weather data */
+        db.beginTransaction();
+        Boolean weatherSuccess = insertWeatherData(weatherArray.toString(), db);
+        if(!weatherSuccess){
             err_count ++;
             System.err.println("Error storing weather");
+            db.endTransaction();
         }
-        try{
-            Boolean surfSuccess = insertSurfData(jsonArray.getJSONArray("surf").toString());
+        else{
+            db.setTransactionSuccessful();
+            db.endTransaction();
         }
-        catch(Exception e){
+
+
+        /* Insert surf data - using transactions to help performance */
+        db.beginTransaction();
+        Boolean surfSuccess = insertSurfData(surfArray.toString(), db);
+        if(!surfSuccess){
             err_count ++;
             System.err.println("Error storing surf");
+            db.endTransaction();
         }
+        else{
+            db.setTransactionSuccessful();
+            db.endTransaction();
+        }
+
         if(err_count > 0){
+            db.endTransaction();
             return false;
         }
+
         return true;
     }
 	
