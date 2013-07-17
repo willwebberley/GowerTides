@@ -1,4 +1,4 @@
-package net.willwebberley.gowertides;
+package net.willwebberley.gowertides.ui;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -9,8 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import android.app.AlertDialog;
 import android.net.Uri;
+import net.willwebberley.gowertides.R;
 import net.willwebberley.gowertides.classes.*;
 import net.willwebberley.gowertides.utils.DayDatabase;
 import net.willwebberley.gowertides.utils.WeatherDatabase;
@@ -48,7 +48,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
   * This class ia also responsible for network tasks (getting weather), and communicating this to the day fragments.
   *
  */
-public class Dayview extends FragmentActivity {
+public class DaysActivity extends FragmentActivity {
 
 	private SharedPreferences prefs;
 	private ViewPager infoPager;
@@ -56,7 +56,7 @@ public class Dayview extends FragmentActivity {
     private int currentFragmentIndex;
     private Calendar[] infoArray;
 	private Calendar currentDay, firstDay, lastDay;
-	private List<DayInfo> fragments;
+	private List<DayFragment> fragments;
 	private PagerAdapter mPagerAdapter;
 	public DayDatabase db;
 	public WeatherDatabase weather_db;
@@ -90,6 +90,7 @@ public class Dayview extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dayview);
+
         /*
         * Following two variables used by day fragments to check the status of parent activity
          */
@@ -103,7 +104,7 @@ public class Dayview extends FragmentActivity {
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         initComponents();
-        fragments = new Vector<DayInfo>();
+        fragments = new Vector<DayFragment>();
         mPagerAdapter = new PagerAdapter(super.getSupportFragmentManager(), fragments);
         infoPager.setAdapter(mPagerAdapter);
 
@@ -127,7 +128,7 @@ public class Dayview extends FragmentActivity {
             Calendar newDay = (Calendar)startDay.clone();
             newDay.add(Calendar.DATE,i);
             infoArray[i] = newDay;
-            DayInfo dayToAdd = new DayInfo(new Day(newDay, getApplicationContext(), this), prefs, this);
+            DayFragment dayToAdd = new DayFragment(new Day(newDay, getApplicationContext(), this), prefs, this);
             if (currentDay.getTimeInMillis() == newDay.getTimeInMillis()){
                 todayFragmentIndex = i;
             }
@@ -144,13 +145,13 @@ public class Dayview extends FragmentActivity {
     * Implements various methods to assist with handling the pager.
      */
     class PagerAdapter extends FragmentPagerAdapter {
-        private List<DayInfo> fragments;
-        public PagerAdapter(android.support.v4.app.FragmentManager fm, List<DayInfo> fragments) {
+        private List<DayFragment> fragments;
+        public PagerAdapter(android.support.v4.app.FragmentManager fm, List<DayFragment> fragments) {
             super(fm);
             this.fragments = fragments;
         }
         @Override
-        public DayInfo getItem(int position) {
+        public DayFragment getItem(int position) {
             return this.fragments.get(position);
         }
         @Override
@@ -231,11 +232,11 @@ public class Dayview extends FragmentActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.menu_about:
-            	Intent intent_about = new Intent(this, About.class);
+            	Intent intent_about = new Intent(this, AboutActivity.class);
                 startActivity(intent_about);
                 return true;
             case R.id.menu_settings:
-            	Intent intent_settings = new Intent(this, Settings.class);
+            	Intent intent_settings = new Intent(this, PrferencesActivity.class);
                 startActivity(intent_settings);
                 return true;
             case R.id.menu_revert:
@@ -345,9 +346,9 @@ public class Dayview extends FragmentActivity {
     * These three methods execute different methods within the loaded pages.
      */
     private void fragmentsRefreshUI(){
-        ((DayInfo)fragments.get(currentFragmentIndex-1)).refreshUI();
-        ((DayInfo)fragments.get(currentFragmentIndex)).refreshUI();
-        ((DayInfo)fragments.get(currentFragmentIndex+1)).refreshUI();
+        ((DayFragment)fragments.get(currentFragmentIndex-1)).refreshUI();
+        ((DayFragment)fragments.get(currentFragmentIndex)).refreshUI();
+        ((DayFragment)fragments.get(currentFragmentIndex+1)).refreshUI();
     }
     private void finishRefresh(){
         refreshProgress.setVisibility(View.INVISIBLE);
@@ -417,7 +418,7 @@ public class Dayview extends FragmentActivity {
                 public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
                 public void onPageSelected(int position) {
                     currentFragmentIndex = position;
-                    DayInfo myNow = mPagerAdapter.getItem(position);
+                    DayFragment myNow = mPagerAdapter.getItem(position);
                     myNow.slideSurf();
                     dateText.setText(myNow.today.toString());
                     if(position == todayFragmentIndex){
@@ -436,6 +437,8 @@ public class Dayview extends FragmentActivity {
         protected void onPostExecute(Boolean result) {
 
             infoPager.setCurrentItem(todayFragmentIndex); // set initial pager position to current day
+
+
             /*
             * If preference is to sync weather on startup, then sync weather task now.
             * (this is done after initialising day fragments due to UI updates on the fragments during this task.)
@@ -448,6 +451,7 @@ public class Dayview extends FragmentActivity {
             buildProgressHolder.setVisibility(View.GONE);
             buildProgress.setVisibility(View.GONE);
             infoPager.setVisibility(View.VISIBLE);
+            ((DayFragment)fragments.get(todayFragmentIndex)).slideSurf(); // Slide surf along for first day
             System.out.println("Done.");
 
         }

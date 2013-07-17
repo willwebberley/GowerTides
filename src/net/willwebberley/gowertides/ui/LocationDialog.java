@@ -1,4 +1,4 @@
-package net.willwebberley.gowertides;
+package net.willwebberley.gowertides.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import net.willwebberley.gowertides.R;
 
 public class LocationDialog extends DialogFragment {
 
@@ -48,7 +49,7 @@ public class LocationDialog extends DialogFragment {
 
     private void selected(int index){
         dismiss();
-        Dayview dv = (Dayview) getActivity();
+        DaysActivity dv = (DaysActivity) getActivity();
         dv.updateLocation(index);
     }
 

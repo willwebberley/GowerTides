@@ -1,4 +1,4 @@
-package net.willwebberley.gowertides;
+package net.willwebberley.gowertides.ui;
 
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -11,8 +11,9 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
+import net.willwebberley.gowertides.R;
 
-public class Settings extends PreferenceActivity implements OnSharedPreferenceChangeListener{
+public class PrferencesActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener{
 
 	 @Override
 	    public void onCreate(Bundle savedInstanceState) {

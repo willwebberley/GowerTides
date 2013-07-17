@@ -16,7 +16,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".Dayview"
+            android:name=".ui.DaysActivity"
             android:hardwareAccelerated="false"
             android:label="@string/title_activity_dayview"
             android:screenOrientation="portrait">
@@ -26,11 +26,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".About"
+            android:name=".ui.AboutActivity"
             android:label="@string/title_activity_about" >
         </activity>
         <activity
-            android:name=".Settings"
+            android:name=".ui.PrferencesActivity"
             android:label="@string/title_activity_settings" >
         </activity>
     </application>

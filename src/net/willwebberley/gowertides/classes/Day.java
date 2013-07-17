@@ -5,14 +5,14 @@ import java.util.*;
 
 import android.content.Context;
 import android.database.Cursor;
-import net.willwebberley.gowertides.Dayview;
+import net.willwebberley.gowertides.ui.DaysActivity;
 import net.willwebberley.gowertides.utils.*;
 
 /*
 * Class to represent a Day. Holds various fields of information regarding the day, including tidal, weather,
 * and sunrise-sunset information.
 *
-* This is not a UI class, but contains the data represented in a DayInfo fragment.
+* This is not a UI class, but contains the data represented in a DayFragment fragment.
  */
 public class Day {
 
@@ -60,14 +60,14 @@ public class Day {
     private Boolean surfAvailable; // true if surf data is available for today
 	private DayDatabase db; // intance of the database holding tidal data
 	private WeatherDatabase weather_db; // instance of the database holding weather and surf data
-	private Dayview dayView; // Top level activity for application (to access context, databases, etc.)
+	private DaysActivity dayView; // Top level activity for application (to access context, databases, etc.)
 	private int dayErrors; // enumerate the number of errors occurred in retrieving data from databases
 
     /*
-    * Instantiate object with a Calendar day to represent, the application context and the main Dayview activity.
+    * Instantiate object with a Calendar day to represent, the application context and the main DaysActivity activity.
     * Activity is needed to access the databases.
      */
-	public Day(Calendar date, Context con, Dayview dv){
+	public Day(Calendar date, Context con, DaysActivity dv){
 		day = date;
 		context = con;
 		db = dv.db;
@@ -123,7 +123,7 @@ public class Day {
 			weatherAvailable = true;
 		}
         /*
-        * Exception will be thrown if there s no stored weather data for this Day.
+        * Exception will be thrown if there is no stored weather data for this Day.
          */
 		catch(Exception e){
 			weatherAvailable = false;
@@ -131,8 +131,10 @@ public class Day {
 		}
 
         try{
+            // Assumes data from DB is returned ordered by timestamp DESC
             long recent_request_timestamp = surfInfo.getLong(1);
             surf_reports.clear();
+            // Only get data for the most recent timestamp:
             while (! surfInfo.isLast() && surfInfo.getLong(1) == recent_request_timestamp){
                 Surf surf = new Surf();
                 surf.hour = surfInfo.getInt(6);

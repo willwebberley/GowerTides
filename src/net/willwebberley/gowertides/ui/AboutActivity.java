@@ -1,4 +1,4 @@
-package net.willwebberley.gowertides;
+package net.willwebberley.gowertides.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,8 +7,9 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
+import net.willwebberley.gowertides.R;
 
-public class About extends Activity {
+public class AboutActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

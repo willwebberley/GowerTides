@@ -1,4 +1,4 @@
-package net.willwebberley.gowertides;
+package net.willwebberley.gowertides.ui;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,18 +11,19 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import net.willwebberley.gowertides.R;
 import net.willwebberley.gowertides.classes.Day;
 import net.willwebberley.gowertides.classes.Surf;
 
 /*
  Class to represent the surf information views in the horizontal scroll bar
  */
-public class SurfInfo extends RelativeLayout {
+public class SurfFragment extends RelativeLayout {
 
     private View layoutView;
     private Surf surf;
 
-    public SurfInfo(Context context, Surf s){
+    public SurfFragment(Context context, Surf s){
         super(context);
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutView = inflater.inflate(R.layout.surf_forecast, null);

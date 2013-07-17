@@ -1,5 +1,6 @@
 package net.willwebberley.gowertides.utils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import android.content.Context;
@@ -111,6 +112,20 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 	}
 
     public Boolean insertSurfData(String data, SQLiteDatabase db){
+        /* Delete any current versions with the same request timestamps */
+        ArrayList<Long> timestamps = new ArrayList<Long>();
+        try{
+            JSONArray jsonArray = new JSONArray(data);
+            for (int i = 0; i < jsonArray.length(); i++){
+                JSONObject surf = jsonArray.getJSONObject(i);
+                db.execSQL("DELETE FROM surf WHERE timestamp = "+surf.getLong("timestamp"));
+            }
+        }
+        catch(Exception e){
+            System.err.println("Could not delete data");
+        }
+
+        /* Now actually do the inserts! */
         try{
             JSONArray jsonArray = new JSONArray(data);
             for (int i = 0; i < jsonArray.length(); i++){
@@ -139,7 +154,7 @@ public class WeatherDatabase extends SQLiteOpenHelper{
                 String pressure_chart_url = surf.getString("pressure_chart");
                 String sst_chart_url = surf.getString("sst_chart");
 
-                
+
 
                 String inS = "INSERT INTO surf VALUES(" +
                         location+","+timestamp+","+localtime+","+year+","+month+","+day+","+hour+","+minute+","+faded_rating+","+
@@ -173,6 +188,8 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 
         SQLiteDatabase db = this.getWritableDatabase();
         int err_count = 0;
+
+
 
         /* Insert weather data */
         db.beginTransaction();

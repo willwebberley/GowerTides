@@ -1,6 +1,5 @@
-package net.willwebberley.gowertides;
+package net.willwebberley.gowertides.ui;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,6 +8,7 @@ import java.util.Calendar;
 import android.widget.*;
 import com.androidplot.xy.XYPlot;
 
+import net.willwebberley.gowertides.R;
 import net.willwebberley.gowertides.classes.Day;
 import net.willwebberley.gowertides.classes.Surf;
 import net.willwebberley.gowertides.classes.TideGraph;
@@ -35,9 +35,9 @@ import android.view.animation.RotateAnimation;
 * data and updating it where necessary.
  */
 @SuppressLint("ValidFragment")
-public class DayInfo extends Fragment {
+public class DayFragment extends Fragment {
 	
-	private Dayview dayView;
+	private DaysActivity dayView;
 	
 	private SharedPreferences prefs;
 	private Handler updaterHandler;
@@ -88,7 +88,7 @@ public class DayInfo extends Fragment {
     /*
     * Initialize the fragment with the Day it is to represent, the application preferences and the parent activity.
      */
-	public DayInfo(Day day, SharedPreferences p, Dayview d){
+	public DayFragment(Day day, SharedPreferences p, DaysActivity d){
 		today = day;
 		prefs = p;
 		dayView = d;
@@ -99,7 +99,7 @@ public class DayInfo extends Fragment {
     /*
     * Empty constructor also required for a valid fragment.
      */
-	public DayInfo(){
+	public DayFragment(){
 		
 	}
 	
@@ -290,7 +290,7 @@ public class DayInfo extends Fragment {
         surf.removeAllViews();
         ArrayList<Surf> reports = today.getSurfReports();
         for(int i = 0; i < reports.size(); i++){
-            SurfInfo si = new SurfInfo(dayView.getApplicationContext(), reports.get(i));
+            SurfFragment si = new SurfFragment(dayView.getApplicationContext(), reports.get(i));
             surf.addView(si.getView(), param);
         }
     }
