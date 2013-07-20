@@ -13,15 +13,22 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:background="#dddddd" >
+            android:background="#eeeeee" >
+
+        <RelativeLayout
+            android:id="@+id/tidal_views"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/drop_shadow"
+            >
 
         <com.androidplot.xy.XYPlot
                 android:id="@+id/tideGraphComponent"
                 android:layout_width="fill_parent"
                 android:layout_height="200dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_alignParentTop="true"
                 title="" />
 
 
@@ -29,18 +36,14 @@
                 android:id="@+id/tideTable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight=	"10dp"
-                android:layout_marginTop="10dp"
-                android:padding="10dp"
-                android:background="@drawable/drop_shadow"
+                android:layout_below="@+id/tideGraphComponent"
                 >
             <LinearLayout
                     android:id="@+id/tides"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingBottom="10dp" >
+                     >
 
             </LinearLayout>
 <!--
@@ -71,6 +74,7 @@
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 -->
         </HorizontalScrollView>
+        </RelativeLayout>
 
 
         <RelativeLayout

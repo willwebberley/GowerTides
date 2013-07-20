@@ -22,37 +22,12 @@ public class Day {
 	private Calendar day;
 
     /*
-    * Fields to hold tidal data
-     */
-	/*private String[] highTideTimes;
-	private String[] highTideHeights;
-	private String[] lowTideTimes;
-	private String[] lowTideHeights;
-	private Calendar sunrise;
-	private Calendar sunset;
-	private String moon;*/
-
-    /*
-    * Fields to hold weather data
-     */
-	private int max_temp_c;
-	private int max_temp_f;
-	private int min_temp_c;
-	private int min_temp_f;
-	private int wind_speed_miles;
-	private int wind_speed_km;
-	private String wind_direction;
-	private int wind_degree;
-	private String icon_url;
-	private String description;
-	private Double precipitation;
-
-    /*
     * Fields to hold day, tidal, weather, surf data
      */
     private Calendar sunrise;
     private Calendar sunset;
     private String moon;
+    private Weather weather;
     private ArrayList<Surf> surf_reports = new ArrayList<Surf>();
     private ArrayList<Tide> tide_forecasts = new ArrayList<Tide>();
 
@@ -67,6 +42,7 @@ public class Day {
 	private DayDatabase db; // intance of the database holding tidal data
 	private WeatherDatabase weather_db; // instance of the database holding weather and surf data
 	private DaysActivity dayView; // Top level activity for application (to access context, databases, etc.)
+
 
     /*
     * Instantiate object with a Calendar day to represent, the application context and the main DaysActivity activity.
@@ -106,114 +82,43 @@ public class Day {
         // 0location 1timestamp 2local_time 3year 4month 5day 6hour 7minute 8faded_rating 9solid_rating 10min_surf 11abs_min_surf 12max_surf
         // 13abs_max_surf 14swell_height 15swell_period 16swell_angle 17swell_direction 18swell_chart 19period_chart
         // 20wind_chart 21pressure_chart 22sst_chart
+
 		Cursor tideInfo = db.getDayInfo(day);
 		Cursor weatherInfo = weather_db.getWeatherInfo(day);
         Cursor surfInfo = weather_db.getSurfInfo(day, dayView.locationKeys[dayView.locationIndex]);
 
         try{
-            sunrise = Calendar.getInstance();
+            sunrise = (Calendar.getInstance());
             sunrise.setTime(dayView.dayDateFormatter.parse(tideInfo.getString(4).replace("BST", "").replace("GMT","")));
             sunset = Calendar.getInstance();
             sunset.setTime(dayView.dayDateFormatter.parse(tideInfo.getString(5).replace("BS new ArrayList<Tide>();T", "").replace("GMT","")));
             moon = tideInfo.getString(6);
-        }
-        catch(Exception e){
-            System.err.println(e);
-        }
+        }catch(Exception e){System.err.println(e);}
 
 		try{
-			max_temp_c = weatherInfo.getInt(4);
-			max_temp_f = weatherInfo.getInt(5);
-			min_temp_c = weatherInfo.getInt(6);
-			min_temp_f = weatherInfo.getInt(7);
-			wind_speed_miles = weatherInfo.getInt(8);
-			wind_speed_km = weatherInfo.getInt(9);
-			wind_direction = weatherInfo.getString(10);
-			wind_degree = weatherInfo.getInt(11);
-			icon_url = weatherInfo.getString(12);
-			description = weatherInfo.getString(13);
-			precipitation = weatherInfo.getDouble(14);
+            weather = Weather.initWeather(weatherInfo);
 			weatherAvailable = true;
-		}
-        /*
-        * Exception will be thrown if there is no stored weather data for this Day.
-         */
-		catch(Exception e){
-			weatherAvailable = false;
-		}
+		}catch(Exception e){weatherAvailable = false;}
+
 
         try{
-            // Assumes data from DB is returned ordered by timestamp DESC
-            long recent_request_timestamp = surfInfo.getLong(1);
-            surf_reports.clear();
-            // Only get data for the most recent timestamp:
-            while (! surfInfo.isLast() && surfInfo.getLong(1) == recent_request_timestamp){
-                Surf surf = new Surf();
-                surf.hour = surfInfo.getInt(6);
-                surf.location = surfInfo.getInt(0);
-                surf.local_time = surfInfo.getLong(2);
-                surf.faded_rating = surfInfo.getInt(8);
-                surf.solid_rating= surfInfo.getInt(9);
-                surf.min_surf = surfInfo.getDouble(10);
-                surf.abs_min_surf= surfInfo.getDouble(11);
-                surf.max_surf = surfInfo.getDouble(12);
-                surf.abs_max_surf= surfInfo.getDouble(13);
-                surf.swell_height= surfInfo.getDouble(14);
-                surf.swell_period= surfInfo.getDouble(15);
-                surf.swell_angle = surfInfo.getDouble(16);
-                surf.swell_direction= surfInfo.getString(17);
-                surf.swell_chart_url= surfInfo.getString(18);
-                surf.period_chart_url= surfInfo.getString(19);
-                surf.Wind_chart_url= surfInfo.getString(20);
-                surf.pressure_chart_url= surfInfo.getString(21);
-                surf.sst_chart_url= surfInfo.getString(22);
-                surf_reports.add(surf);
-
-                surfInfo.moveToNext();
-            }
+            surf_reports = Surf.initSurf(surf_reports, surfInfo);
             surfAvailable = true;
-        }
-        /*
-        * Exception will be thrown if there is no stored surf data for this Day.
-         */
-        catch(Exception e){
-            surfAvailable = false;
-        }
+        }catch(Exception e){surfAvailable = false;}
 
 		try{
-            tide_forecasts.clear();
-            int tideCounter = 1;
-            for(int i = 7; i <= 15; i = i+2){
-                if(! tideInfo.getString(i).equals("")){
-                    Tide tide = new Tide();
-                    String type="high";
-                    if(tideCounter%2 == 0){type="low";}
-                    Calendar time = Calendar.getInstance();
-                    time.setTime(dayView.dayDateFormatter.parse(tideInfo.getString(i).replace("BST", "").replace("GMT","")));
-                    tide.time = time;
-                    tide.timeHours = time.get(Calendar.HOUR_OF_DAY) + (time.get(Calendar.MINUTE) / 60);
-                    tide.height = Double.parseDouble((tideInfo.getString(i+1).replace("m","")).trim());
-                    tide.type = type;
-                    tide_forecasts.add(tide);
-                }
-                tideCounter++;
-            }
-		}
-		catch(Exception e){
-			System.out.println(e);
-		}
+            tide_forecasts = Tide.initTides(tide_forecasts, dayView, tideInfo);
+		}catch(Exception e){tidesAvailable = false;}
+
 
         /*
         * Close the three cursors needed to get this data.
          */
-       try{
-        tideInfo.close();
-        weatherInfo.close();
-        surfInfo.close();
-       }
-       catch(Exception e){
-           System.err.println("Could not close DBs: "+e);
-       }
+        try{
+            tideInfo.close();
+            weatherInfo.close();
+            surfInfo.close();
+        }catch(Exception e){System.err.println("Could not close DBs: "+e);}
 	}
 
     /*
@@ -230,7 +135,7 @@ public class Day {
     }
 
     /*
-    * Publicly-available standard getter and mutator methods for this class.
+    * Publicly-available standard getter methods for this class.
      */
     public ArrayList<Surf> getSurfReports(){
         return surf_reports;
@@ -238,40 +143,9 @@ public class Day {
     public ArrayList<Tide> getTides(){
         return tide_forecasts;
     }
-
-	public String getWeatherDescription(){
-		return description;
-	}
-	public int getMaxTemp(Boolean metric){
-		if(metric){return max_temp_c;}
-		else{return max_temp_f;}
-	}
-	public int getMinTemp(Boolean metric){
-		if(metric){return min_temp_c;}
-		else{return min_temp_f;}
-	}
-	public int getWindSpeed(Boolean metric){
-		if(metric){return wind_speed_km;}
-		else{return wind_speed_miles;}
-	}
-	public String getWindDirection(){
-		return wind_direction;
-	}
-	public int getWindDegree(){
-		return wind_degree;
-	}
-	public String getWeatherIcon(){
-		String[] tokens = icon_url.split("\\/");
-		for(int i = 0; i < tokens.length; i++){
-			if(tokens[i].contains("wsymbol_0")){
-				return tokens[i];
-			}
-		}
-		return null;
-	}
-	public Double getPrecipitation(){
-		return precipitation;
-	}
+    public Weather getWeather(){
+        return weather;
+    }
 
     /*
     * Get the sunrise time of today in hours (for plotting on the graph) (add 0.0 to make it Double type)

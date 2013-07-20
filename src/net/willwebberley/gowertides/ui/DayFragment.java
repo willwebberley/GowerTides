@@ -9,10 +9,7 @@ import android.widget.*;
 import com.androidplot.xy.XYPlot;
 
 import net.willwebberley.gowertides.R;
-import net.willwebberley.gowertides.classes.Day;
-import net.willwebberley.gowertides.classes.Surf;
-import net.willwebberley.gowertides.classes.Tide;
-import net.willwebberley.gowertides.classes.TideGraph;
+import net.willwebberley.gowertides.classes.*;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -215,18 +212,19 @@ public class DayFragment extends Fragment {
      * Set the weather fields and images for the current day.
      */
     private void setWeatherInfo(){
-    	String weather_description = today.getWeatherDescription();
+        Weather weather = today.getWeather();
+    	String weather_description = weather.description;
     	String unitType = prefs.getString("unitFormat", "true");
     	Boolean metric = false;
     	if(unitType.equals("true")){
     		metric = true;
     	}
     	
-    	int max_temp = today.getMaxTemp(metric);
-    	int min_temp = today.getMinTemp(metric);
-    	int wind_speed = today.getWindSpeed(metric);
-    	Double prep = today.getPrecipitation();
-    	String direction = today.getWindDirection();
+    	int max_temp = weather.getMaxTemp(metric);
+    	int min_temp = weather.getMinTemp(metric);
+    	int wind_speed = weather.getWindSpeed(metric);
+    	Double prep = weather.precipitation;
+    	String direction = weather.wind_direction;
     	Spanned temp=null,wind=null;
     	if(metric){
     		temp = Html.fromHtml("<b>"+min_temp+"&deg;C - "+max_temp+"&deg;C</b>");
@@ -246,7 +244,7 @@ public class DayFragment extends Fragment {
         ((TextView)layoutView.findViewById(R.id.weatherWind)).setTextColor(Color.rgb(100, 100, 100));
 		((TextView)layoutView.findViewById(R.id.weatherPrecipitation)).setText(precipitation);
         ((TextView)layoutView.findViewById(R.id.weatherPrecipitation)).setTextColor(Color.rgb(100, 100, 100));
-		String icon = today.getWeatherIcon();
+		String icon = weather.getWeatherIcon();
 		try {
 			 InputStream ims = getActivity().getAssets().open("icons/"+icon);
 			 Drawable d = Drawable.createFromStream(ims, null);
@@ -255,7 +253,7 @@ public class DayFragment extends Fragment {
 			 Drawable d2 = Drawable.createFromStream(ims2, null);
 			 ((ImageView)layoutView.findViewById(R.id.weatherWindIcon)).setImageDrawable(d2);
 			 
-			 RotateAnimation rAnim = new RotateAnimation(0, today.getWindDegree(), Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+			 RotateAnimation rAnim = new RotateAnimation(0, weather.wind_degree, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 			 rAnim.setDuration(500);
 			 rAnim.setFillEnabled(true);
 			 rAnim.setFillAfter(true);
@@ -298,7 +296,7 @@ public class DayFragment extends Fragment {
 
         LinearLayout tides = (LinearLayout)layoutView.findViewById(R.id.tides); // Get the linear layout to add the surf details to
         // Set some basic layout params (last arg is weight - set to 0.2)
-        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((int)(x*100),LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         // Calculate the pixel density (in dpi)...
 
         // ... and use this to set the horizontal margins of the views to be added to the LinearLayout (i.e. 5dpi left and right)
@@ -308,7 +306,7 @@ public class DayFragment extends Fragment {
         tides.removeAllViews();
         ArrayList<Tide> forecasts = today.getTides();
         for(int i = 0; i < forecasts.size(); i++){
-            TideFragment ti = new TideFragment(dayView.getApplicationContext(), forecasts.get(i));
+            TideFragment ti = new TideFragment(dayView.getApplicationContext(), forecasts.get(i), today);
             tides.addView(ti.getView(), param);
         }
     	/*tideTypeField.setText("");

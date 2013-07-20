@@ -33,6 +33,7 @@
             android:text="3:38"
             android:layout_toRightOf="@+id/tide_icon"
             android:layout_below="@+id/time"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             />
 
 
