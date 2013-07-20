@@ -25,7 +25,7 @@
                 title="" />
 
 
-        <RelativeLayout
+        <HorizontalScrollView
                 android:id="@+id/tideTable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,7 +35,15 @@
                 android:padding="10dp"
                 android:background="@drawable/drop_shadow"
                 >
+            <LinearLayout
+                    android:id="@+id/tides"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="10dp" >
 
+            </LinearLayout>
+<!--
             <TextView
                     android:id="@+id/tideTypes"
                     android:layout_width="wrap_content"
@@ -61,8 +69,8 @@
                     android:layout_alignParentRight="true"
                     android:text="TO GO"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        </RelativeLayout>
+-->
+        </HorizontalScrollView>
 
 
         <RelativeLayout

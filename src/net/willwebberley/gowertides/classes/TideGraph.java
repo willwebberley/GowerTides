@@ -57,8 +57,8 @@ public class TideGraph {
 		
 		// If the sunset and sunrise times should be drawn...
         if(prefs.getBoolean("show_graph_sunrise_sunset", true)){
-        	Double sunriseTime = day.getSunrisePlot();
-        	Double sunsetTime = day.getSunsetPlot();
+        	Double sunriseTime = day.getSunriseTimeHours();
+        	Double sunsetTime = day.getSunsetTimeHours();
         	Double[] xValues1 = {-3.0,sunriseTime};
         	Double[] xValues2 = {sunsetTime,28.0};
         	Double[] yValues = {15.0, 15.0};
@@ -80,14 +80,22 @@ public class TideGraph {
         	plot.addSeries(sunriseSeries, formatter);
         	plot.addSeries(sunsetSeries, formatter);
         }
-		
+
+        ArrayList<Tide> tides = day.getTides();
+		int numTides = tides.size();
+
 		// Get the tide times and heights and assign to a series
-		Double[] heights = day.getTideHeights();
-		Double[] times = day.getTideTimesPlot();
-		series = new SimpleXYSeries(
-                Arrays.asList(times),          
-                Arrays.asList(heights),
-                "Tides"); 
+		//Double[] heights = day.getTideHeights();
+		//Double[] times = day.getTideTimesPlot();
+        Double[] heights = new Double[numTides];
+        Double[] times = new Double[numTides];
+
+        for(int i = 0; i < numTides; i++){
+            heights[i] = tides.get(i).height;
+            times[i] = tides.get(i).timeHours;
+        }
+
+		series = new SimpleXYSeries(Arrays.asList(times), Arrays.asList(heights), "Tides");
 		
 		// Format the series
 		LineAndPointFormatter heightsFormat = new LineAndPointFormatter(
@@ -107,7 +115,7 @@ public class TideGraph {
         if(prefs.getBoolean("show_graph_time", true)){
         	// If current day, get current time and paint red vertical line on graph
 	        if(day.isToday()){
-	        	Double currentTime = day.getCurrentTimePlot();
+	        	Double currentTime = day.getCurrentTimeHours();
 	        	Double[] xValues = {currentTime,currentTime};
 	        	Double[] yValues = {0.0, 20.0};
 	        	timeSeries = new SimpleXYSeries(

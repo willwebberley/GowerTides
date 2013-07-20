@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/tideDetails"
+                android:layout_width="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_height="wrap_content">
+
+    <ImageView
+            android:id="@+id/tide_icon"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/high"
+            android:scaleType="fitStart"
+            android:adjustViewBounds="true"
+            android:layout_marginRight="5dp"
+            />
+
+    <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:00"
+            android:layout_toRightOf="@+id/tide_icon"
+            android:layout_alignParentTop="true"
+            />
+
+    <TextView
+            android:id="@+id/time_diff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3:38"
+            android:layout_toRightOf="@+id/tide_icon"
+            android:layout_below="@+id/time"
+            />
+
+
+</RelativeLayout>

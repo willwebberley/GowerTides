@@ -11,6 +11,7 @@ import com.androidplot.xy.XYPlot;
 import net.willwebberley.gowertides.R;
 import net.willwebberley.gowertides.classes.Day;
 import net.willwebberley.gowertides.classes.Surf;
+import net.willwebberley.gowertides.classes.Tide;
 import net.willwebberley.gowertides.classes.TideGraph;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
@@ -37,14 +38,14 @@ import android.view.animation.RotateAnimation;
 @SuppressLint("ValidFragment")
 public class DayFragment extends Fragment {
 	
-	private DaysActivity dayView;
+	private DaysActivity dayView; //parent Activity
 	
-	private SharedPreferences prefs;
-	private Handler updaterHandler;
+	private SharedPreferences prefs; //app preferences
+	private Handler updaterHandler; //handler for updater thread
 	
-	public Day today;
-	private Calendar rightNow;
-	private TideGraph tideGraph;
+	public Day today; //Day represented by this fragment
+	private Calendar rightNow; //Calendar representing the CURRENT time
+	private TideGraph tideGraph; //TideGraph object
 	
 	private TextView tideTypeField;
 	private TextView tideTimeField;
@@ -53,17 +54,11 @@ public class DayFragment extends Fragment {
 	private TextView sunsetText;
 	private TextView sunsetCountField;
 	private TextView weatherDescriptionView;
-	private ProgressBar weatherProgress;
-	private ImageButton weatherSync;
-    private ProgressBar surfProgress;
-    private ImageButton surfSync;
 	
-	private View layoutView;
-    private ViewGroup c;
+	private View layoutView; //The layout view for this fragment (the views and widgets within it)
 
-    private String[] locationNames;
-    private int[] locationKeys;
-    private int locationIndex;
+    private String[] locationNames; //Array holding the names of the possible surf report locations
+    private int locationIndex; //Index of currently selected location
 
     /*
     * Called when the fragment is loaded into the viewpager's memory.
@@ -76,7 +71,6 @@ public class DayFragment extends Fragment {
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
         layoutView =  inflater.inflate(R.layout.fragment_day_info, container, false);
-        c = container;
         updaterHandler = new Handler();
         initComponents();
         showPreferredComponents();
@@ -93,7 +87,6 @@ public class DayFragment extends Fragment {
 		prefs = p;
 		dayView = d;
         locationNames = dayView.locationNames;
-        locationKeys = dayView.locationKeys;
 	}
 
     /*
@@ -301,7 +294,24 @@ public class DayFragment extends Fragment {
      * This method responsible for first two columns (since final one depends on current time).
      */
     private void setTideTableInfo(){
-    	tideTypeField.setText("");
+        double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
+
+        LinearLayout tides = (LinearLayout)layoutView.findViewById(R.id.tides); // Get the linear layout to add the surf details to
+        // Set some basic layout params (last arg is weight - set to 0.2)
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams((int)(x*100),LinearLayout.LayoutParams.MATCH_PARENT);
+        // Calculate the pixel density (in dpi)...
+
+        // ... and use this to set the horizontal margins of the views to be added to the LinearLayout (i.e. 5dpi left and right)
+        param.setMargins((int)(5*x), 0, (int)(5*x), 0);
+
+        // Finally remove all views in there already, before repopulating with the layoutparams specified above.
+        tides.removeAllViews();
+        ArrayList<Tide> forecasts = today.getTides();
+        for(int i = 0; i < forecasts.size(); i++){
+            TideFragment ti = new TideFragment(dayView.getApplicationContext(), forecasts.get(i));
+            tides.addView(ti.getView(), param);
+        }
+    	/*tideTypeField.setText("");
     	tideTimeField.setText("");
     	tideTimeLeftField.setText("");
     	tideTypeField.append((Html.fromHtml("<b>TIDE</b><br />")));
@@ -317,14 +327,14 @@ public class DayFragment extends Fragment {
     			tideTypeField.append("\n");
     			tideTimeField.append("\n");
     		}
-      	}
+      	}*/
     }
     
     /*
      * Updates tide table's final column with the time left until the next high/low tide.
      */
     private void setTimeToTide(){
-    	tideTimeLeftField.setText("");
+    /*	tideTimeLeftField.setText("");
     	tideTimeLeftField.append((Html.fromHtml("<b>TO GO</b><br />")));
     	
     	Calendar[] times = today.getTideTimes();
@@ -345,7 +355,7 @@ public class DayFragment extends Fragment {
 		    if(i < times.length-1){
 		    	tideTimeLeftField.append((Html.fromHtml("<br />")));
     		}
-    	}
+    	}*/
     }
     
     /*
@@ -380,10 +390,10 @@ public class DayFragment extends Fragment {
     	try{
     	tideGraph = new TideGraph((XYPlot)layoutView.findViewById(R.id.tideGraphComponent), dayView.getApplicationContext());
 
-    	tideTypeField = (TextView)layoutView.findViewById(R.id.tideTypes);
+    	/*tideTypeField = (TextView)layoutView.findViewById(R.id.tideTypes);
     	tideTimeField = (TextView)layoutView.findViewById(R.id.tideTimes);
     	tideTimeLeftField = (TextView)layoutView.findViewById(R.id.tideTimesLeft);
-    	tideTimeLeftField.setTextColor(Color.rgb(0, 100, 0));
+    	tideTimeLeftField.setTextColor(Color.rgb(0, 100, 0));*/
     	
     	sunriseText = (TextView)layoutView.findViewById(R.id.sunriseText);
     	sunriseText.setTextColor(Color.rgb(0, 100, 0));

@@ -18,8 +18,13 @@ public class DayDatabase extends SQLiteAssetHelper {
 	private static final String DATABASE_NAME = "tides";
 	private static final int DATABASE_VERSION = 1;
 
+    // Will force upgrade databases less than this version to the one stored in /assets.
+    // When updating tide database, increment both of these values (version and upgrade_version).
+    private static final int UPGRADE_VERSION = 1;
+
 	public DayDatabase(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);  
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        setForcedUpgradeVersion(UPGRADE_VERSION);
 	}
 
     public Calendar getFirstDay(){

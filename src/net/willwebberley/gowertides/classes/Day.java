@@ -24,13 +24,13 @@ public class Day {
     /*
     * Fields to hold tidal data
      */
-	private String[] highTideTimes;
+	/*private String[] highTideTimes;
 	private String[] highTideHeights;
 	private String[] lowTideTimes;
 	private String[] lowTideHeights;
 	private Calendar sunrise;
 	private Calendar sunset;
-	private String moon;
+	private String moon;*/
 
     /*
     * Fields to hold weather data
@@ -48,9 +48,13 @@ public class Day {
 	private Double precipitation;
 
     /*
-    * Fields to hold surf data
+    * Fields to hold day, tidal, weather, surf data
      */
-    private ArrayList surf_reports = new ArrayList<Surf>();
+    private Calendar sunrise;
+    private Calendar sunset;
+    private String moon;
+    private ArrayList<Surf> surf_reports = new ArrayList<Surf>();
+    private ArrayList<Tide> tide_forecasts = new ArrayList<Tide>();
 
     /*
     * Helper fields
@@ -58,10 +62,11 @@ public class Day {
 	private Context context; // application context
 	private Boolean weatherAvailable; // true if weather data is available for today
     private Boolean surfAvailable; // true if surf data is available for today
+    private Boolean tidesAvailable; // true if tides data is available for today
+
 	private DayDatabase db; // intance of the database holding tidal data
 	private WeatherDatabase weather_db; // instance of the database holding weather and surf data
 	private DaysActivity dayView; // Top level activity for application (to access context, databases, etc.)
-	private int dayErrors; // enumerate the number of errors occurred in retrieving data from databases
 
     /*
     * Instantiate object with a Calendar day to represent, the application context and the main DaysActivity activity.
@@ -89,7 +94,6 @@ public class Day {
     * Load information regarding this day from the databases and put into the fields held by this object.
      */
 	public void getDayInfo(){
-		dayErrors = 0;
 		// TIDE INFO:
 		// 0year 1month 2day 3week_day 4sunrise 5sunset 6moon 7high1_time 8high1_height 9low1_time 10low1_height 
 		// 11high2_time 12high2_height 13low2_time 14low2_height 15high3_time 16high3_height
@@ -102,11 +106,20 @@ public class Day {
         // 0location 1timestamp 2local_time 3year 4month 5day 6hour 7minute 8faded_rating 9solid_rating 10min_surf 11abs_min_surf 12max_surf
         // 13abs_max_surf 14swell_height 15swell_period 16swell_angle 17swell_direction 18swell_chart 19period_chart
         // 20wind_chart 21pressure_chart 22sst_chart
-
-		int location = dayView.locationKeys[dayView.locationIndex];
-		Cursor info = db.getDayInfo(day);
+		Cursor tideInfo = db.getDayInfo(day);
 		Cursor weatherInfo = weather_db.getWeatherInfo(day);
-        Cursor surfInfo = weather_db.getSurfInfo(day, location);
+        Cursor surfInfo = weather_db.getSurfInfo(day, dayView.locationKeys[dayView.locationIndex]);
+
+        try{
+            sunrise = Calendar.getInstance();
+            sunrise.setTime(dayView.dayDateFormatter.parse(tideInfo.getString(4).replace("BST", "").replace("GMT","")));
+            sunset = Calendar.getInstance();
+            sunset.setTime(dayView.dayDateFormatter.parse(tideInfo.getString(5).replace("BS new ArrayList<Tide>();T", "").replace("GMT","")));
+            moon = tideInfo.getString(6);
+        }
+        catch(Exception e){
+            System.err.println(e);
+        }
 
 		try{
 			max_temp_c = weatherInfo.getInt(4);
@@ -127,7 +140,6 @@ public class Day {
          */
 		catch(Exception e){
 			weatherAvailable = false;
-			dayErrors++;
 		}
 
         try{
@@ -166,71 +178,42 @@ public class Day {
          */
         catch(Exception e){
             surfAvailable = false;
-            dayErrors ++;
         }
 
 		try{
-			sunrise = Calendar.getInstance();
-			//sunrise.setTime(new SimpleDateFormat("h:m a z").parse(info.getString(4).replace("BST", "GMT")));
-            sunrise.setTime(dayView.dayDateFormatter.parse(info.getString(4).replace("BST", "GMT")));
-            //sunrise.setTime(new SimpleDateFormat("h:m a").parse(info.getString(4).replace("BST", "GMT").replace("GMT", "")));
-			sunset = Calendar.getInstance();
-			sunset.setTime(dayView.dayDateFormatter.parse(info.getString(5).replace("BST", "GMT")));
-            //sunset.setTime(new SimpleDateFormat("h:m a").parse(info.getString(5).replace("BST", "GMT").replace("GMT", "")));
-			//if(info.getString(4).contains("BST")){
-				sunset.add(Calendar.HOUR, -1);
-				sunrise.add(Calendar.HOUR, -1);
-    		//}
+            tide_forecasts.clear();
+            int tideCounter = 1;
+            for(int i = 7; i <= 15; i = i+2){
+                if(! tideInfo.getString(i).equals("")){
+                    Tide tide = new Tide();
+                    String type="high";
+                    if(tideCounter%2 == 0){type="low";}
+                    Calendar time = Calendar.getInstance();
+                    time.setTime(dayView.dayDateFormatter.parse(tideInfo.getString(i).replace("BST", "").replace("GMT","")));
+                    tide.time = time;
+                    tide.timeHours = time.get(Calendar.HOUR_OF_DAY) + (time.get(Calendar.MINUTE) / 60);
+                    tide.height = Double.parseDouble((tideInfo.getString(i+1).replace("m","")).trim());
+                    tide.type = type;
+                    tide_forecasts.add(tide);
+                }
+                tideCounter++;
+            }
 		}
 		catch(Exception e){
 			System.out.println(e);
-			dayErrors++;
 		}
-		
-		moon = info.getString(6);
-		
-		highTideTimes = new String[3];
-		highTideHeights = new String[3];
-		lowTideTimes = new String[2];
-		lowTideHeights = new String[2];
-		
-		highTideTimes[0] = info.getString(7);
-		highTideTimes[1] = info.getString(11);
-		highTideTimes[2] = info.getString(15);
-		
-		highTideHeights[0] = info.getString(8);
-		highTideHeights[1] = info.getString(12);
-		highTideHeights[2] = info.getString(16);
-		
-		lowTideTimes[0] = info.getString(9);
-		lowTideTimes[1] = info.getString(13);
-
-		lowTideHeights[0] = info.getString(10);
-		lowTideHeights[1] = info.getString(14);
 
         /*
         * Close the three cursors needed to get this data.
          */
        try{
-        info.close();
+        tideInfo.close();
         weatherInfo.close();
         surfInfo.close();
        }
        catch(Exception e){
            System.err.println("Could not close DBs: "+e);
        }
-	}
-
-    /*
-    * Check to see if there were any errors in retrieving data.
-    *
-    * Note that if weather is unavailable for this Day, then this will return true.
-     */
-	public Boolean getErrors(){
-		if (dayErrors > 0){
-			return true;
-		}
-		return false;
 	}
 
     /*
@@ -252,6 +235,10 @@ public class Day {
     public ArrayList<Surf> getSurfReports(){
         return surf_reports;
     }
+    public ArrayList<Tide> getTides(){
+        return tide_forecasts;
+    }
+
 	public String getWeatherDescription(){
 		return description;
 	}
@@ -285,7 +272,31 @@ public class Day {
 	public Double getPrecipitation(){
 		return precipitation;
 	}
-	public Calendar getSunrise(){
+
+    /*
+    * Get the sunrise time of today in hours (for plotting on the graph) (add 0.0 to make it Double type)
+     */
+    public Double getSunriseTimeHours(){
+        return (sunrise.get(Calendar.HOUR_OF_DAY)+(sunrise.get(Calendar.MINUTE)/60)+0.0);
+    }
+
+    /*
+    * Get the sunset time of today in hours (for plotting on the graph) (add 0.0 to make it Double type)
+     */
+    public Double getSunsetTimeHours(){
+        return (sunset.get(Calendar.HOUR_OF_DAY)+(sunset.get(Calendar.MINUTE)/60)+0.0);
+    }
+
+    /*
+    * Get the current time of day in hours (for plotting on the graph) (add 0.0 to make it Double type)
+     */
+    public Double getCurrentTimeHours(){
+        Calendar now = Calendar.getInstance();
+        return (now.get(Calendar.HOUR_OF_DAY)+(now.get(Calendar.MINUTE)/60)+0.0);
+    }
+
+
+    public Calendar getSunrise(){
 		return sunrise;
 	}
 	public String getSunriseString(){
@@ -297,18 +308,11 @@ public class Day {
 	public String getSunsetString(){
 		return (new SimpleDateFormat("HH:mm")).format(sunset.getTime());
 	}
+
 	public String toString(){
 		return (new SimpleDateFormat("E, dd MMM yyyy")).format(day.getTime());
 	}
 	public Calendar getDay(){
-		return day;
-	}
-	public Calendar getNextDay(){
-		day.add(Calendar.DATE, 1);
-		return day;
-	}
-	public Calendar getPrevDay(){
-		day.add(Calendar.DATE, -1);
 		return day;
 	}
 
@@ -326,196 +330,6 @@ public class Day {
 		}
 	}
 
-    /*
-    * Get the current time of day for plotting on the graph.
-     */
-	public Double getCurrentTimePlot(){
-		Calendar now = Calendar.getInstance();
-		Double hour = now.get(Calendar.HOUR_OF_DAY)+0.0;
-		Double minute = now.get(Calendar.MINUTE)+0.0;
-		Double minuteOfHour = minute/60;
-		return (hour+minuteOfHour);
-	}
-    /*
-    * Get the sunrise time of today for plotting on the graph.
-     */
-	public Double getSunrisePlot(){
-		Double hour = sunrise.get(Calendar.HOUR_OF_DAY)+0.0;
-		Double minute = sunrise.get(Calendar.MINUTE)+0.0;
-		Double minuteOfHour = minute/60;
-		return (hour+minuteOfHour);
-	}
-    /*
-    * Get the sunset time of today for plotting on the graph.
-     */
-	public Double getSunsetPlot(){
-		Double hour = sunset.get(Calendar.HOUR_OF_DAY)+0.0;
-		Double minute = sunset.get(Calendar.MINUTE)+0.0;
-		Double minuteOfHour = minute/60;
-		return (hour+minuteOfHour);
-	}
-    /*
-    * Get an array of tide heights to plot on graph, stripping out the numeric values.
-     */
-	public Double[] getTideHeights(){
-		ArrayList heights = new ArrayList();
-		for(int i = 0; i < highTideHeights.length; i++){
-			String highTideStripped = highTideHeights[i].replaceAll("\\s","");
-			if(!highTideStripped.equals("")){
-				String[] tokens = highTideStripped.split("m");
-				
-				if(i == 0){
-	        		heights.add(2.0);
-	        	}
-				heights.add(Double.parseDouble(tokens[0]));
-				if(i == 1 && lowTideTimes[1].equals("")){
-					heights.add(2.0);
-	        	}
-				if(i == 2){
-					heights.add(2.0);
-	        	}
-			}
-			if(i < 2){
-				String lowTideStripped = lowTideHeights[i].replaceAll("\\s","");
-				if(!lowTideStripped.equals("")){
-					String[] tokens = lowTideStripped.split("m");
-					
-					if(i == 0 && heights.size() == 0){
-						heights.add(8.0);
-		        	}
-					heights.add(Double.parseDouble(tokens[0]));
-					if(i == 1 && highTideTimes[2].equals("")){
-						heights.add(8.0);
-		        	}
-				}
-			}
-		}
-		return (Double[]) heights.toArray(new Double[heights.size()]);
-	}
-	/*
-	* Get the time of tide events for plotting on the graph.
-    */
-	public Double[] getTideTimesPlot(){
-		ArrayList times = new ArrayList();
-		for(int i = 0; i < highTideTimes.length; i++){
-			String highTimeStripped = highTideTimes[i].trim();
-			if(!highTimeStripped.equals("")){
-		        try {
-                    Date date = dayView.dayDateFormatter.parse(highTideTimes[i].replace("BST", "GMT"));
-		        	Calendar cal = Calendar.getInstance();
-		        	cal.setTime(date);
-		        	//if(highTideTimes[i].contains("BST")){
-		        		cal.add(Calendar.HOUR, -1);
-		        	//}
-		        	int min = cal.get(Calendar.MINUTE);
-		        	Double minOfHour = (min+0.0)/60.0;
-		        	int hour = cal.get(Calendar.HOUR_OF_DAY);
-		        	
-		        	if(i == 0){
-		        		times.add(hour-6.0);
-		        	}
-		        	times.add(hour+minOfHour);
-		        	if(i == 1 && lowTideTimes[1].equals("")){
-		        		times.add(hour+10.0);
-		        	}
-		        	if(i == 2){
-		        		times.add(hour+6.0);
-		        	}
-				} 
-		        catch (ParseException e) {
-					System.out.println(e);
-				}
-			}
-			if(i < 2){
-				String lowTimeStripped = lowTideTimes[i].trim();
-				if(!lowTimeStripped.equals("")){
-			        try {
-                        Date date = dayView.dayDateFormatter.parse(lowTideTimes[i].replace("BST", "GMT"));
-			        	Calendar cal = Calendar.getInstance();
-			        	cal.setTime(date);
-			        	//if(lowTideTimes[i].contains("BST")){
-			        		cal.add(Calendar.HOUR, -1);
-			        	//}
-			        	int min = cal.get(Calendar.MINUTE);
-			        	Double minOfHour = (min+0.0)/60.0;
-			        	int hour = cal.get(Calendar.HOUR_OF_DAY);
-			        	
-			        	if(i == 0 && times.size() == 0){
-			        		times.add(hour-6.0);
-			        	}
-			        	times.add(hour+minOfHour);
-			        	if(i == 1 && highTideTimes[2].equals("")){
-			        		times.add(hour+6.0);
-			        	}
-					} 
-			        catch (ParseException e) {
-						System.out.println(e);
-					}
-				}
-			}
-		}
-		return (Double[]) times.toArray(new Double[times.size()]);
-	}
 
-    /*
-    * Get String[] representing order of tide events for the day. (e.g. high, low, high, low)
-     */
-	public String[] getTideTypes(){
-		ArrayList types = new ArrayList();
-		for(int i = 0; i < highTideTimes.length; i++){
-			String highTimeStripped = highTideTimes[i].trim();
-			if(!highTimeStripped.equals("")){
-				types.add("high");
-			}
-			if(i < 2){
-				String lowTimeStripped = lowTideTimes[i].trim();
-				if(!lowTimeStripped.equals("")){
-					types.add("low");
-				}
-			}
-		}
-		return (String[]) types.toArray(new String[types.size()]);
-	}
 
-    /*
-    * Get Calendar[] representing the time of the tide events for the day (in same order as above method).
-     */
-	public Calendar[] getTideTimes(){
-		ArrayList times = new ArrayList();
-		for(int i = 0; i < highTideTimes.length; i++){
-			String highTimeStripped = highTideTimes[i].trim();
-			if(!highTimeStripped.equals("")){
-		        try {
-                    Date date = dayView.dayDateFormatter.parse(highTideTimes[i].replace("BST", "GMT"));
-		        	Calendar cal = Calendar.getInstance();
-		        	cal.setTime(date);
-		        	//if(highTideTimes[i].contains("BST")){
-		        		cal.add(Calendar.HOUR, -1);
-		        	//}
-		        	times.add(cal);
-				} 
-		        catch (ParseException e) {
-					System.out.println(e);
-				}
-			}
-			if(i < 2){
-				String lowTimeStripped = lowTideTimes[i].trim();
-				if(!lowTimeStripped.equals("")){
-			        try {
-                        Date date = dayView.dayDateFormatter.parse(lowTideTimes[i].replace("BST", "GMT"));
-			        	Calendar cal = Calendar.getInstance();
-			        	cal.setTime(date);
-			        	//if(lowTideTimes[i].contains("BST")){
-			        		cal.add(Calendar.HOUR, -1);
-			        	//}
-			        	times.add(cal);
-					} 
-			        catch (ParseException e) {
-						System.out.println(e);
-					}
-				}
-			}
-		}
-		return (Calendar[]) times.toArray(new Calendar[times.size()]);
-	}
 }

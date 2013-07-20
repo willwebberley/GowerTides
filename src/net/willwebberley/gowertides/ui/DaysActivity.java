@@ -4,10 +4,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import android.net.Uri;
 import net.willwebberley.gowertides.R;
@@ -96,11 +93,15 @@ public class DaysActivity extends FragmentActivity {
          */
         isPaused = false;
         isSyncing = false;
+
         /*
         * Following one variable stored by Parent activity to speed up startup on Android v2.2.
         * (Previously each Day class responsibe for maintaining, which caused slowdowns)
          */
-        dayDateFormatter = new SimpleDateFormat("h:m a z");
+        dayDateFormatter = new SimpleDateFormat("h:m a");
+        dayDateFormatter.setTimeZone(TimeZone.getDefault());
+
+        //dayDateFormatter = new SimpleDateFormat("h:m a");
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         initComponents();
@@ -179,6 +180,8 @@ public class DaysActivity extends FragmentActivity {
     	}
 
     	Calendar cal = Calendar.getInstance();
+        cal.setTime(tester);
+
     	return cal;
     }
 
@@ -346,9 +349,14 @@ public class DaysActivity extends FragmentActivity {
     * These three methods execute different methods within the loaded pages.
      */
     private void fragmentsRefreshUI(){
-        ((DayFragment)fragments.get(currentFragmentIndex-1)).refreshUI();
         ((DayFragment)fragments.get(currentFragmentIndex)).refreshUI();
-        ((DayFragment)fragments.get(currentFragmentIndex+1)).refreshUI();
+        try{
+            ((DayFragment)fragments.get(currentFragmentIndex-1)).refreshUI();
+            ((DayFragment)fragments.get(currentFragmentIndex+1)).refreshUI();
+        }
+        catch(Exception e){
+            System.err.println("At end of viewpager.");
+        }
     }
     private void finishRefresh(){
         refreshProgress.setVisibility(View.INVISIBLE);
@@ -407,7 +415,7 @@ public class DaysActivity extends FragmentActivity {
             System.out.println("Preparing day fragments...");
             infoArray = new Calendar[DAYS_TO_STORE];
             currentDay = Calendar.getInstance();
-            //currentDay = setDayForTesting("31/12/2016");
+            //currentDay = setDayForTesting("21/07/2016");
 
             System.out.println("Populating viewpager...");
             populatePager(currentDay, DAYS_TO_STORE);
@@ -438,7 +446,6 @@ public class DaysActivity extends FragmentActivity {
 
             infoPager.setCurrentItem(todayFragmentIndex); // set initial pager position to current day
 
-
             /*
             * If preference is to sync weather on startup, then sync weather task now.
             * (this is done after initialising day fragments due to UI updates on the fragments during this task.)
@@ -451,7 +458,7 @@ public class DaysActivity extends FragmentActivity {
             buildProgressHolder.setVisibility(View.GONE);
             buildProgress.setVisibility(View.GONE);
             infoPager.setVisibility(View.VISIBLE);
-            ((DayFragment)fragments.get(todayFragmentIndex)).slideSurf(); // Slide surf along for first day
+//            ((DayFragment)fragments.get(todayFragmentIndex)).slideSurf(); // Slide surf along for first day
             System.out.println("Done.");
 
         }
