@@ -68,16 +68,11 @@ public class SurfFragment extends RelativeLayout {
 
         // Swell direction
         ((TextView)layoutView.findViewById(R.id.swellDirection)).setText(Html.fromHtml("<b>"+surf.swell_direction+"</b>"));
-        /*RotateAnimation rAnim = new RotateAnimation(0, (float)surf.swell_angle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rAnim.setDuration(200);
+        RotateAnimation rAnim = new RotateAnimation(0, (float)surf.swell_angle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rAnim.setDuration(20);
         rAnim.setFillEnabled(true);
         rAnim.setFillAfter(true);
-        ((ImageView)layoutView.findViewById(R.id.swellDirectionIcon)).startAnimation(rAnim);*/
-        Matrix matrix=new Matrix();
-        ImageView icon = ((ImageView)layoutView.findViewById(R.id.swellDirectionIcon));
-        icon.setScaleType(ImageView.ScaleType.MATRIX);
-        matrix.postRotate((float)surf.swell_angle, icon.getDrawable().getBounds().width() / 2, icon.getDrawable().getBounds().height() / 2);
-        icon.setImageMatrix(matrix);
+        ((ImageView)layoutView.findViewById(R.id.swellDirectionIcon)).startAnimation(rAnim);
 
         // Swell period
         ((TextView)layoutView.findViewById(R.id.swellPeriod)).setText(Html.fromHtml("<b>"+surf.swell_period+"</b> <i>s</i>"));

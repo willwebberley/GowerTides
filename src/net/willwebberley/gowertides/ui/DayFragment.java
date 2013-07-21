@@ -195,7 +195,9 @@ public class DayFragment extends Fragment {
     	catch(Exception e){
     		e.printStackTrace();
     	}
-    	
+
+        ((TextView)layoutView.findViewById(R.id.surf_title)).setText(locationNames[locationIndex]);
+
     	// Check if there is weather data for selected day. If yes, set the weather info view to visible
     	// and remove error message and fill text fields with correct data. Else hide weather info
     	// and show error message.
@@ -211,12 +213,13 @@ public class DayFragment extends Fragment {
     	}
         if(day.isSurfAvailable()){
             layoutView.findViewById(R.id.surf).setVisibility(View.VISIBLE);
+            ((TextView)layoutView.findViewById(R.id.surf_head)).setText("Surf report");
             ((TextView)layoutView.findViewById(R.id.surf_error)).setVisibility(View.GONE);
             setSurfInfo();
         }
         else{
             layoutView.findViewById(R.id.surf).setVisibility(View.GONE);
-            ((TextView)layoutView.findViewById(R.id.surf_title)).setText("Surf unavailable");
+            ((TextView)layoutView.findViewById(R.id.surf_head)).setText("Surf unavailable");
             ((TextView)layoutView.findViewById(R.id.surf_error)).setVisibility(View.VISIBLE);
         }
     }
@@ -279,7 +282,6 @@ public class DayFragment extends Fragment {
      * Set the surf fields and images for the current day.
      */
     private void setSurfInfo(){
-        ((TextView)layoutView.findViewById(R.id.surf_title)).setText(locationNames[locationIndex]);
         double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
 
         LinearLayout surf = (LinearLayout)layoutView.findViewById(R.id.surf); // Get the linear layout to add the surf details to
@@ -365,7 +367,7 @@ public class DayFragment extends Fragment {
             weatherDescriptionView = (TextView)layoutView.findViewById(R.id.weather_description);
             weatherDescriptionView.setTextColor(Color.rgb(0, 150, 220));
 
-            ((TextView)layoutView.findViewById(R.id.surf_title)).setTextColor(Color.rgb(0, 150, 220));
+            ((TextView)layoutView.findViewById(R.id.surf_head)).setTextColor(Color.rgb(0, 150, 220));
         }
         catch(Exception e){
             System.err.println(e);

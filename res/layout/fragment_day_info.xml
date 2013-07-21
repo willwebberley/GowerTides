@@ -68,24 +68,36 @@
                 android:layout_marginTop="15dp"
                 android:padding="3dp"
                 android:background="@drawable/drop_shadow">
+
             <TextView
-                    android:id="@+id/surf_title"
+                    android:id="@+id/surf_head"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="4dp"
                     android:layout_marginLeft="7dp"
-                    android:text=""
+                    android:text="Surf report"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                    android:id="@+id/surf_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/surf_head"
+                    android:layout_marginTop="0dp"
+                    android:layout_marginLeft="7dp"
+                    android:text="Location"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <ImageView
                     android:id="@+id/edit_location"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginTop="2dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_alignParentTop="true"
+                    android:layout_below="@+id/surf_head"
                     android:layout_toRightOf="@+id/surf_title"
                     android:scaleType="fitXY"
                     android:onClick="editLocation"
@@ -110,7 +122,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@+id/msw_icon"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="15dp"
                     android:layout_marginLeft="7dp"
                     android:layout_marginBottom="15dp"
                     android:visibility="gone"
@@ -121,7 +133,7 @@
                     android:id="@+id/surfScroller"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/msw_icon"
+                    android:layout_below="@+id/surf_title"
                     android:layout_marginTop="10dp"
                 >
 
@@ -130,7 +142,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:paddingBottom="10dp" >
+                    android:paddingBottom="10dp"
+                    >
 
             </LinearLayout>
             </HorizontalScrollView>
