@@ -56,7 +56,7 @@ public class TideFragment extends RelativeLayout {
             if(!negative){
                 ((TextView)layoutView.findViewById(R.id.time_diff)).setTextColor(Color.rgb(0,168,0));
             }
-            ((TextView)layoutView.findViewById(R.id.time_diff)).setText(timeDifference);
+            ((TextView)layoutView.findViewById(R.id.time_diff)).setText("("+timeDifference+")");
         }
         else{
             ((TextView)layoutView.findViewById(R.id.time_diff)).setVisibility(View.GONE);
@@ -64,9 +64,11 @@ public class TideFragment extends RelativeLayout {
 
         if(tide.getType() == tide.LOW){
             ((ImageView)layoutView.findViewById(R.id.tide_icon)).setImageResource(R.drawable.low);
+            ((TextView)layoutView.findViewById(R.id.type)).setText("LOW");
         }
         if(tide.getType() == tide.HIGH){
             ((ImageView)layoutView.findViewById(R.id.tide_icon)).setImageResource(R.drawable.high);
+            ((TextView)layoutView.findViewById(R.id.type)).setText("HIGH");
         }
     }
 }

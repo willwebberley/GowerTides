@@ -54,39 +54,49 @@ public class TideGraph {
 		plot.removeSeries(timeSeries);
 		plot.removeSeries(sunriseSeries);
 		plot.removeSeries(sunsetSeries);
-		
-		// If the sunset and sunrise times should be drawn...
+
+        // Create the 3 series types...
+		createSunSeries();
+        createTideSeries();
+        createCurrentTimeSeries();
+
+        // Refresh the plot display
+        plot.redraw();
+	}
+
+    private void createSunSeries(){
+        // If the sunset and sunrise times should be drawn...
         if(prefs.getBoolean("show_graph_sunrise_sunset", true)){
-        	Double sunriseTime = day.getSunriseTimeHours();
-        	Double sunsetTime = day.getSunsetTimeHours();
-        	Double[] xValues1 = {-3.0,sunriseTime};
-        	Double[] xValues2 = {sunsetTime,28.0};
-        	Double[] yValues = {15.0, 15.0};
-        	sunriseSeries = new SimpleXYSeries(
-                    Arrays.asList(xValues1),          
+            Double sunriseTime = day.getSunriseTimeHours();
+            Double sunsetTime = day.getSunsetTimeHours();
+            Double[] xValues1 = {-3.0,sunriseTime};
+            Double[] xValues2 = {sunsetTime,28.0};
+            Double[] yValues = {15.0, 15.0};
+            sunriseSeries = new SimpleXYSeries(
+                    Arrays.asList(xValues1),
                     Arrays.asList(yValues),
-                    "Sunrise"); 
-        	sunsetSeries = new SimpleXYSeries(
-                    Arrays.asList(xValues2),          
+                    "Sunrise");
+            sunsetSeries = new SimpleXYSeries(
+                    Arrays.asList(xValues2),
                     Arrays.asList(yValues),
-                    "Sunrise"); 
-        	LineAndPointFormatter formatter = new LineAndPointFormatter(
-            		Color.rgb(200, 200, 200),                   // line color
+                    "Sunrise");
+            LineAndPointFormatter formatter = new LineAndPointFormatter(
+                    Color.rgb(200, 200, 200),                   // line color
                     null,                   // point color
                     Color.rgb(220, 220, 220));
-        	Paint lineFill = new Paint();
+            Paint lineFill = new Paint();
             lineFill.setAlpha(60);
             formatter.setFillPaint(lineFill);
-        	plot.addSeries(sunriseSeries, formatter);
-        	plot.addSeries(sunsetSeries, formatter);
+            plot.addSeries(sunriseSeries, formatter);
+            plot.addSeries(sunsetSeries, formatter);
         }
+    }
 
+    private void createTideSeries(){
         ArrayList<Tide> tides = day.getTides();
-		int numTides = tides.size();
+        int numTides = tides.size();
 
-		// Get the tide times and heights and assign to a series
-		//Double[] heights = day.getTideHeights();
-		//Double[] times = day.getTideTimesPlot();
+        // Get the tide times and heights and assign to a series
         Double[] heights = new Double[numTides];
         Double[] times = new Double[numTides];
 
@@ -95,58 +105,56 @@ public class TideGraph {
             times[i] = tides.get(i).timeHours;
         }
 
-		series = new SimpleXYSeries(Arrays.asList(times), Arrays.asList(heights), "Tides");
-		
-		// Format the series
-		LineAndPointFormatter heightsFormat = new LineAndPointFormatter(
-        		Color.rgb(0, 150, 220),                   // line color
+        series = new SimpleXYSeries(Arrays.asList(times), Arrays.asList(heights), "Tides");
+
+        // Format the series
+        LineAndPointFormatter heightsFormat = new LineAndPointFormatter(
+                Color.rgb(0, 150, 220),                   // line color
                 null,                   // point color
                 Color.rgb(0, 150, 220));                                  // fill color
-		Paint lineFill = new Paint();
+        Paint lineFill = new Paint();
         lineFill.setAlpha(150);
         lineFill.setShader(new LinearGradient(0, 0, 0, 250, Color.WHITE, Color.rgb(0, 150, 220), Shader.TileMode.CLAMP));
         heightsFormat.setFillPaint(lineFill);
-        
-		// Add the series to the graph
+
+        // Add the series to the graph
         plot.addSeries(series, heightsFormat);
 
-        
-        // If the current time should be drawn...
-        if(prefs.getBoolean("show_graph_time", true)){
-        	// If current day, get current time and paint red vertical line on graph
-	        if(day.isToday()){
-	        	Double currentTime = day.getCurrentTimeHours();
-	        	Double[] xValues = {currentTime,currentTime};
-	        	Double[] yValues = {0.0, 20.0};
-	        	timeSeries = new SimpleXYSeries(
-	                    Arrays.asList(xValues),       
-	                    Arrays.asList(yValues), 
-	                    "Time"); 
-	        	
-	    		LineAndPointFormatter timeFormat = new LineAndPointFormatter(
-	            		Color.rgb(200, 0, 0),                   // line color
-	            		null,                   // point color
-	                    Color.rgb(200, 0, 0));                                  // fill color
-	    		timeFormat.getLinePaint().setStyle(Paint.Style.STROKE);
-	    		timeFormat.getLinePaint().setStrokeWidth(5);
-	            plot.addSeries(timeSeries, timeFormat);
-	        }
-        }
-        
         // Get highest tide height and adjust y-axis accordingly
         Double largestHeight = 0.0;
         for(int i = 0; i < heights.length; i++){
-        	if(heights[i]>largestHeight){
-        		largestHeight = heights[i];
-        	}
+            if(heights[i]>largestHeight){
+                largestHeight = heights[i];
+            }
         }
         plot.setRangeTopMin((Number)(largestHeight+1));
         plot.setRangeTopMax((Number)(largestHeight+1));
-        
-        // Refresh the plot display
-        plot.redraw();
-	}
-	
+    }
+
+    private void createCurrentTimeSeries(){
+        // If the current time should be drawn...
+        if(prefs.getBoolean("show_graph_time", true)){
+            // If current day, get current time and paint red vertical line on graph
+            if(day.isToday()){
+                Double currentTime = day.getCurrentTimeHours();
+                Double[] xValues = {currentTime,currentTime};
+                Double[] yValues = {0.0, 20.0};
+                timeSeries = new SimpleXYSeries(
+                        Arrays.asList(xValues),
+                        Arrays.asList(yValues),
+                        "Time");
+
+                LineAndPointFormatter timeFormat = new LineAndPointFormatter(
+                        Color.rgb(200, 0, 0),                   // line color
+                        null,                   // point color
+                        Color.rgb(200, 0, 0));                                  // fill color
+                timeFormat.getLinePaint().setStyle(Paint.Style.STROKE);
+                timeFormat.getLinePaint().setStrokeWidth(5);
+                plot.addSeries(timeSeries, timeFormat);
+            }
+        }
+    }
+
 	/*
 	* Initialize the graph by handling its static UI properties (axes, etc.), colours, axes formats, axes titles,
 	* axes ranges, etc.

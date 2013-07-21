@@ -28,6 +28,11 @@ public class Surf {
 
 
     public static ArrayList<Surf> initSurf(ArrayList<Surf> surf_reports, Cursor surfInfo){
+        // SURF INFO:
+        // 0location 1timestamp 2local_time 3year 4month 5day 6hour 7minute 8faded_rating 9solid_rating 10min_surf 11abs_min_surf 12max_surf
+        // 13abs_max_surf 14swell_height 15swell_period 16swell_angle 17swell_direction 18swell_chart 19period_chart
+        // 20wind_chart 21pressure_chart 22sst_chart
+
         // Assumes data from DB is returned ordered by timestamp DESC
         long recent_request_timestamp = surfInfo.getLong(1);
         surf_reports.clear();

@@ -44,6 +44,10 @@ public class Weather {
 
 
     public static Weather initWeather(Cursor weatherInfo){
+        // WEATHER INFO:
+        // 0timestamp 1year 2month 3day 4max_temp_c 5max_temp_f 6min_temp_c 7min_temp_f 8wind_speed_miles
+        // 9wind_speed_km 10wind_direction 11wind_degree 12icon_url 13description 14precipitation
+
         Weather weather = new Weather();
         weather.max_temp_c = weatherInfo.getInt(4);
         weather.max_temp_f = weatherInfo.getInt(5);

@@ -1,7 +1,6 @@
 package net.willwebberley.gowertides.ui;
 
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -40,7 +39,7 @@ public class DayFragment extends Fragment {
 	private SharedPreferences prefs; //app preferences
 	private Handler updaterHandler; //handler for updater thread
 	
-	public Day today; //Day represented by this fragment
+	public Day day; //Day represented by this fragment
 	private Calendar rightNow; //Calendar representing the CURRENT time
 	private TideGraph tideGraph; //TideGraph object
 	
@@ -80,7 +79,7 @@ public class DayFragment extends Fragment {
     * Initialize the fragment with the Day it is to represent, the application preferences and the parent activity.
      */
 	public DayFragment(Day day, SharedPreferences p, DaysActivity d){
-		today = day;
+		this.day = day;
 		prefs = p;
 		dayView = d;
         locationNames = dayView.locationNames;
@@ -146,34 +145,31 @@ public class DayFragment extends Fragment {
      * Main UI updater. Sets the textfields, tide graph, etc to the selected day.
      */
     public void updateUI(){
-        today.getDayInfo();
+        day.getDayInfo();
     	rightNow = Calendar.getInstance();
         locationIndex = dayView.locationIndex;
 
        	// Put in try-catch as getting the strings returned null pointers on some devices
     	try{
-    		sunriseText.setText(today.getSunriseString());
-    		sunsetText.setText(today.getSunsetString());
+    		sunriseText.setText(day.getSunriseString());
+    		sunsetText.setText(day.getSunsetString());
     	}
     	catch(Exception e){
     		e.printStackTrace();
     	}
     	
     	try{
-    		tideGraph.setDay(today);
-        	
-        	// Draw the tide table with correct values
-        	setTideTableInfo();
+    		tideGraph.setDay(day);
+           	setTideTableInfo();
     	}
     	catch(Exception e){
     		e.printStackTrace();
     	}
     	
     	try{
-	    	// Check if selected day is today. If so, show further information
-	    	if(today.isToday()){
+	    	// Check if selected day is day. If so, show further information
+	    	if(day.isToday()){
 	    		setSunsetTime();
-	    		setTimeToTide();
 	    	}
 	    	else{
 	    		sunsetCountField.setText("");
@@ -186,7 +182,7 @@ public class DayFragment extends Fragment {
     	// Check if there is weather data for selected day. If yes, set the weather info view to visible
     	// and remove error message and fill text fields with correct data. Else hide weather info
     	// and show error message.
-    	if(today.isWeatherAvailable()){
+    	if(day.isWeatherAvailable()){
     		layoutView.findViewById(R.id.weather).setVisibility(View.VISIBLE);
     		((TextView)layoutView.findViewById(R.id.weather_error)).setVisibility(View.GONE);
     		setWeatherInfo();
@@ -196,7 +192,7 @@ public class DayFragment extends Fragment {
     		((TextView)layoutView.findViewById(R.id.weather_description)).setText("Weather unavailable");
     		((TextView)layoutView.findViewById(R.id.weather_error)).setVisibility(View.VISIBLE);
     	}
-        if(today.isSurfAvailable()){
+        if(day.isSurfAvailable()){
             layoutView.findViewById(R.id.surf).setVisibility(View.VISIBLE);
             ((TextView)layoutView.findViewById(R.id.surf_error)).setVisibility(View.GONE);
             setSurfInfo();
@@ -212,7 +208,7 @@ public class DayFragment extends Fragment {
      * Set the weather fields and images for the current day.
      */
     private void setWeatherInfo(){
-        Weather weather = today.getWeather();
+        Weather weather = day.getWeather();
     	String weather_description = weather.description;
     	String unitType = prefs.getString("unitFormat", "true");
     	Boolean metric = false;
@@ -279,7 +275,7 @@ public class DayFragment extends Fragment {
 
         // Finally remove all views in there already, before repopulating with the layoutparams specified above.
         surf.removeAllViews();
-        ArrayList<Surf> reports = today.getSurfReports();
+        ArrayList<Surf> reports = day.getSurfReports();
         for(int i = 0; i < reports.size(); i++){
             SurfFragment si = new SurfFragment(dayView.getApplicationContext(), reports.get(i));
             surf.addView(si.getView(), param);
@@ -292,75 +288,28 @@ public class DayFragment extends Fragment {
      * This method responsible for first two columns (since final one depends on current time).
      */
     private void setTideTableInfo(){
-        double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
-
         LinearLayout tides = (LinearLayout)layoutView.findViewById(R.id.tides); // Get the linear layout to add the surf details to
-        // Set some basic layout params (last arg is weight - set to 0.2)
         LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
         // Calculate the pixel density (in dpi)...
-
+        double x = dayView.getApplicationContext().getResources().getDisplayMetrics().density;
         // ... and use this to set the horizontal margins of the views to be added to the LinearLayout (i.e. 5dpi left and right)
         param.setMargins((int)(5*x), 0, (int)(5*x), 0);
 
         // Finally remove all views in there already, before repopulating with the layoutparams specified above.
         tides.removeAllViews();
-        ArrayList<Tide> forecasts = today.getTides();
+        ArrayList<Tide> forecasts = day.getTides();
         for(int i = 0; i < forecasts.size(); i++){
-            TideFragment ti = new TideFragment(dayView.getApplicationContext(), forecasts.get(i), today);
+            TideFragment ti = new TideFragment(dayView.getApplicationContext(), forecasts.get(i), day);
             tides.addView(ti.getView(), param);
         }
-    	/*tideTypeField.setText("");
-    	tideTimeField.setText("");
-    	tideTimeLeftField.setText("");
-    	tideTypeField.append((Html.fromHtml("<b>TIDE</b><br />")));
-    	tideTimeField.append((Html.fromHtml("<b>TIME</b><br />")));
-    	
-    	String[] types = today.getTideTypes();
-    	Calendar[] times = today.getTideTimes();
-    	
-    	for(int i = 0; i < types.length; i++){
-    		tideTypeField.append(types[i]);
-    		tideTimeField.append((new SimpleDateFormat("HH:mm")).format(times[i].getTime()));
-    		if(i < types.length-1){
-    			tideTypeField.append("\n");
-    			tideTimeField.append("\n");
-    		}
-      	}*/
     }
+
     
     /*
-     * Updates tide table's final column with the time left until the next high/low tide.
-     */
-    private void setTimeToTide(){
-    /*	tideTimeLeftField.setText("");
-    	tideTimeLeftField.append((Html.fromHtml("<b>TO GO</b><br />")));
-    	
-    	Calendar[] times = today.getTideTimes();
-    	for(int i = 0; i < times.length; i++){
-	    	int hoursDiff = times[i].get(Calendar.HOUR_OF_DAY) - rightNow.get(Calendar.HOUR_OF_DAY);
-		    int minsDiff = times[i].get(Calendar.MINUTE) - rightNow.get(Calendar.MINUTE);
-		    if(minsDiff < 0){
-		    	hoursDiff--;
-		    	minsDiff = 60+minsDiff;
-		    }
-		    if(hoursDiff < 0){
-		    	tideTimeLeftField.append("--:--");
-		    }
-		    if(hoursDiff >= 0){
-		    	if(minsDiff < 10){tideTimeLeftField.append((Html.fromHtml("<b>"+hoursDiff+":0"+minsDiff+"</b>")));}
-	    	    if(minsDiff >=10){tideTimeLeftField.append((Html.fromHtml("<b>"+hoursDiff+":"+minsDiff+"</b>")));}
-		    }
-		    if(i < times.length-1){
-		    	tideTimeLeftField.append((Html.fromHtml("<br />")));
-    		}
-    	}*/
-    }
-    
-    /*
-     * Set data for the sunset timer (again, depends on whether selected day is 'today')
+     * Set data for the sunset timer (again, depends on whether selected day is 'day')
      */
     private void setSunsetTime(){
-    	Calendar sunsetTime = today.getSunset();
+    	Calendar sunsetTime = day.getSunset();
 	    int hoursDiff = sunsetTime.get(Calendar.HOUR_OF_DAY) - rightNow.get(Calendar.HOUR_OF_DAY);
 	    int minsDiff = sunsetTime.get(Calendar.MINUTE) - rightNow.get(Calendar.MINUTE);
 	    if(minsDiff < 0){
@@ -386,24 +335,19 @@ public class DayFragment extends Fragment {
      */
     private void initComponents(){
     	try{
-    	tideGraph = new TideGraph((XYPlot)layoutView.findViewById(R.id.tideGraphComponent), dayView.getApplicationContext());
+            tideGraph = new TideGraph((XYPlot)layoutView.findViewById(R.id.tideGraphComponent), dayView.getApplicationContext());
 
-    	/*tideTypeField = (TextView)layoutView.findViewById(R.id.tideTypes);
-    	tideTimeField = (TextView)layoutView.findViewById(R.id.tideTimes);
-    	tideTimeLeftField = (TextView)layoutView.findViewById(R.id.tideTimesLeft);
-    	tideTimeLeftField.setTextColor(Color.rgb(0, 100, 0));*/
-    	
-    	sunriseText = (TextView)layoutView.findViewById(R.id.sunriseText);
-    	sunriseText.setTextColor(Color.rgb(0, 100, 0));
-    	sunsetText = (TextView)layoutView.findViewById(R.id.sunsetText);
-    	sunsetText.setTextColor(Color.rgb(100, 0, 0));
-    	sunsetCountField = (TextView)layoutView.findViewById(R.id.sunsetCountField);
-    	sunsetCountField.setTextColor(Color.rgb(100, 25, 25));
+            sunriseText = (TextView)layoutView.findViewById(R.id.sunriseText);
+            sunriseText.setTextColor(Color.rgb(0, 100, 0));
+            sunsetText = (TextView)layoutView.findViewById(R.id.sunsetText);
+            sunsetText.setTextColor(Color.rgb(100, 0, 0));
+            sunsetCountField = (TextView)layoutView.findViewById(R.id.sunsetCountField);
+            sunsetCountField.setTextColor(Color.rgb(100, 25, 25));
 
-    	weatherDescriptionView = (TextView)layoutView.findViewById(R.id.weather_description);
-    	weatherDescriptionView.setTextColor(Color.rgb(0, 150, 220));
+            weatherDescriptionView = (TextView)layoutView.findViewById(R.id.weather_description);
+            weatherDescriptionView.setTextColor(Color.rgb(0, 150, 220));
 
-        ((TextView)layoutView.findViewById(R.id.surf_title)).setTextColor(Color.rgb(0, 150, 220));
+            ((TextView)layoutView.findViewById(R.id.surf_title)).setTextColor(Color.rgb(0, 150, 220));
         }
         catch(Exception e){
             System.err.println(e);

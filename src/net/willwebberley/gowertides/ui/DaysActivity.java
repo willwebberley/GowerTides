@@ -53,7 +53,7 @@ public class DaysActivity extends FragmentActivity {
     private int currentFragmentIndex;
     private Calendar[] infoArray;
 	private Calendar currentDay, firstDay, lastDay;
-	private List<DayFragment> fragments;
+	private Vector<DayFragment> fragments;
 	private PagerAdapter mPagerAdapter;
 	public DayDatabase db;
 	public WeatherDatabase weather_db;
@@ -122,7 +122,7 @@ public class DaysActivity extends FragmentActivity {
     private void populatePager(Calendar newToday, int daysToLoad){
         fragments.clear();
         Calendar startDay = (Calendar)newToday.clone();
-        // Change the day to start the pager at (e.g., if 4, will start at today - DAYS_TO_STORE/4 and end at
+        // Change the day to start the pager at (e.g., if 4, will start at day - DAYS_TO_STORE/4 and end at
         // 3*DAYS_TO_STORE/4.
         startDay.add(Calendar.DATE,-(daysToLoad/4));
         for(int i =0; i < DAYS_TO_STORE; i++){
@@ -167,7 +167,7 @@ public class DaysActivity extends FragmentActivity {
 
     /*
      * Invoke this method (in onCreate()) for testing.
-     * Allows the app to be started at a desired date instead of 'today'
+     * Allows the app to be started at a desired date instead of 'day'
      */
     private Calendar setDayForTesting(String test){
     	Date tester = null;
@@ -428,7 +428,7 @@ public class DaysActivity extends FragmentActivity {
                     currentFragmentIndex = position;
                     DayFragment myNow = mPagerAdapter.getItem(position);
                     myNow.slideSurf();
-                    dateText.setText(myNow.today.toString());
+                    dateText.setText(myNow.day.toString());
                     if(position == todayFragmentIndex){
                         revertButton.setVisibility(View.INVISIBLE);
                     }
@@ -438,8 +438,16 @@ public class DaysActivity extends FragmentActivity {
                 }
             });
 
-
-
+            for(int i=0; i < fragments.size(); i++){
+                if(i > 0){
+                    Day yesterday = fragments.get(i-1).day;
+                    fragments.get(i).day.setYesterday(yesterday);
+                }
+                if(i < fragments.size()-1){
+                    Day tomorrow = fragments.get(i+1).day;
+                    fragments.get(i).day.setTomorrow(tomorrow);
+                }
+            }
             return true;
         }
         protected void onPostExecute(Boolean result) {
@@ -453,12 +461,12 @@ public class DaysActivity extends FragmentActivity {
             if(prefs.getBoolean("sync_enabled", true)){
                 refresh(null);
             }
+
             System.out.println("Final bits...");
             ((RelativeLayout)findViewById(R.id.controls)).setVisibility(View.VISIBLE);
             buildProgressHolder.setVisibility(View.GONE);
             buildProgress.setVisibility(View.GONE);
             infoPager.setVisibility(View.VISIBLE);
-//            ((DayFragment)fragments.get(todayFragmentIndex)).slideSurf(); // Slide surf along for first day
             System.out.println("Done.");
 
         }

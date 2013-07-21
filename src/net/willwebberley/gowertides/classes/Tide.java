@@ -70,6 +70,10 @@ public class Tide {
 
 
     public static ArrayList<Tide> initTides(ArrayList<Tide> tide_forecasts, DaysActivity parent, Cursor tideInfo) throws ParseException {
+        // TIDE INFO:
+        // 0year 1month 2day 3week_day 4sunrise 5sunset 6moon 7high1_time 8high1_height 9low1_time 10low1_height
+        // 11high2_time 12high2_height 13low2_time 14low2_height 15high3_time 16high3_height
+
         tide_forecasts.clear();
         int tideCounter = 1;
         for(int i = 7; i <= 15; i = i+2){
@@ -80,7 +84,7 @@ public class Tide {
                 Calendar time = Calendar.getInstance();
                 time.setTime(parent.dayDateFormatter.parse(tideInfo.getString(i).replace("BST", "").replace("GMT","")));
                 tide.time = time;
-                tide.timeHours = time.get(Calendar.HOUR_OF_DAY) + (time.get(Calendar.MINUTE) / 60);
+                tide.timeHours = time.get(Calendar.HOUR_OF_DAY) + ((time.get(Calendar.MINUTE)+0.0) / 60);
                 tide.height = Double.parseDouble((tideInfo.getString(i+1).replace("m","")).trim());
                 tide.type = type;
                 tide_forecasts.add(tide);
@@ -90,65 +94,11 @@ public class Tide {
         return tide_forecasts;
     }
 
-       /* highTideTimes = new String[3];
-        highTideHeights = new String[3];
-        lowTideTimes = new String[2];
-        lowTideHeights = new String[2];
-
-        highTideTimes[0] = info.getString(7);
-        highTideTimes[1] = info.getString(11);
-        highTideTimes[2] = info.getString(15);
-
-        highTideHeights[0] = info.getString(8);
-        highTideHeights[1] = info.getString(12);
-        highTideHeights[2] = info.getString(16);
-
-        lowTideTimes[0] = info.getString(9);
-        lowTideTimes[1] = info.getString(13);
-
-        lowTideHeights[0] = info.getString(10);
-        lowTideHeights[1] = info.getString(14);*/
 
 
 
-    /*
-    * Get an array of tide heights to plot on graph, stripping out the numeric values.
-     */
-    /*public Double[] getTideHeights(){
-        ArrayList heights = new ArrayList();
-        for(int i = 0; i < highTideHeights.length; i++){
-            String highTideStripped = highTideHeights[i].replaceAll("\\s","");
-            if(!highTideStripped.equals("")){
-                String[] tokens = highTideStripped.split("m");
 
-                if(i == 0){
-                    heights.add(2.0);
-                }
-                heights.add(Double.parseDouble(tokens[0]));
-                if(i == 1 && lowTideTimes[1].equals("")){
-                    heights.add(2.0);
-                }
-                if(i == 2){
-                    heights.add(2.0);
-                }
-            }
-            if(i < 2){
-                String lowTideStripped = lowTideHeights[i].replaceAll("\\s","");
-                if(!lowTideStripped.equals("")){
-                    String[] tokens = lowTideStripped.split("m");
 
-                    if(i == 0 && heights.size() == 0){
-                        heights.add(8.0);
-                    }
-                    heights.add(Double.parseDouble(tokens[0]));
-                    if(i == 1 && highTideTimes[2].equals("")){
-                        heights.add(8.0);
-                    }
-                }
-            }
-        }
-        return (Double[]) heights.toArray(new Double[heights.size()]);
-    }*/
 
     /*
     * Get the time of tide events for plotting on the graph.

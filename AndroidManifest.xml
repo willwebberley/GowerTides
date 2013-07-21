@@ -15,6 +15,7 @@
         android:icon="@drawable/tides"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
             android:name=".ui.DaysActivity"
             android:hardwareAccelerated="false"
@@ -25,10 +26,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.AboutActivity"
             android:label="@string/title_activity_about" >
         </activity>
+
         <activity
             android:name=".ui.PrferencesActivity"
             android:label="@string/title_activity_settings" >
