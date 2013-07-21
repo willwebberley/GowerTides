@@ -99,7 +99,7 @@ public class Day {
         }catch(Exception e){surfAvailable = false;}
 
 		try{
-            tide_forecasts = Tide.initTides(tide_forecasts, dayView, tideInfo);
+            tide_forecasts = Tide.initTides(tide_forecasts, dayView, tideInfo, this);
 		}catch(Exception e){tidesAvailable = false;}
 
 
@@ -113,12 +113,24 @@ public class Day {
         }catch(Exception e){System.err.println("Could not close DBs: "+e);}
 	}
 
+    /*
+    * Set the instance of Day representing the day before this one (for showing continuation of tide graph)
+     */
     public void setYesterday(Day y){
         yesterday = y;
     }
+    public Day getYesterday(){
+        return yesterday;
+    }
 
+    /*
+    * Set instance of Day representing day after this one (for showing continuation of tide graph)
+     */
     public void setTomorrow(Day t){
         tomorrow = t;
+    }
+    public Day getTomorrow(){
+        return tomorrow;
     }
 
     /*
@@ -188,6 +200,10 @@ public class Day {
 	public String toString(){
 		return (new SimpleDateFormat("E, dd MMM yyyy")).format(day.getTime());
 	}
+
+    public Calendar getDay(){
+        return day;
+    }
 
     /*
     * Check if this Day represents real-life 'day'

@@ -7,6 +7,17 @@
                 android:layout_marginRight="5dp"
                 android:layout_height="wrap_content">
 
+    <View
+            android:id="@+id/vr1"
+            android:layout_width="2dp"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/tide_icon"
+            android:background="#dddddd"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            />
+
     <ImageView
             android:id="@+id/tide_icon"
             android:layout_width="22dp"
@@ -16,7 +27,7 @@
             android:adjustViewBounds="true"
             android:layout_marginRight="5dp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
+            android:layout_toRightOf="@+id/vr1"
             />
 
     <TextView
@@ -28,23 +39,17 @@
             android:layout_toRightOf="@+id/tide_icon"
             />
 
-    <View
-    android:id="@+id/hr1"
-    android:layout_width="fill_parent"
-    android:layout_height="2dp"
-    android:layout_below="@+id/tide_icon"
-    android:background="#cccccc"
-    android:layout_marginBottom="5dp"
-    android:layout_margin="0dp"
-    />
+
 
     <TextView
             android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="12:00"
-            android:layout_below="@+id/hr1"
+            android:layout_below="@+id/type"
+            android:layout_toRightOf="@+id/hr1"
             android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
             />
 
     <TextView
@@ -53,8 +58,7 @@
             android:layout_height="wrap_content"
             android:text="3:38"
             android:layout_toRightOf="@+id/time"
-            android:layout_below="@+id/hr1"
-            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_below="@+id/type"
             />
 
 

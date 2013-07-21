@@ -7,7 +7,6 @@ import java.util.*;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.*;
-import android.graphics.Paint.Style;
 import android.preference.PreferenceManager;
 
 import com.androidplot.series.XYSeries;
@@ -105,13 +104,38 @@ public class TideGraph {
             times[i] = tides.get(i).timeHours;
         }
 
+        if(day.getYesterday() != null){
+            Double[] heights2 = new Double[heights.length+1];
+            Double[] times2 = new Double[times.length+1];
+            heights2[0] = day.getYesterday().getTides().get(day.getYesterday().getTides().size()-1).height;
+            times2[0] = day.getYesterday().getTides().get(day.getYesterday().getTides().size()-1).timeHours - 24;
+            for(int i = 1; i<=heights.length; i++){
+                heights2[i] = heights[i-1];
+                times2[i] = times[i-1];
+            }
+            heights = heights2;
+            times = times2;
+        }
+        if(day.getTomorrow() != null){
+            Double[] heights2 = new Double[heights.length+1];
+            Double[] times2 = new Double[times.length+1];
+            heights2[heights2.length-1] = day.getTomorrow().getTides().get(0).height;
+            times2[times2.length-1] = day.getTomorrow().getTides().get(0).timeHours + 24;
+            for(int i = 0; i<heights.length; i++){
+                heights2[i] = heights[i];
+                times2[i] = times[i];
+            }
+            heights = heights2;
+            times = times2;
+        }
+
         series = new SimpleXYSeries(Arrays.asList(times), Arrays.asList(heights), "Tides");
 
         // Format the series
         LineAndPointFormatter heightsFormat = new LineAndPointFormatter(
                 Color.rgb(0, 150, 220),                   // line color
                 null,                   // point color
-                Color.rgb(0, 150, 220));                                  // fill color
+                Color.rgb(0, 150, 220));     // fill color
         Paint lineFill = new Paint();
         lineFill.setAlpha(150);
         lineFill.setShader(new LinearGradient(0, 0, 0, 250, Color.WHITE, Color.rgb(0, 150, 220), Shader.TileMode.CLAMP));
@@ -171,8 +195,9 @@ public class TideGraph {
 		
 		try{
 		// handle the graph colours
-		plot.setBackgroundColor(Color.rgb(250, 250, 250));
-		plot.getBackgroundPaint().setAlpha(200);
+		//plot.setBackgroundColor(Color.rgb(250, 250, 250));
+            plot.setBackgroundColor(Color.parseColor("#eeeeee"));
+		//plot.getBackgroundPaint().setAlpha(200);
 		plot.getGraphWidget().getGridLinePaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
 		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
@@ -191,11 +216,11 @@ public class TideGraph {
 		}
 		
 		// handle axis titles
-		plot.getRangeLabelWidget().getLabelPaint().setColor(Color.BLACK);
+		plot.getRangeLabelWidget().getLabelPaint().setColor(Color.rgb(0, 150, 220));
 		plot.getRangeLabelWidget().getLabelPaint().setTextSize(20);
 		plot.getRangeLabelWidget().setMarginRight(10);
 		plot.getRangeLabelWidget().setMarginLeft(10);
-		plot.getDomainLabelWidget().getLabelPaint().setColor(Color.BLACK);
+		plot.getDomainLabelWidget().getLabelPaint().setColor(Color.rgb(0, 150, 220));
 		plot.getDomainLabelWidget().getLabelPaint().setTextSize(20);
 		plot.getDomainLabelWidget().setMarginTop(25);
 		plot.getDomainLabelWidget().setMarginBottom(20);
@@ -222,7 +247,7 @@ public class TideGraph {
    		
 		// remove borders from graph
 		plot.setBorderPaint(null);
-		
+
 		// hide the legend
 		plot.getLegendWidget().setVisible(false);
     

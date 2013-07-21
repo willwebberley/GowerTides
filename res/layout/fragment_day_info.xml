@@ -6,7 +6,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="#dddddd" >
+            android:background="#eeeeee" >
 
     <LinearLayout
             android:id="@+id/mainView"
@@ -19,9 +19,8 @@
             android:id="@+id/tidal_views"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/drop_shadow"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
             >
 
         <com.androidplot.xy.XYPlot
@@ -31,12 +30,22 @@
                 android:layout_alignParentTop="true"
                 title="" />
 
+        <View
+            android:id="@+id/hr1"
+            android:layout_width="fill_parent"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="5dp"
+            android:layout_height="2dp"
+            android:background="#eeeeee"
+            android:layout_below="@+id/tideGraphComponent"/>
 
         <HorizontalScrollView
                 android:id="@+id/tideTable"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tideGraphComponent"
+                android:layout_below="@+id/hr1"
+                android:scrollbars="none"
                 >
             <LinearLayout
                     android:id="@+id/tides"
@@ -46,33 +55,6 @@
                      >
 
             </LinearLayout>
-<!--
-            <TextView
-                    android:id="@+id/tideTypes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginRight="15px"
-                    android:text="TIDE"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-            <TextView
-                    android:id="@+id/tideTimes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerInParent="true"
-                    android:text="TIME"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-            <TextView
-                    android:id="@+id/tideTimesLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentRight="true"
-                    android:text="TO GO"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
--->
         </HorizontalScrollView>
         </RelativeLayout>
 
@@ -83,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:padding="3dp"
                 android:background="@drawable/drop_shadow">
             <TextView

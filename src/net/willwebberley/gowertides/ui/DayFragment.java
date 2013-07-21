@@ -324,6 +324,7 @@ public class DayFragment extends Fragment {
     	    if(minsDiff >=10){sunsetCountField.setText(hoursDiff+":"+minsDiff+" 'til sunset");}
 	    }
     }
+
     
     /******
      * 

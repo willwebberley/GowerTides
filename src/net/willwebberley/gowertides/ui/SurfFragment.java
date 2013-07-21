@@ -2,6 +2,7 @@ package net.willwebberley.gowertides.ui;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,11 +51,16 @@ public class SurfFragment extends RelativeLayout {
 
         // Swell direction
         ((TextView)layoutView.findViewById(R.id.swellDirection)).setText(Html.fromHtml("<b>"+surf.swell_direction+"</b>"));
-        RotateAnimation rAnim = new RotateAnimation(0, (float)surf.swell_angle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        /*RotateAnimation rAnim = new RotateAnimation(0, (float)surf.swell_angle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rAnim.setDuration(200);
         rAnim.setFillEnabled(true);
         rAnim.setFillAfter(true);
-        ((ImageView)layoutView.findViewById(R.id.swellDirectionIcon)).startAnimation(rAnim);
+        ((ImageView)layoutView.findViewById(R.id.swellDirectionIcon)).startAnimation(rAnim);*/
+        Matrix matrix=new Matrix();
+        ImageView icon = ((ImageView)layoutView.findViewById(R.id.swellDirectionIcon));
+        icon.setScaleType(ImageView.ScaleType.MATRIX);
+        matrix.postRotate((float)surf.swell_angle, icon.getDrawable().getBounds().width() / 2, icon.getDrawable().getBounds().height() / 2);
+        icon.setImageMatrix(matrix);
 
         // Swell period
         ((TextView)layoutView.findViewById(R.id.swellPeriod)).setText(Html.fromHtml("<b>"+surf.swell_period+"</b> <i>s</i>"));
