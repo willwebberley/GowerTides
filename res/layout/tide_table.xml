@@ -9,7 +9,7 @@
 
     <View
             android:id="@+id/vr1"
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="fill_parent"
             android:layout_below="@+id/tide_icon"
             android:background="#dddddd"
@@ -23,7 +23,7 @@
             android:layout_width="22dp"
             android:layout_height="15dp"
             android:src="@drawable/high"
-            android:scaleType="fitStart"
+            android:scaleType="fitEnd"
             android:adjustViewBounds="true"
             android:layout_marginRight="5dp"
             android:layout_alignParentTop="true"

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="version_name">1.4</string>
+    <string name="version_code">4</string>
     <string name="app_name">Gower Tides</string>
     <string name="menu_about">About</string>
     <string name="title_activity_dayview">Gower Tides</string>

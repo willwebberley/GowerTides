@@ -16,6 +16,105 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="10dp"
+                android:text="Gower Tides"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_weight="1.0"/>
+
+        <TextView
+                android:id="@+id/versionText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/aboutText"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:text="Version: "
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                />
+        <TextView
+                android:id="@+id/versionText2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/aboutText"
+                android:layout_toRightOf="@+id/versionText"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="2dp"
+                android:text="@string/version_name"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                />
+
+        <TextView
+                android:id="@+id/licenseOverview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/versionText"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:text="License: GNU General Public License (v3)"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                />
+
+
+
+        <TextView
+                android:id="@+id/licenseText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/licenseOverview"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:text="Copyright 2013 Will Webberley.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details."
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                />
+
+
+        <Button
+                android:id="@+id/sourceButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/licenseText"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:onClick="goToSource"
+                android:text="Project source"
+                android:layout_weight=".50"/>
+
+        <Button
+                android:id="@+id/licenseButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/licenseText"
+                android:layout_toRightOf="@+id/sourceButton"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:onClick="goToLicense"
+                android:text="View license"
+                android:layout_weight=".50"/>
+
+        <View
+                android:id="@+id/developerDivider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#bbb"
+                android:layout_below="@+id/sourceButton"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                />
+
+
+        <TextView
+                android:id="@+id/developerText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/developerDivider"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="10dp"
                 android:text="Developer"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:layout_weight="1.0"/>
@@ -25,7 +124,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@+id/aboutText"
+                android:layout_below="@+id/developerText"
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="20dp"
                 android:text="Will Webberley (\@flyingSparx)"
@@ -205,7 +304,6 @@
                 android:layout_below="@+id/iconCredit"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="30dp"
                 android:onClick="goToIcon"
                 style="?android:attr/buttonStyleSmall"
                 android:text="Climacons web page" />

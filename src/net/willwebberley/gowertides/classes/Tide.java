@@ -1,15 +1,32 @@
+/*
+Copyright 2013 Will Webberley.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The full text of the License is available in the root of this
+project repository.
+*/
+
 package net.willwebberley.gowertides.classes;
 
 import android.database.Cursor;
-import android.text.format.DateUtils;
 import net.willwebberley.gowertides.ui.DaysActivity;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import org.joda.time.DateTime;
+import org.joda.time.Hours;
+import org.joda.time.Minutes;
 
 /*
 * Class representing a tidal event (type (low/high), time, height, etc.)
@@ -37,23 +54,28 @@ public class Tide {
 
     // Get difference between a specified time and the time of this tide event as a String (HH:mm)
     public String getTimeDifference(Calendar cal){
-        boolean negative = false;
-        long milli_diff = time.getTime().getTime() - cal.getTime().getTime();
-        if(milli_diff < 0){
-            negative = true;
-            milli_diff= Math.abs(milli_diff);
-        }
-        Calendar time_diff = Calendar.getInstance();
-        time_diff.setTimeInMillis(milli_diff);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.UK);
-        String time_diff_str = sdf.format(time_diff.getTime());
+        int h_diff = Hours.hoursBetween(new DateTime(time.getTime()), new DateTime(cal.getTime())).getHours() % 24;
+        int m_diff = Minutes.minutesBetween(new DateTime(time.getTime()), new DateTime(cal.getTime())).getMinutes() % 60;
+
+        String h_diff_s = Math.abs(h_diff)+"";
+        String m_diff_s = Math.abs(m_diff)+"";
+        if(m_diff < 10){
+            m_diff_s = "0"+m_diff_s;
+        }
+
+        boolean negative = true;
+        long milli_diff = cal.getTime().getTime() - time.getTime().getTime();
+        if(milli_diff < 0){
+            negative = false;
+            //milli_diff= Math.abs(milli_diff);
+        }
 
         if(negative){
-            return "-"+time_diff_str;
+            return "-"+h_diff_s+":"+m_diff_s;
         }
         else{
-            return "+"+time_diff_str;
+            return "+"+h_diff_s+":"+m_diff_s;
         }
     }
 

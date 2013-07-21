@@ -1,3 +1,20 @@
+/*
+Copyright 2013 Will Webberley.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+The full text of the License is available in the root of this
+project repository.
+*/
+
 package net.willwebberley.gowertides.ui;
 
 import android.net.Uri;
@@ -22,7 +39,21 @@ public class AboutActivity extends Activity {
         getMenuInflater().inflate(R.menu.activity_about, menu);
         return true;
     }
-    
+
+    public void goToSource(View view){
+        String url = "https://github.com/flyingsparx/GowerTides";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+
+    public void goToLicense(View view){
+        String url = "http://www.gnu.org/licenses/gpl.html";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+
     public void goToHelp(View view){
     	String url = "http://www.flyingsparx.net/contact";
     	Intent i = new Intent(Intent.ACTION_VIEW);
