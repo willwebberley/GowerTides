@@ -68,7 +68,7 @@ public class SurfFragment extends RelativeLayout {
 
         // Swell direction
         ((TextView)layoutView.findViewById(R.id.swellDirection)).setText(Html.fromHtml("<b>"+surf.swell_direction+"</b>"));
-        RotateAnimation rAnim = new RotateAnimation(0, (float)surf.swell_angle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        RotateAnimation rAnim = new RotateAnimation(0, 180+(float)surf.swell_angle, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rAnim.setDuration(20);
         rAnim.setFillEnabled(true);
         rAnim.setFillAfter(true);

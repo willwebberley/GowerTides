@@ -130,7 +130,6 @@ public class WeatherDatabase extends SQLiteOpenHelper{
 
     public Boolean insertSurfData(String data, SQLiteDatabase db){
         /* Delete any current versions with the same request timestamps */
-        ArrayList<Long> timestamps = new ArrayList<Long>();
         try{
             JSONArray jsonArray = new JSONArray(data);
             for (int i = 0; i < jsonArray.length(); i++){

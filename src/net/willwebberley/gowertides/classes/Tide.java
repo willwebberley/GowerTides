@@ -55,20 +55,19 @@ public class Tide {
     // Get difference between a specified time and the time of this tide event as a String (HH:mm)
     public String getTimeDifference(Calendar cal){
 
-        int h_diff = Hours.hoursBetween(new DateTime(time.getTime()), new DateTime(cal.getTime())).getHours() % 24;
-        int m_diff = Minutes.minutesBetween(new DateTime(time.getTime()), new DateTime(cal.getTime())).getMinutes() % 60;
+        int h_diff = Math.abs(Hours.hoursBetween(new DateTime(time.getTime()), new DateTime(cal.getTime())).getHours() % 24);
+        int m_diff = Math.abs(Minutes.minutesBetween(new DateTime(time.getTime()), new DateTime(cal.getTime())).getMinutes() % 60);
 
-        String h_diff_s = Math.abs(h_diff)+"";
-        String m_diff_s = Math.abs(m_diff)+"";
+        String h_diff_s = h_diff+"";
+        String m_diff_s = m_diff+"";
         if(m_diff < 10){
             m_diff_s = "0"+m_diff_s;
         }
 
-        boolean negative = true;
+        boolean negative = true; // negative if time of tide BEHIND current time
         long milli_diff = cal.getTime().getTime() - time.getTime().getTime();
         if(milli_diff < 0){
             negative = false;
-            //milli_diff= Math.abs(milli_diff);
         }
 
         if(negative){

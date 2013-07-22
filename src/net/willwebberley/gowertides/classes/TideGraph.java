@@ -253,8 +253,8 @@ public class TideGraph {
 		plot.getGraphWidget().setMarginRight(10);
 		
 		// Axis settings
-		plot.setRangeLabel("Height (m)");
-		plot.setDomainLabel("Time");
+		plot.setRangeLabel("Tide height (m)");
+		plot.setDomainLabel("Time of day (h)");
 		plot.setDomainLeftMax((Number)0);
 		plot.setDomainLeftMin((Number)0);
 		plot.setDomainRightMax((Number)24);

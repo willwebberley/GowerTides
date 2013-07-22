@@ -56,7 +56,7 @@ public class TideFragment extends RelativeLayout {
     }
 
     private void updateUI(){
-        ((TextView)layoutView.findViewById(R.id.time)).setTextColor(Color.rgb(0, 150, 220));
+        ((TextView)layoutView.findViewById(R.id.time)).setTextColor(Color.rgb(50, 50, 50));
         ((TextView)layoutView.findViewById(R.id.time)).setText(tide.getTimeString());
 
         if(day.isToday()){

@@ -213,7 +213,7 @@ public class DayFragment extends Fragment {
     	}
         if(day.isSurfAvailable()){
             layoutView.findViewById(R.id.surf).setVisibility(View.VISIBLE);
-            ((TextView)layoutView.findViewById(R.id.surf_head)).setText("Surf report");
+            ((TextView)layoutView.findViewById(R.id.surf_head)).setText("Surf & swell");
             ((TextView)layoutView.findViewById(R.id.surf_error)).setVisibility(View.GONE);
             setSurfInfo();
         }
