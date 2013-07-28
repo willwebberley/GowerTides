@@ -314,7 +314,9 @@ public class DaysActivity extends FragmentActivity {
     public void viewSurfDetail(View view){
         Intent intent_surf = new Intent(this, SurfDetailActivity.class);
         Day d = ((DayFragment)fragments.get(currentFragmentIndex)).day;
+        String loc = locationNames[locationIndex];
         intent_surf.putExtra("day", d);
+        intent_surf.putExtra("location", loc);
         startActivity(intent_surf);
     }
 

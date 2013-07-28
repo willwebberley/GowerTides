@@ -39,6 +39,17 @@
             android:text="Detailed marine data for Llangennith/Rhossili"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
+    <View
+        android:id="@+id/hr1"
+        android:layout_below="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:background="#bbb"
+        />
+
     <ScrollView
         android:id="@+id/scroller"
         android:layout_width="fill_parent"
@@ -46,7 +57,7 @@
         android:layout_marginRight="5dp"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="10dp"
-        android:layout_below="@+id/title">
+        android:layout_below="@+id/hr1">
 
 
 

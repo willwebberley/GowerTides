@@ -19,14 +19,20 @@ package net.willwebberley.gowertides.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import net.willwebberley.gowertides.R;
 import net.willwebberley.gowertides.classes.Day;
+import net.willwebberley.gowertides.classes.Surf;
+
+import java.util.ArrayList;
 
 
 public class SurfDetailActivity extends Activity {
 
     private Day day;
+    private String location;
+    private ArrayList<Surf> reports;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,19 +40,40 @@ public class SurfDetailActivity extends Activity {
         setContentView(R.layout.activity_surfdetail);
 
         day = (Day)getIntent().getSerializableExtra("day");
+        location = getIntent().getStringExtra("location");
+        reports = day.getSurfReports();
 
-        System.out.println(day);
         try{
             updateUI();
         }
         catch(Exception e){
-            System.err.println(e);
+            e.printStackTrace();
         }
+
     }
 
 
     private void updateUI(){
-        ((TextView)findViewById(R.id.time)).setText(day.toString());
+        ((TextView)findViewById(R.id.date)).setText(day.toString());
+        ((TextView)findViewById(R.id.title)).setText("Details for "+location);
+
+        double x = getApplicationContext().getResources().getDisplayMetrics().density;
+
+        LinearLayout list = (LinearLayout)findViewById(R.id.detail_list); // Get the linear layout to add the surf details to
+        // Set some basic layout params (last arg is weight - set to 0.2)
+        LinearLayout.LayoutParams param = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+        // Calculate the pixel density (in dpi)...
+
+        // ... and use this to set the horizontal margins of the views to be added to the LinearLayout (i.e. 5dpi left and right)
+        param.setMargins((int)(5*x), 0, (int)(5*x), 0);
+
+        // Finally remove all views in there already, before repopulating with the layoutparams specified above.
+        list.removeAllViews();
+
+        for(int i = 0; i < reports.size(); i++){
+            SurfDetailFragment frag = new SurfDetailFragment(getApplicationContext(), reports.get(i));
+            list.addView(frag.getView(), param);
+        }
     }
 
 }
