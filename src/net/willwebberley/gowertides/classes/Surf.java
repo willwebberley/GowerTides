@@ -40,7 +40,7 @@ public class Surf implements Serializable{
     public String swell_direction;
     public String swell_chart_url;
     public String period_chart_url;
-    public String Wind_chart_url;
+    public String wind_chart_url;
     public String pressure_chart_url;
     public String sst_chart_url;
 
@@ -73,7 +73,7 @@ public class Surf implements Serializable{
             surf.swell_direction= surfInfo.getString(17);
             surf.swell_chart_url= surfInfo.getString(18);
             surf.period_chart_url= surfInfo.getString(19);
-            surf.Wind_chart_url= surfInfo.getString(20);
+            surf.wind_chart_url= surfInfo.getString(20);
             surf.pressure_chart_url= surfInfo.getString(21);
             surf.sst_chart_url= surfInfo.getString(22);
             surf_reports.add(surf);

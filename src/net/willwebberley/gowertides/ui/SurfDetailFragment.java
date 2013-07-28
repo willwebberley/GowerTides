@@ -20,6 +20,7 @@ package net.willwebberley.gowertides.ui;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,9 @@ import android.widget.TextView;
 import net.willwebberley.gowertides.R;
 import net.willwebberley.gowertides.classes.Day;
 import net.willwebberley.gowertides.classes.Surf;
+import net.willwebberley.gowertides.utils.Utilities;
+
+import java.util.Calendar;
 
 /*
  Class to represent the detailed surf information for the Surf Details Activity
@@ -40,14 +44,25 @@ public class SurfDetailFragment extends RelativeLayout {
 
     private View layoutView;
     private Surf surf;
+    private Day day;
+    private String[] urls;
+    private View[] views;
+    private String[] types;
+    private int downloaded;
+    private Context context;
 
-    public SurfDetailFragment(Context context, Surf s){
-        super(context);
+    public SurfDetailFragment(Context c, Surf s, Day d){
+        super(c);
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         layoutView = inflater.inflate(R.layout.fragment_surfdetail, null);
-
-
+        day = d;
         surf = s;
+        context = context;
+
+        downloaded = 0;
+        urls = new String[]{surf.swell_chart_url, surf.period_chart_url, surf.wind_chart_url, surf.pressure_chart_url};
+        views = new View[]{layoutView.findViewById(R.id.swell_image),layoutView.findViewById(R.id.period_image), layoutView.findViewById(R.id.wind_image), layoutView.findViewById(R.id.pressure_image)};
+        types = new String[]{"swell","period","wind","pressure"};
         updateUI();
     }
 
@@ -56,6 +71,8 @@ public class SurfDetailFragment extends RelativeLayout {
     }
 
     private void updateUI(){
+        downloadImages();
+
         // Format the title textviews
         ((TextView)layoutView.findViewById(R.id.time)).setTextColor(Color.rgb(0, 150, 220));
         ((TextView)layoutView.findViewById(R.id.time)).setText(surf.hour+":00");
@@ -68,7 +85,7 @@ public class SurfDetailFragment extends RelativeLayout {
         ((TextView)layoutView.findViewById(R.id.surf_size)).setTextColor(Color.rgb(70, 80, 70));
 
         ((TextView)layoutView.findViewById(R.id.abs_min_surf_size)).setText(Html.fromHtml(String.format("%.1f", surf.abs_min_surf) + "<i>ft</i>"));
-        ((TextView)layoutView.findViewById(R.id.abs_max_surf_size)).setText(Html.fromHtml(String.format("%.1f", surf.abs_min_surf) + "<i>ft</i>"));
+        ((TextView)layoutView.findViewById(R.id.abs_max_surf_size)).setText(Html.fromHtml(String.format("%.1f", surf.abs_max_surf) + "<i>ft</i>"));
 
 
         // Swell direction
@@ -85,5 +102,23 @@ public class SurfDetailFragment extends RelativeLayout {
 
         // Swell height
         ((TextView)layoutView.findViewById(R.id.height_text)).setText(Html.fromHtml(surf.swell_height+"<i>ft</i>"));
+    }
+
+    private void downloadImages(){
+        if(downloaded < urls.length){
+            new Utilities.ImageDownloader(this).execute(urls[downloaded]);
+        }
+
+    }
+
+    public void notifyDownloadComplete(BitmapDrawable bd){
+        if(bd != null){
+            ((ImageView)views[downloaded]).setImageBitmap(bd.getBitmap());
+            Calendar cal = day.getDay();
+            String fileToCache = cal.get(cal.YEAR)+cal.get(cal.MONTH)+cal.get(cal.DAY_OF_MONTH)+"-"+surf.location+"_"+types[downloaded]+".gif";
+            Utilities.cacheImage(bd, fileToCache, context);
+        }
+        downloaded++;
+        downloadImages();
     }
 }

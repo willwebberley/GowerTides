@@ -18,12 +18,17 @@ project repository.
 package net.willwebberley.gowertides.ui;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import net.willwebberley.gowertides.R;
 import net.willwebberley.gowertides.classes.Day;
 import net.willwebberley.gowertides.classes.Surf;
+import net.willwebberley.gowertides.utils.Utilities;
 
 import java.util.ArrayList;
 
@@ -54,6 +59,7 @@ public class SurfDetailActivity extends Activity {
 
 
     private void updateUI(){
+
         ((TextView)findViewById(R.id.date)).setText(day.toString());
         ((TextView)findViewById(R.id.title)).setText("Details for "+location);
 
@@ -71,9 +77,19 @@ public class SurfDetailActivity extends Activity {
         list.removeAllViews();
 
         for(int i = 0; i < reports.size(); i++){
-            SurfDetailFragment frag = new SurfDetailFragment(getApplicationContext(), reports.get(i));
+            SurfDetailFragment frag = new SurfDetailFragment(getApplicationContext(), reports.get(i), day);
             list.addView(frag.getView(), param);
         }
+    }
+
+    /*
+   * Listen for clicks on MSW logo, and open up their site if clicked.
+    */
+    public void openMSW(View view){
+        String url = "http://www.magicseaweed.com";
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
     }
 
 }

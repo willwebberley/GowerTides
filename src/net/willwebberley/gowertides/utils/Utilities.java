@@ -19,18 +19,21 @@ package net.willwebberley.gowertides.utils;
 
 
 import android.app.Activity;
+import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import net.willwebberley.gowertides.classes.Day;
 import net.willwebberley.gowertides.classes.Surf;
 import net.willwebberley.gowertides.classes.Tide;
 import net.willwebberley.gowertides.classes.Weather;
 import net.willwebberley.gowertides.ui.DaysActivity;
+import net.willwebberley.gowertides.ui.SurfDetailActivity;
+import net.willwebberley.gowertides.ui.SurfDetailFragment;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -185,16 +188,16 @@ public class Utilities {
     /*
      * AsyncTask to fetch new surf and weather data. Notifies parent Activity upon completion.
      */
-    public static  class Downloader extends AsyncTask<String, Integer, Boolean> {
+    public static  class ImageDownloader extends AsyncTask<String, Integer, BitmapDrawable> {
 
-        private Activity parent;
+        private SurfDetailFragment parent;
 
-        public Downloader(Activity p){
+        public ImageDownloader(SurfDetailFragment p){
             parent = p;
         }
 
         @Override
-        protected Boolean doInBackground(String... arg0) {
+        protected BitmapDrawable doInBackground(String... arg0) {
             // Prepare the readers:
             BufferedReader reader = null;
             StringBuffer completeData = new StringBuffer();
@@ -204,20 +207,32 @@ public class Utilities {
 
             // Make the request:
             try {
-                URL url = new URL(resource);
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                InputStream in = con.getInputStream();
-                reader = new BufferedReader(new InputStreamReader(in));
-                String line = "";
-                while ((line = reader.readLine()) != null) {
-                    completeData.append(line);
-                }
+                //Prepare to download image
+                URL url;
+                BufferedOutputStream out;
+                InputStream in;
+                BufferedInputStream buf;
+                    url = new URL(resource);
+                    in = url.openStream();
 
-                return true;
+
+                    // Read the inputstream
+                    buf = new BufferedInputStream(in);
+
+                    // Convert the BufferedInputStream to a Bitmap
+                    Bitmap bMap = BitmapFactory.decodeStream(buf);
+                    if (in != null) {
+                        in.close();
+                    }
+                    if (buf != null) {
+                        buf.close();
+                    }
+
+                    return new BitmapDrawable(bMap);
             }
             catch (IOException e) {
                 e.printStackTrace();
-                return false;
+                return null;
             }
             finally {
                 if (reader != null) {
@@ -225,7 +240,7 @@ public class Utilities {
                         reader.close();
                     } catch (IOException e) {
                         e.printStackTrace();
-                        return false;
+                        return null;
                     }
                 }
             }
@@ -236,8 +251,27 @@ public class Utilities {
         *
         * If unsuccessful, for any reason, show an error.
          */
-        protected void onPostExecute(Boolean result) {
-            parent.notify();
+        protected void onPostExecute(BitmapDrawable result) {
+            parent.notifyDownloadComplete(result);
+        }
+
+    }
+
+    public static void cacheImage(BitmapDrawable image, String fileName, Context context){
+
+        try{
+            FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+
+            Bitmap b = image.getBitmap();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            b.compress(Bitmap.CompressFormat.PNG, 0 , bos);
+            byte[] bitmapdata = bos.toByteArray();
+
+            fos.write(bitmapdata);
+            fos.close();
+        }
+        catch(Exception e){
+            System.err.println(e);
         }
     }
 }
