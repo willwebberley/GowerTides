@@ -19,10 +19,12 @@ package net.willwebberley.gowertides.classes;
 
 import android.database.Cursor;
 
+import java.io.Serializable;
+
 /**
  * Created by flyingsparx on 20/07/13.
  */
-public class Weather {
+public class Weather  implements Serializable {
 
     public int max_temp_c;
     public int max_temp_f;

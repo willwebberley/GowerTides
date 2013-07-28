@@ -20,9 +20,10 @@ package net.willwebberley.gowertides.classes;
 
 import android.database.Cursor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Surf {
+public class Surf implements Serializable{
 
     public int hour;
     public int location;
@@ -44,7 +45,7 @@ public class Surf {
     public String sst_chart_url;
 
 
-    public static ArrayList<Surf> initSurf(ArrayList<Surf> surf_reports, Cursor surfInfo){
+    public static ArrayList<Surf> initSurf(Cursor surfInfo){
         // SURF INFO:
         // 0location 1timestamp 2local_time 3year 4month 5day 6hour 7minute 8faded_rating 9solid_rating 10min_surf 11abs_min_surf 12max_surf
         // 13abs_max_surf 14swell_height 15swell_period 16swell_angle 17swell_direction 18swell_chart 19period_chart
@@ -52,7 +53,8 @@ public class Surf {
 
         // Assumes data from DB is returned ordered by timestamp DESC
         long recent_request_timestamp = surfInfo.getLong(1);
-        surf_reports.clear();
+        ArrayList<Surf> surf_reports = new ArrayList<Surf>();
+        //surf_reports.clear();
         // Only get data for the most recent timestamp:
         while (! surfInfo.isLast() && surfInfo.getLong(1) == recent_request_timestamp){
             Surf surf = new Surf();

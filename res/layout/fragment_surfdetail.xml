@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_below="@+id/msw_icon"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            android:textColor="#aaaaaa"
+            android:text="09:00"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <HorizontalScrollView
+        android:id="@+id/image_scroller"
+        android:layout_height="@+id/wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_below="@+id/time"
+        >
+
+        <LinearLayout
+            android:id="@+id/images"
+            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/wind_image"
+                android:layout_marginRight="5dp"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_action_search"
+                />
+
+            <ImageView
+                    android:id="@+id/pressure_image"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_action_search"
+                    />
+
+            <ImageView
+                    android:id="@+id/sst_image"
+                    android:layout_marginRight="5dp"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_action_search"
+                    />
+
+        </LinearLayout>
+     </HorizontalScrollView>
+</RelativeLayout>

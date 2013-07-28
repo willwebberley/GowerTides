@@ -20,10 +20,13 @@ package net.willwebberley.gowertides.classes;
 import android.database.Cursor;
 import net.willwebberley.gowertides.ui.DaysActivity;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+
+import net.willwebberley.gowertides.utils.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import org.joda.time.Minutes;
@@ -31,7 +34,7 @@ import org.joda.time.Minutes;
 /*
 * Class representing a tidal event (type (low/high), time, height, etc.)
  */
-public class Tide {
+public class Tide  implements Serializable {
     public final int LOW = 0;
     public final int HIGH = 1;
 
@@ -82,12 +85,12 @@ public class Tide {
     /*
     * Read database cursors and generate list of Tide events for representative day.
      */
-    public static ArrayList<Tide> initTides(ArrayList<Tide> tide_forecasts, DaysActivity parent, Cursor tideInfo, Day day) throws ParseException {
+    public static ArrayList<Tide> initTides(Cursor tideInfo, Calendar cal) throws ParseException {
         // TIDE INFO:
         // 0year 1month 2day 3week_day 4sunrise 5sunset 6moon 7high1_time 8high1_height 9low1_time 10low1_height
         // 11high2_time 12high2_height 13low2_time 14low2_height 15high3_time 16high3_height
-
-        tide_forecasts.clear();
+        ArrayList<Tide> tide_forecasts = new ArrayList<Tide>();
+//        tide_forecasts.clear();
         int tideCounter = 1;
         for(int i = 7; i <= 15; i = i+2){
             if(! tideInfo.getString(i).equals("")){
@@ -95,10 +98,10 @@ public class Tide {
                 String type="high";
                 if(tideCounter%2 == 0){type="low";}
                 Calendar time = Calendar.getInstance();
-                time.setTime(parent.dayDateFormatter.parse(tideInfo.getString(i).replace("BST", "").replace("GMT","")));
-                time.set(Calendar.YEAR, day.getDay().get(Calendar.YEAR));
-                time.set(Calendar.MONTH, day.getDay().get(Calendar.MONTH));
-                time.set(Calendar.DAY_OF_MONTH, day.getDay().get(Calendar.DAY_OF_MONTH));
+                time.setTime(Constants.getDateFormat().parse(tideInfo.getString(i).replace("BST", "").replace("GMT", "")));
+                time.set(Calendar.YEAR, cal.get(Calendar.YEAR));
+                time.set(Calendar.MONTH, cal.get(Calendar.MONTH));
+                time.set(Calendar.DAY_OF_MONTH, cal.get(Calendar.DAY_OF_MONTH));
                 tide.time = time;
                 tide.timeHours = time.get(Calendar.HOUR_OF_DAY) + ((time.get(Calendar.MINUTE)+0.0) / 60);
                 tide.height = Double.parseDouble((tideInfo.getString(i+1).replace("m","")).trim());

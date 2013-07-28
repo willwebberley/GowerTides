@@ -162,7 +162,7 @@ public class DayFragment extends Fragment {
      * Main UI updater. Sets the textfields, tide graph, etc to the selected day.
      */
     public void updateUI(){
-        day.getDayInfo();
+        //day.getDayInfo();
     	rightNow = Calendar.getInstance();
         locationIndex = dayView.locationIndex;
 

@@ -27,6 +27,7 @@ import android.net.Uri;
 import net.willwebberley.gowertides.R;
 import net.willwebberley.gowertides.classes.*;
 import net.willwebberley.gowertides.utils.DayDatabase;
+import net.willwebberley.gowertides.utils.Utilities;
 import net.willwebberley.gowertides.utils.WeatherDatabase;
 
 import android.net.ConnectivityManager;
@@ -54,10 +55,10 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 /*
  * Main Activity of application
  *
- * This class maintains the pageviewer of days as well as indicating the currently selected day and handles some button
+ * This class maintains the ViewPager of days as well as indicating the currently selected day and handles some button
   * press events.
   *
-  * Pageviewer contains a list of fragments, each representing a day.
+  * ViewPager contains a list of fragments, each representing a day.
   *
   * This class ia also responsible for network tasks (getting weather), and communicating this to the day fragments.
   *
@@ -68,7 +69,6 @@ public class DaysActivity extends FragmentActivity {
 	private ViewPager infoPager;
     private int todayFragmentIndex;
     private int currentFragmentIndex;
-    private Calendar[] infoArray;
 	private Calendar currentDay, firstDay, lastDay;
 	private Vector<DayFragment> fragments;
 	private PagerAdapter mPagerAdapter;
@@ -111,14 +111,6 @@ public class DaysActivity extends FragmentActivity {
         isPaused = false;
         isSyncing = false;
 
-        /*
-        * Following one variable stored by Parent activity to speed up startup on Android v2.2.
-        * (Previously each Day class responsibe for maintaining, which caused slowdowns)
-         */
-        dayDateFormatter = new SimpleDateFormat("h:m a");
-        dayDateFormatter.setTimeZone(TimeZone.getDefault());
-
-        //dayDateFormatter = new SimpleDateFormat("h:m a");
         prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         initComponents();
@@ -145,12 +137,14 @@ public class DaysActivity extends FragmentActivity {
         for(int i =0; i < DAYS_TO_STORE; i++){
             Calendar newDay = (Calendar)startDay.clone();
             newDay.add(Calendar.DATE,i);
-            infoArray[i] = newDay;
-            DayFragment dayToAdd = new DayFragment(new Day(newDay, getApplicationContext(), this), prefs, this);
+
+            Day day = Utilities.createDay(db,weather_db, newDay, locationKeys[locationIndex]);
+            DayFragment dayFrag = new DayFragment(day, prefs, this);
+
             if (currentDay.getTimeInMillis() == newDay.getTimeInMillis()){
                 todayFragmentIndex = i;
             }
-            fragments.add(dayToAdd);
+            fragments.add(dayFrag);
             if (newDay.getTimeInMillis() == lastDay.getTimeInMillis()){
                 break;
             }
@@ -305,10 +299,23 @@ public class DaysActivity extends FragmentActivity {
         startActivity(i);
     }
 
+    /*
+    * Listen for clicks on 'location edit' image to open location select dialog.
+     */
     public void editLocation(View view){
         LocationDialog ld = new LocationDialog(locationNames, locationKeys);
         ld.show(getSupportFragmentManager(), "");
 
+    }
+
+    /*
+    * Listen for clicks on 'surf detail' image to open the surf detail activity.
+     */
+    public void viewSurfDetail(View view){
+        Intent intent_surf = new Intent(this, SurfDetailActivity.class);
+        Day d = ((DayFragment)fragments.get(currentFragmentIndex)).day;
+        intent_surf.putExtra("day", d);
+        startActivity(intent_surf);
     }
 
 
@@ -323,12 +330,23 @@ public class DaysActivity extends FragmentActivity {
         refreshProgress.setVisibility(View.VISIBLE);
         isSyncing = true;
         if(this.isOnline()){
-            new RefreshTask().execute("http://tides.flyingsparx.net/fetch/both/");
+            new Utilities.DataGetter(this, locationKeys[locationIndex], weather_db).execute();
         }
         else{
             Toast.makeText(getApplicationContext(), "Unable to sync: network unavailable.", Toast.LENGTH_LONG).show();
             finishRefresh();
         }
+    }
+
+    /*
+    * Called upon completion of the refresh task
+     */
+    public void notifySyncFinished(Boolean result){
+        finishRefresh();
+        if(!result){
+            Toast.makeText(getApplicationContext(), "Sync error: Please try again later.", Toast.LENGTH_LONG).show();
+        }
+        isSyncing = false;
     }
 
     /******
@@ -366,15 +384,22 @@ public class DaysActivity extends FragmentActivity {
     * These three methods execute different methods within the loaded pages.
      */
     private void fragmentsRefreshUI(){
+        Utilities.reprocessDay(db, weather_db, ((DayFragment)fragments.get(currentFragmentIndex)).day, locationKeys[locationIndex]);
         ((DayFragment)fragments.get(currentFragmentIndex)).refreshUI();
         try{
+            Utilities.reprocessDay(db, weather_db, ((DayFragment)fragments.get(currentFragmentIndex-1)).day, locationKeys[locationIndex]);
             ((DayFragment)fragments.get(currentFragmentIndex-1)).refreshUI();
+            Utilities.reprocessDay(db, weather_db, ((DayFragment)fragments.get(currentFragmentIndex+1)).day, locationKeys[locationIndex]);
             ((DayFragment)fragments.get(currentFragmentIndex+1)).refreshUI();
         }
         catch(Exception e){
             System.err.println("At end of viewpager.");
         }
     }
+
+    /*
+    * Called when network sync finishes, to update the UI (i.e. hide progress bar and re-show the button)
+     */
     private void finishRefresh(){
         refreshProgress.setVisibility(View.INVISIBLE);
         refreshButton.setVisibility(View.VISIBLE);
@@ -430,7 +455,6 @@ public class DaysActivity extends FragmentActivity {
                 System.err.println(e);
             }
             System.out.println("Preparing day fragments...");
-            infoArray = new Calendar[DAYS_TO_STORE];
             currentDay = Calendar.getInstance();
             //currentDay = setDayForTesting("21/07/2016");
 
@@ -455,6 +479,9 @@ public class DaysActivity extends FragmentActivity {
                 }
             });
 
+            /*
+            * Set each Day's yesterday Day and tomorrow Day (if available)
+             */
             for(int i=0; i < fragments.size(); i++){
                 if(i > 0){
                     Day yesterday = fragments.get(i-1).day;
@@ -489,77 +516,5 @@ public class DaysActivity extends FragmentActivity {
         }
     }
 
-    /*
-     * AsyncTask to fetch new surf and weather data.
-     */
-    private class RefreshTask extends AsyncTask<String, Integer, Boolean>{
-        @Override
-        protected Boolean doInBackground(String... arg0) {
-            System.out.println("Starting download...");
-            BufferedReader reader = null;
-            StringBuffer completeData = new StringBuffer();
-            String androidVersion = android.os.Build.VERSION.RELEASE;
-            String model = android.os.Build.MANUFACTURER+"-"+android.os.Build.MODEL.replace(" ", "-");
-            int location = locationKeys[locationIndex];
-            arg0[0] = arg0[0]+"?dev="+model+"&ver="+androidVersion+"&loc="+location;
-            try {
-                URL url = new URL(arg0[0]);
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                InputStream in = con.getInputStream();
-                reader = new BufferedReader(new InputStreamReader(in));
-                String line = "";
-                while ((line = reader.readLine()) != null) {
-                    completeData.append(line);
-                }
-                System.out.println("Finished. Adding to db...");
-                Boolean success = weather_db.insertAllData(completeData.toString());
-                System.out.println("Done.");
-                if(!success){
-                    return false;
-                }
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                return false;
-            }
-            finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }
-        /*
-        * On finish, update day fragments to show surf and flag the process as complete.
-        *
-        * If unsuccessful, for any reason, show an error.
-         */
-        protected void onPostExecute(Boolean result) {
-            finishRefresh();
-            if(!result){
-                Toast.makeText(getApplicationContext(), "Sync error: Please try again later.", Toast.LENGTH_LONG).show();
-            }
-            isSyncing = false;
-        }
-    }
 
-    /*
-     * AsyncTask to fetch new surf and weather data.
-     */
-    private class UpdateFragmentTask extends AsyncTask<String, Integer, Boolean>{
-        @Override
-        protected Boolean doInBackground(String... arg0) {
-
-            return true;
-        }
-
-        protected void onPostExecute(Boolean result) {
-
-        }
-    }
 }

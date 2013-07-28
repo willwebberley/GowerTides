@@ -17,6 +17,7 @@ project repository.
 
 package net.willwebberley.gowertides.classes;
 
+import java.io.Serializable;
 import java.text.*;
 import java.util.*;
 
@@ -31,7 +32,7 @@ import net.willwebberley.gowertides.utils.*;
 *
 * This is not a UI class, but contains the data represented in a DayFragment fragment.
  */
-public class Day {
+public class Day implements Serializable{
 
     /*
     * Calendar representation of Day
@@ -58,77 +59,39 @@ public class Day {
     private Boolean surfAvailable; // true if surf data is available for day
     private Boolean tidesAvailable; // true if tides data is available for day
 
-	private DayDatabase db; // intance of the database holding tidal data
-	private WeatherDatabase weather_db; // instance of the database holding weather and surf data
-	private DaysActivity dayView; // Top level activity for application (to access context, databases, etc.)
+	//private DayDatabase db; // intance of the database holding tidal data
+	//private WeatherDatabase weather_db; // instance of the database holding weather and surf data
+	//private DaysActivity dayView; // Top level activity for application (to access context, databases, etc.)
 
 
     /*
-    * Instantiate object with a Calendar day to represent, the application context and the main DaysActivity activity.
-    * Activity is needed to access the databases.
+    * Instantiate object with a Calendar day to represent,
      */
-	public Day(Calendar date, Context con, DaysActivity dv){
-		day = date;
-		context = con;
-		db = dv.db;
-		weather_db = dv.weather_db;
-		dayView = dv;
-		getDayInfo();
-	}
+    public Day(Calendar date){
+        day = date;
+    }
 
     /*
-    * Set a new Calendar day of the Day object, if needed
+    * Set the day's information (which is processed externally from the databases):
      */
-	public Day setDay(Calendar date){
-		day = date;
-		getDayInfo();
-		return this;
-	}
+    public void setGeneral(Calendar sunrise, Calendar sunset, String moon){
+        this.sunrise = sunrise;
+        this.sunset = sunset;
+        this.moon = moon;
+    }
+    public void setTide(ArrayList<Tide> t, Boolean available){
+        this.tide_forecasts = t;
+        this.tidesAvailable = available;
+    }
+    public void setWeather(Weather w, Boolean available){
+        this.weather = w;
+        this.weatherAvailable = available;
+    }
+    public void setSurf(ArrayList<Surf> s, Boolean available){
+        this.surf_reports = s;
+        this.surfAvailable = available;
+    }
 
-    /*
-    * Load information regarding this day from the databases and put into the fields held by this object.
-     */
-	public void getDayInfo(){
-		Cursor tideInfo = db.getDayInfo(day);
-		Cursor weatherInfo = weather_db.getWeatherInfo(day);
-        Cursor surfInfo = weather_db.getSurfInfo(day, dayView.locationKeys[dayView.locationIndex]);
-
-        try{
-            // TIDE INFO:
-            // 0year 1month 2day 3week_day 4sunrise 5sunset 6moon 7high1_time 8high1_height 9low1_time 10low1_height
-            // 11high2_time 12high2_height 13low2_time 14low2_height 15high3_time 16high3_height
-            sunrise = (Calendar.getInstance());
-            sunrise.setTime(dayView.dayDateFormatter.parse(tideInfo.getString(4).replace("BST", "").replace("GMT","")));
-            sunset = Calendar.getInstance();
-            sunset.setTime(dayView.dayDateFormatter.parse(tideInfo.getString(5).replace("BST", "").replace("GMT","")));
-            moon = tideInfo.getString(6);
-        }catch(Exception e){System.err.println(e);}
-
-		try{
-            weather = Weather.initWeather(weatherInfo);
-			weatherAvailable = true;
-		}catch(Exception e){weatherAvailable = false;}
-
-
-        try{
-            surf_reports = Surf.initSurf(surf_reports, surfInfo);
-            surfAvailable = true;
-        }catch(Exception e){surfAvailable = false;}
-
-		try{
-            tide_forecasts = Tide.initTides(tide_forecasts, dayView, tideInfo, this);
-		}catch(Exception e){tidesAvailable = false;}
-
-
-        /*
-        * Close the three cursors needed to get this data.
-         */
-        try{
-            tideInfo.close();
-            weatherInfo.close();
-            surfInfo.close();
-        }catch(Exception e){System.err.println("Could not close DBs: "+e);}
-	}
 
     /*
     * Set the instance of Day representing the day before this one (for showing continuation of tide graph)
@@ -139,6 +102,7 @@ public class Day {
     public Day getYesterday(){
         return yesterday;
     }
+
 
     /*
     * Set instance of Day representing day after this one (for showing continuation of tide graph)
@@ -162,6 +126,7 @@ public class Day {
     public Boolean isSurfAvailable(){
         return surfAvailable;
     }
+
 
     /*
     * Publicly-available standard getter methods for this class.
@@ -235,7 +200,5 @@ public class Day {
 			return false;
 		}
 	}
-
-
 
 }

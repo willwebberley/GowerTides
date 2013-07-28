@@ -101,7 +101,20 @@
                     android:layout_toRightOf="@+id/surf_title"
                     android:scaleType="fitXY"
                     android:onClick="editLocation"
-                    android:src="@drawable/edit"
+                    android:src="@drawable/pin"
+                    android:alpha="0.5"/>
+
+            <ImageView
+                    android:id="@+id/view_surfdetail"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_below="@+id/surf_head"
+                    android:layout_toRightOf="@+id/edit_location"
+                    android:scaleType="fitXY"
+                    android:onClick="viewSurfDetail"
+                    android:src="@drawable/eye"
                     android:alpha="0.5"/>
 
             <ImageView
