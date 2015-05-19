@@ -1,5 +1,4 @@
-Gower Tides v1.4
-=================
+# Gower Tides
 
 Source for Gower Tides app on Google Play.
 
@@ -16,8 +15,3 @@ Source for Gower Tides app on Google Play.
     * Weather data is from the [World Weather Online](http://www.worldweatheronline.com) API.
     * This SQLite [helper class](https://github.com/jgilfelt/android-sqlite-asset-helper) was used to handle the local SQLite database.
     * The [Joda Time](http://joda-time.sourceforge.net) library is used to handle dates and times (including calculating time differences).
-
-* Source Information
-    * Tidal data is excluded from the publically available source
-    * Weather icons and some other images are excluded from the publically available source
-    * External libraries (AndroidPlot, Android SQLite Helper, Joda Time,  and Android Support) are required (in `libs/` dir).

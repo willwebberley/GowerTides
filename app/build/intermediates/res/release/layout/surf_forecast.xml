@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/surfDetails"
+                android:layout_width="100dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_height="wrap_content">
+    <!-- android:layout_weight=".20"-->
+    <!-- GENERAL INFO -->
+    <TextView
+            android:id="@+id/timeField"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginBottom="5dp"
+            android:layout_alignParentTop="true"
+            android:text="09:00"/>
+    <View
+            android:id="@+id/hr1"
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:layout_below="@+id/timeField"
+            android:background="#cccccc"
+            android:layout_marginBottom="5dp"
+            />
+
+    <!-- MAX/MIN WAVE HEIGHT INFO -->
+
+    <ImageView
+            android:id="@+id/waveLogo"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginRight="5dp"
+            android:layout_below="@+id/hr1"
+            android:scaleType="fitXY"
+            android:src="@drawable/wave"
+            />
+    <TextView
+            android:id="@+id/surfSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hr1"
+            android:layout_toRightOf="@+id/waveLogo"
+            android:text="3-4ft"/>
+
+    <View
+            android:id="@+id/hr2"
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/surfSize"
+            android:background="#dddddd"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            />
+
+
+    <!-- SWELL DIRECTION INFO -->
+
+    <ImageView
+            android:id="@+id/directionLogo"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/hr2"
+            android:scaleType="fitXY"
+            android:src="@drawable/compass"
+            />
+    <TextView
+            android:id="@+id/swellDirection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/hr2"
+            android:layout_toRightOf="@+id/directionLogo"
+            android:layout_alignTop="@+id/directionLogo"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#000000"
+            android:text="3-4ft"/>
+    <ImageView
+            android:id="@+id/swellDirectionIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/hr2"
+            android:layout_toRightOf="@+id/swellDirection"
+            android:layout_marginLeft="7dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/arrow" />
+
+    <!-- SWELL PERIOD INFO -->
+
+    <ImageView
+            android:id="@+id/periodLogo"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/directionLogo"
+            android:scaleType="fitXY"
+            android:src="@drawable/stopwatch"
+            />
+    <TextView
+            android:id="@+id/swellPeriod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/directionLogo"
+            android:layout_alignTop="@+id/periodLogo"
+            android:layout_toRightOf="@+id/periodLogo"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="3-4ft"
+            android:textColor="#000000"/>
+
+
+    <!-- SWELL HEIGHT INFO -->
+
+    <ImageView
+            android:id="@+id/heightLogo"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="8dp"
+            android:layout_below="@+id/periodLogo"
+            android:scaleType="fitXY"
+            android:src="@drawable/size"
+            />
+    <TextView
+            android:id="@+id/swellHeight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/periodLogo"
+            android:layout_alignTop="@+id/heightLogo"
+            android:layout_toRightOf="@+id/heightLogo"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="3-4ft"
+            android:textColor="#000000"/>
+</RelativeLayout><!-- From: file:/home/will/StudioProjects/GowerTides/app/src/main/res/layout/surf_forecast.xml -->

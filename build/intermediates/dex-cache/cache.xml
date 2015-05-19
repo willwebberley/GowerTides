@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/will/StudioProjects/GowerTides/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="d1bf02de1c56d942e7a9d093b8610ba1ef4128e3">
+        <dex dex="/home/will/StudioProjects/GowerTides/app/build/intermediates/pre-dexed/debug/classes-a0b7dc9f5463d38649ccf4d2c2e07aacb7a59f6e.jar" />
+    </item>
+    <item
+        jar="/home/will/StudioProjects/GowerTides/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.2/jars/classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="7ae2d38807a43b2f2185ff4089a92c790b579e54">
+        <dex dex="/home/will/StudioProjects/GowerTides/app/build/intermediates/pre-dexed/debug/classes-b9e221b2be14b590db9453243de1d9abda3f0ac7.jar" />
+    </item>
+    <item
+        jar="/home/will/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.2/support-annotations-21.0.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="99373741f99a0556ee293c41e8faa1ca3ae8a4e6">
+        <dex dex="/home/will/StudioProjects/GowerTides/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.2-a4e595789df4975ceea932c0fea379eeb0c48556.jar" />
+    </item>
+    <item
+        jar="/home/will/StudioProjects/GowerTides/app/libs/Androidplot-core-0.5.0-release.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="72a0ec72a119887454de2745ccece3c659fcf0d2">
+        <dex dex="/home/will/StudioProjects/GowerTides/app/build/intermediates/pre-dexed/debug/Androidplot-core-0.5.0-release-acf016157476ece0225425c1798834756354728b.jar" />
+    </item>
+    <item
+        jar="/home/will/StudioProjects/GowerTides/app/libs/joda-time-2.7.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="5599707a3eaad13e889f691b3af78c8c03842195">
+        <dex dex="/home/will/StudioProjects/GowerTides/app/build/intermediates/pre-dexed/debug/joda-time-2.7-53690e02f6223c1f6bfec667aed3995b7f1f06b9.jar" />
+    </item>
+    <item
+        jar="/home/will/StudioProjects/GowerTides/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.2/jars/libs/internal_impl-21.0.2.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="962e8b12569c56dbdcf8367eb4eac8bb129cd18f">
+        <dex dex="/home/will/StudioProjects/GowerTides/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.2-4497d59640ddc7b5a63b2767d020f66ec3a91adb.jar" />
+    </item>
+    <item
+        jar="/home/will/StudioProjects/GowerTides/app/libs/android-sqlite-asset-helper.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="20f039a3336c18f93cfddfa1a49ce91a55361c40">
+        <dex dex="/home/will/StudioProjects/GowerTides/app/build/intermediates/pre-dexed/debug/android-sqlite-asset-helper-68201c269075f61b26e010f20294603ac2c3994a.jar" />
+    </item>
+
+</items>

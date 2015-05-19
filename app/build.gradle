@@ -1,0 +1,26 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "22.0.1"
+
+    defaultConfig {
+        applicationId "net.willwebberley.gowertides"
+        minSdkVersion 7
+        targetSdkVersion 12
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile 'com.android.support:appcompat-v7:21.0.2'
+    compile files('libs/Androidplot-core-0.5.0-release.jar')
+    compile files('libs/android-sqlite-asset-helper.jar')
+    compile files('libs/joda-time-2.7.jar')
+}

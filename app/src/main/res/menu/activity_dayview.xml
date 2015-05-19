@@ -1,0 +1,34 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"  xmlns:yourapp="http://schemas.android.com/apk/res-auto">
+    
+    <item android:id="@+id/menu_revert"
+        android:title="Today"
+        yourapp:showAsAction="always"
+        android:icon="@drawable/ic_today_white_48dp"
+    />
+    <item android:id="@+id/menu_location"
+        android:title="Surf location"
+        yourapp:showAsAction="always"
+        android:icon="@drawable/ic_pin_drop_white_48dp"
+        />
+    <item android:id="@+id/sync"
+        android:title="Sync weather &amp; surf"
+        yourapp:showAsAction="never"
+        android:icon="@drawable/ic_refresh_white_48dp"
+        />
+    <item android:id="@+id/next_day"
+        android:title="Next day"
+        yourapp:showAsAction="never"
+        />
+    <item android:id="@+id/prev_day"
+        android:title="Previous day"
+        yourapp:showAsAction="never"
+        />
+    <item android:id="@+id/menu_about"
+        android:title="@string/title_activity_about"
+        yourapp:showAsAction="never"
+         />
+    <item android:id="@+id/menu_settings"
+        android:title="@string/title_activity_settings"
+        yourapp:showAsAction="never"
+         />
+</menu>
