@@ -2,9 +2,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-        android:background="#ffffff">
+    android:background="#ffffff">
 
-    <TextView 
+    <TextView
             android:id="@+id/dayNotFound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -19,8 +19,7 @@
     <RelativeLayout
             android:id="@+id/buildProgressHolder"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            >
+            android:layout_height="fill_parent">
         <ProgressBar
                 android:id="@+id/buildProgress"
                 android:layout_width="40dp"

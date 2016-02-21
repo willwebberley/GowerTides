@@ -82,13 +82,19 @@ public class DayDatabase extends SQLiteAssetHelper {
 		int month = (todayDate.get(Calendar.MONTH))+1;
 		int year = todayDate.get(Calendar.YEAR);
 		int day = todayDate.get(Calendar.DAY_OF_MONTH);
-		
-		SQLiteDatabase db = getReadableDatabase();
+		try{
+			SQLiteDatabase db = getReadableDatabase();
+			Cursor c = db.rawQuery("SELECT * FROM data WHERE year="+year+" AND month="+month+" AND day="+day, null);
 
-		Cursor c = db.rawQuery("SELECT * FROM data WHERE year="+year+" AND month="+month+" AND day="+day, null);
+			c.moveToFirst();
+			return c;
+		}
+		catch(Exception e){
+			System.err.println(e);
+		}
 
-		c.moveToFirst();
-		return c;
+
+		return null;
 
 	}
 }

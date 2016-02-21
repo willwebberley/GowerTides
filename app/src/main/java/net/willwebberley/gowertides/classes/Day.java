@@ -59,11 +59,6 @@ public class Day implements Serializable{
     private Boolean surfAvailable; // true if surf data is available for day
     private Boolean tidesAvailable; // true if tides data is available for day
 
-	//private DayDatabase db; // intance of the database holding tidal data
-	//private WeatherDatabase weather_db; // instance of the database holding weather and surf data
-	//private DaysActivity dayView; // Top level activity for application (to access context, databases, etc.)
-
-
     /*
     * Instantiate object with a Calendar day to represent,
      */

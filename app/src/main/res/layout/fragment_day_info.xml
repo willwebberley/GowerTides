@@ -6,23 +6,21 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="#eeeeee" >
+            android:background="#eeeeee">
 
     <LinearLayout
             android:id="@+id/mainView"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:background="#eeeeee" >
+            android:background="#eeeeee">
 
         <RelativeLayout
             android:id="@+id/tidal_views"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dp"
-            android:layout_marginRight="3dp"
-
-            >
+            android:layout_marginRight="3dp">
 
         <com.androidplot.xy.XYPlot
                 android:id="@+id/tideGraphComponent"

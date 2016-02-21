@@ -26,7 +26,7 @@ import android.content.SharedPreferences;
 import android.graphics.*;
 import android.preference.PreferenceManager;
 
-import com.androidplot.series.XYSeries;
+import com.androidplot.xy.XYSeries;
 import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYPlot;
@@ -41,7 +41,7 @@ import com.androidplot.xy.XYStepMode;
 * Each instance of TideGraph represents the tidal graph and tidal data for a certain Day object.
  */
 public class TideGraph {
-	
+
 	private XYPlot plot;
 	private XYSeries series, timeSeries, sunriseSeries, sunsetSeries;
 	private Day day;
@@ -53,7 +53,7 @@ public class TideGraph {
 	public TideGraph(XYPlot plotComponent, Context context){
 		plot = plotComponent;
 
-		prefs = PreferenceManager.getDefaultSharedPreferences(context); 
+		prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		initGraph();
 	}
 
@@ -71,13 +71,13 @@ public class TideGraph {
 		plot.removeSeries(sunriseSeries);
 		plot.removeSeries(sunsetSeries);
 
-        // Create the 3 series types...
+    // Create the 3 series types...
 		createSunSeries();
-        createTideSeries();
-        createCurrentTimeSeries();
+    createTideSeries();
+    createCurrentTimeSeries();
 
-        // Refresh the plot display
-        plot.redraw();
+    // Refresh the plot display
+    plot.redraw();
 	}
 
     private void createSunSeries(){
@@ -97,9 +97,11 @@ public class TideGraph {
                     Arrays.asList(yValues),
                     "Sunrise");
             LineAndPointFormatter formatter = new LineAndPointFormatter(
-                    Color.rgb(200, 200, 200),                   // line color
-                    null,                   // point color
-                    Color.rgb(220, 220, 220));
+                    Color.rgb(200, 200, 200),	// line color
+                    null,                   	// point color
+                    Color.rgb(220, 220, 220),  // fill Color
+										null
+						);
             Paint lineFill = new Paint();
             lineFill.setAlpha(60);
             formatter.setFillPaint(lineFill);
@@ -150,9 +152,11 @@ public class TideGraph {
 
         // Format the series
         LineAndPointFormatter heightsFormat = new LineAndPointFormatter(
-                Color.rgb(0, 150, 220),                   // line color
-                null,                   // point color
-                Color.rgb(0, 150, 220));     // fill color
+                Color.rgb(0, 150, 220),  	// line color
+                null,                   	// point color
+                Color.rgb(0, 150, 220),   // fill color
+								null
+				);
         Paint lineFill = new Paint();
         lineFill.setAlpha(150);
         lineFill.setShader(new LinearGradient(0, 0, 0, 250, Color.WHITE, Color.rgb(0, 150, 220), Shader.TileMode.CLAMP));
@@ -186,9 +190,11 @@ public class TideGraph {
                         "Time");
 
                 LineAndPointFormatter timeFormat = new LineAndPointFormatter(
-                        Color.rgb(200, 0, 0),                   // line color
+                        Color.rgb(200, 0, 0),   // line color
                         null,                   // point color
-                        Color.rgb(200, 0, 0));                                  // fill color
+                        Color.rgb(200, 0, 0),		// fill color
+												null
+								);
                 timeFormat.getLinePaint().setStyle(Paint.Style.STROKE);
                 timeFormat.getLinePaint().setStrokeWidth(5);
                 plot.addSeries(timeSeries, timeFormat);
@@ -201,7 +207,7 @@ public class TideGraph {
 	* axes ranges, etc.
 	 */
 	private void initGraph(){
-        
+
 		// reduce the number of range labels
 		plot.setTicksPerRangeLabel(1);
 		// step periods on axes
@@ -209,29 +215,28 @@ public class TideGraph {
 		plot.setRangeStep(XYStepMode.INCREMENT_BY_VAL, 2.0);
 		// change format of x-axis to decimal
 		plot.setDomainValueFormat(new DecimalFormat("#"));
-		
+
+		// Colours
 		try{
-		// handle the graph colours
-		//plot.setBackgroundColor(Color.rgb(250, 250, 250));
-            plot.setBackgroundColor(Color.parseColor("#eeeeee"));
-		//plot.getBackgroundPaint().setAlpha(200);
-		plot.getGraphWidget().getGridLinePaint().setColor(Color.GRAY);
-		plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
-		plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
-		plot.getGraphWidget().getRangeLabelPaint().setColor(Color.BLACK);
-		plot.getGraphWidget().getDomainLabelPaint().setColor(Color.BLACK);
-		plot.getGraphWidget().getDomainOriginLabelPaint().setColor(Color.BLACK);
-		plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.BLACK);	
-		
-			plot.setBackgroundPaint(null);
-			plot.getGraphWidget().setBackgroundPaint(null);
-			plot.getGraphWidget().setGridBackgroundPaint(null);
-			//plot.setBackground(null);
+			plot.getGraphWidget().getDomainOriginLinePaint().setColor(Color.GRAY);
+			plot.getGraphWidget().getRangeOriginLinePaint().setColor(Color.GRAY);
+			plot.getGraphWidget().getRangeLabelPaint().setColor(Color.BLACK);
+			plot.getGraphWidget().getDomainLabelPaint().setColor(Color.BLACK);
+			plot.getGraphWidget().getDomainOriginLabelPaint().setColor(Color.BLACK);
+			plot.getGraphWidget().getRangeOriginLabelPaint().setColor(Color.BLACK);
+			plot.setPlotMargins(0,0,0,0);
+			plot.setPlotPadding(0,0,30,0);
+			Paint white = new Paint();
+			white.setColor(Color.parseColor("#eeeeee"));
+			plot.setBackgroundPaint(white);
+			plot.setBorderPaint(white);
+			plot.getGraphWidget().setBackgroundPaint(white);
+			plot.getGraphWidget().setGridBackgroundPaint(white);
 		}
 		catch(Exception e){
 			System.out.println(e);
 		}
-		
+
 		// handle axis titles
 		plot.getRangeLabelWidget().getLabelPaint().setColor(Color.rgb(0, 150, 220));
 		plot.getRangeLabelWidget().getLabelPaint().setTextSize(20);
@@ -241,17 +246,17 @@ public class TideGraph {
 		plot.getDomainLabelWidget().getLabelPaint().setTextSize(20);
 		plot.getDomainLabelWidget().setMarginTop(25);
 		plot.getDomainLabelWidget().setMarginBottom(20);
-				
+
 		// handle size of axis tick labels
 		plot.getGraphWidget().getDomainLabelPaint().setTextSize(25);
 		plot.getGraphWidget().getDomainOriginLabelPaint().setTextSize(25);
 		plot.getGraphWidget().getRangeLabelPaint().setTextSize(20);
 		plot.getGraphWidget().getRangeOriginLabelPaint().setTextSize(20);
-		
+
 		// increase margins to ensure labels fit on graph
 		plot.getGraphWidget().setMarginBottom(25);
 		plot.getGraphWidget().setMarginRight(10);
-		
+
 		// Axis settings
 		plot.setRangeLabel("Tide height (m)");
 		plot.setDomainLabel("Time of day (h)");
@@ -261,16 +266,8 @@ public class TideGraph {
 		plot.setDomainRightMin((Number)24);
 		plot.setRangeBottomMax((Number)0);
 		plot.setRangeBottomMin((Number)0);
-   		
-		// remove borders from graph
-		plot.setBorderPaint(null);
 
 		// hide the legend
 		plot.getLegendWidget().setVisible(false);
-    
-		// disable developer guides
-		plot.disableAllMarkup();
 	}
-	
-	
 }

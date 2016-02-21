@@ -66,11 +66,13 @@ public class Utilities {
             // 0year 1month 2day 3week_day 4sunrise 5sunset 6moon 7high1_time 8high1_height 9low1_time 10low1_height
             // 11high2_time 12high2_height 13low2_time 14low2_height 15high3_time 16high3_height
             sunrise = (Calendar.getInstance());
-            sunrise.setTime(Constants.getDateFormat().parse(tideInfo.getString(4).replace("BST", "").replace("GMT","")));
+            sunrise.setTime(Constants.getDateFormat().parse(tideInfo.getString(4).trim().replace("BST", "").replace("GMT","")));
             sunset = Calendar.getInstance();
-            sunset.setTime(Constants.getDateFormat().parse(tideInfo.getString(5).replace("BST", "").replace("GMT","")));
+            sunset.setTime(Constants.getDateFormat().parse(tideInfo.getString(5).replace("BST", "").trim().replace("GMT","")));
             moon = tideInfo.getString(6);
-        }catch(Exception e){}
+        }catch(Exception e){
+          System.out.println(e);
+        }
         try{
             w = Weather.initWeather(weatherInfo);
             w_available = true;

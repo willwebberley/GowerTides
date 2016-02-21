@@ -163,6 +163,7 @@ public class DaysActivity extends ActionBarActivity {
      */
     class PagerAdapter extends FragmentPagerAdapter {
         private List<DayFragment> fragments;
+				private boolean doNotifyDataSetChangedOnce = false;
         public PagerAdapter(android.support.v4.app.FragmentManager fm, List<DayFragment> fragments) {
             super(fm);
             this.fragments = fragments;
@@ -173,6 +174,10 @@ public class DaysActivity extends ActionBarActivity {
         }
         @Override
         public int getCount() {
+					if (doNotifyDataSetChangedOnce) {
+						doNotifyDataSetChangedOnce = false;
+						notifyDataSetChanged();
+					}
             return this.fragments.size();
         }
         @Override

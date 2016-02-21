@@ -7,10 +7,5 @@ local.properties
 *.apk
 *.class
 *.jar
-.idea/
-.gradle/
-gradle/
 build/
 *.bat
-androidTest/
-debug/
